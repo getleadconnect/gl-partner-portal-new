@@ -241,6 +241,7 @@ public function check(Request $request){
 	
 public function createPartner(Request $request)
     {
+
 		$validate = Validator::make(request()->all(),
 		[
              'email'=>'required|unique:partners,email',
@@ -255,8 +256,20 @@ public function createPartner(Request $request)
 		{
 			try
 			{
+				//---unique code-----------
+					$code='';
+					do
+					{
+						$length = 5;
+						$code = substr(uniqid(bin2hex(random_bytes(4)), true), -$length);  // Limiting the length to maxLength
+						$code="GL".$code;
+						$res=Partner::where('unique_id',$code)->first();
+					}
+					while(!empty($res));
+				//---------------------------
 
 				$result=Partner::create([
+					'unique_id'=>$code,
 					'name'=>$request->name,
 					'country_code'=>$request->country_code,
 					'mobile'=>$request->mobile,
@@ -265,7 +278,7 @@ public function createPartner(Request $request)
 					'email'=>$request->email,
 					'website'=>$request->website,
 					'team_size'=>0,
-					'country'=>$request->country,
+					'country'=>$request->country??NULL,
 					'country_name'=>$request->country_name,
 					'state'=>$request->state,
 					'city'=>$request->city,

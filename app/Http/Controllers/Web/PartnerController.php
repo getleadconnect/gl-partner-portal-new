@@ -139,6 +139,166 @@ class PartnerController extends Controller
     }
 
 
+// PARTNER ------------------------------------------
+
+	public function signup()
+	{
+		$agent_id=0;
+		return view('partner.signup',compact('agent_id'));
+	}
+
+
+   public function create(Request $request)
+   {
+	   
+	   $validate = Validator::make(request()->all(),
+		[
+            'email'=>'required|unique:partners,email',
+			//'mobile'=>'required|unique:partners,mobile',
+        ]);
+
+	    if ($validate->fails())
+        {
+			return response()->json(['status'=>0,'msg'=>$validate->errors()->first()]);
+        }
+		else
+		{
+
+			try
+			{
+				//---UNIQUE CODE
+					$code='';
+					do
+					{
+						$length = 5;
+						$code = substr(uniqid(bin2hex(random_bytes(4)), true), -$length);  // Limiting the length to maxLength
+						$code="GL".$code;
+						$res=Partner::where('unique_id',$code)->first();
+					}
+					while(!empty($res));
+				//---------------------------------	
+				
+				
+				$partner = new Partner();
+				$partner->unique_id=$code;
+				$partner->name = request('name');
+				$partner->country_code = request('country_code');
+				$partner->mobile = request('mobile');
+				$partner->company_name = request('company_name');
+				$partner->email = request('email');
+				$partner->photo = 'partner_dummy.png';
+				$partner->password = \Hash::make($request->password);
+				$partner->status =1;
+				$save = $partner->save();
+
+				$login_url=url("/")."/partner/login";
+
+				if( $save )
+				{
+					
+					//------send partner to crm-----
+						$send_response=$this->sendPartnerDetailToCrm($request);
+					//------------------------------
+										
+					
+					$partner_full_mobile=$request->country_code.$request->mobile;
+		
+						$data = [
+							'to_address' => $request->email,
+							'subject' => 'GL-Partner, Welcome to Our Service',
+							'body' => "",
+							'view' => 'admin_partner_adding_email_template', // Optional view page location
+							'attachments' => [], // Optional attachments array
+							'partner_name'=>$request->name,
+							'login_url'=>$login_url,
+						];
+
+						$mail = new EmailNotification();
+						$mail->send($data);
+
+
+					if($this->admin_email!="")
+					{
+						$data2 = [
+								'subject' => "New Partner Registration Alert!",
+								'body' => "" ,
+								'view' => "admin_partner_adding_admin_email_template", // Optional view page location
+								'attachments' => [], // Optional attachments array
+								'partner_name'=>$request->name,
+								'company_name'=>$request->company_name,
+								'partner_mobile'=>$request->country_code.$request->mobile,
+								'partner_email'=>$request->email,
+							];
+						
+						$data2['to_address']=$this->admin_email; //send to admin
+						$resp2=$this->sendMail->send($data2); 
+					}
+					
+				//----- WHATSAPP MESSAGE-----------
+			
+					$data = [
+							'mobile' => $partner_full_mobile,
+							'template' => "partner_registration_message", // template for WhatsApp
+							'parameters'=>[["type" => "text","text" => $login_url]],
+							'buttons'=>[],
+						];
+					
+				$whatsapp = new WhatsAppNotification();
+				$result=$whatsapp->send($data); // Send WhatsApp message via queue
+							
+				//to admin ----------
+
+					if($this->admin_whatsapp_no!="")
+					{
+						$data = [
+								'mobile' => $this->admin_whatsapp_no,
+								'template' => "partner_message_admin", // template for WhatsApp
+								'parameters'=>[],
+								'buttons'=>[],
+							];
+
+						$whatsapp = new WhatsAppNotification();
+						$result=$whatsapp->send($data);
+					}
+
+				//------------SEND TELEGRAM MESSAGE----------
+				
+				$data = [
+					'message' => "Hi,\n New partner registred into the Partner Portal !!!".
+								 "\n --------------------------------------".
+								 "\n Partner Name: ".$request->name.
+								 "\n Company     : ".$request->company_name.
+								 "\n Email       : ".$request->email.
+								 "\n Contact     : ".$request->country_code.$request->mobile.
+								 "\n --------------------------------------",
+					'buttons' => [] 
+				];
+				
+				$telegram = new TelegramNotification();
+				$telegram->quickSend($data); // For quick send
+
+				//---------------------
+					
+					Session::flash('success', 'Rgistration successfully completed.');
+					return redirect('partner/login');
+				}else{
+					Session::flash('fail', 'Something went Wrong, failed to register.');
+					return redirect()->back();
+				}
+						   
+			}
+			catch(\Exception $e)
+			{
+				\Log::info($e->getMessage());
+				return response()->json(['status'=>0,'msg'=>$e->getMessage()]);	
+			}
+		}
+  }
+  
+  
+//LEADS --------------------
+
+
     public function getLeads(Request $request)
     {
 
@@ -658,7 +818,7 @@ public function getBusinessLeads(Request $request)  //dashboard
         $business_leads = $leads->where('lead_status',"Got Business")->count();
         $total_leads = $leads->count();
         $countries = CountryState::getCountries();
-        if($partner->country)
+        if($partner->country!=null)
         {
             $states = CountryState::getStates($partner->country);
         }
@@ -747,149 +907,7 @@ public function getBusinessLeads(Request $request)  //dashboard
     }
 
 
-// PARTNER ------------------------------------------
 
-	public function signup()
-	{
-		$agent_id=0;
-		return view('partner.signup',compact('agent_id'));
-	}
-
-
-   public function create(Request $request)
-   {
-	   
-	   $validate = Validator::make(request()->all(),
-		[
-            'email'=>'required|unique:partners,email',
-			//'mobile'=>'required|unique:partners,mobile',
-        ]);
-
-	    if ($validate->fails())
-        {
-			return response()->json(['status'=>0,'msg'=>$validate->errors()->first()]);
-        }
-		else
-		{
-
-			try
-			{
-				$partner = new Partner();
-				$partner->name = request('name');
-				$partner->country_code = request('country_code');
-				$partner->mobile = request('mobile');
-				$partner->company_name = request('company_name');
-				$partner->email = request('email');
-				$partner->photo = 'partner_dummy.png';
-				$partner->password = \Hash::make($request->password);
-				$partner->status =1;
-				$save = $partner->save();
-
-				$login_url=url("/")."/partner/login";
-
-				if( $save )
-				{
-					
-					//------send partner to crm-----
-						$send_response=$this->sendPartnerDetailToCrm($request);
-					//------------------------------
-										
-					
-					$partner_full_mobile=$request->country_code.$request->mobile;
-		
-						$data = [
-							'to_address' => $request->email,
-							'subject' => 'GL-Partner, Welcome to Our Service',
-							'body' => "",
-							'view' => 'admin_partner_adding_email_template', // Optional view page location
-							'attachments' => [], // Optional attachments array
-							'partner_name'=>$request->name,
-							'login_url'=>$login_url,
-						];
-
-						$mail = new EmailNotification();
-						$mail->send($data);
-
-
-					if($this->admin_email!="")
-					{
-						$data2 = [
-								'subject' => "New Partner Registration Alert!",
-								'body' => "" ,
-								'view' => "admin_partner_adding_admin_email_template", // Optional view page location
-								'attachments' => [], // Optional attachments array
-								'partner_name'=>$request->name,
-								'company_name'=>$request->company_name,
-								'partner_mobile'=>$request->country_code.$request->mobile,
-								'partner_email'=>$request->email,
-							];
-						
-						$data2['to_address']=$this->admin_email; //send to admin
-						$resp2=$this->sendMail->send($data2); 
-					}
-					
-				//----- WHATSAPP MESSAGE-----------
-			
-					$data = [
-							'mobile' => $partner_full_mobile,
-							'template' => "partner_registration_message", // template for WhatsApp
-							'parameters'=>[["type" => "text","text" => $login_url]],
-							'buttons'=>[],
-						];
-					
-				$whatsapp = new WhatsAppNotification();
-				$result=$whatsapp->send($data); // Send WhatsApp message via queue
-							
-				//to admin ----------
-
-					if($this->admin_whatsapp_no!="")
-					{
-						$data = [
-								'mobile' => $this->admin_whatsapp_no,
-								'template' => "partner_message_admin", // template for WhatsApp
-								'parameters'=>[],
-								'buttons'=>[],
-							];
-
-						$whatsapp = new WhatsAppNotification();
-						$result=$whatsapp->send($data);
-					}
-
-				//------------SEND TELEGRAM MESSAGE----------
-				
-				$data = [
-					'message' => "Hi,\n New partner registred into the Partner Portal !!!".
-								 "\n --------------------------------------".
-								 "\n Partner Name: ".$request->name.
-								 "\n Company     : ".$request->company_name.
-								 "\n Email       : ".$request->email.
-								 "\n Contact     : ".$request->country_code.$request->mobile.
-								 "\n --------------------------------------",
-					'buttons' => [] 
-				];
-				
-				$telegram = new TelegramNotification();
-				$telegram->quickSend($data); // For quick send
-
-				//---------------------
-					
-					Session::flash('success', 'Rgistration successfully completed.');
-					return redirect('partner/login');
-				}else{
-					Session::flash('fail', 'Something went Wrong, failed to register.');
-					return redirect()->back();
-				}
-						   
-			}
-			catch(\Exception $e)
-			{
-				\Log::info($e->getMessage());
-				return response()->json(['status'=>0,'msg'=>$e->getMessage()]);	
-			}
-		}
-  }
-  
-  
   
   
   

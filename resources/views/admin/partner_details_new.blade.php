@@ -10,6 +10,7 @@
 </style>
 
 <div style="width:99.5%;">
+
 <div class="row">
 	<div class="col-lg-3 col-xl-3 col-xxl-3">
 
@@ -17,6 +18,7 @@
 			<div class="col-lg-12 col-xl-12 col-xxl-12">
 					<div class="form-group mt-3">
 						<p><h4>{{$data['partner']->name}}</h4> </p>
+						<p><h6>ID :{{$data['partner']->unique_id}}</h6> </p>
 						<p>{{$data['partner']->email}}</p>
 						<p>{{$data['partner']->mobile}}</p>
 					</div>
@@ -126,6 +128,7 @@
 					
 				</thead>
 				<tbody>
+				
 				
 				
 				</tbody>

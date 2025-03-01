@@ -69,6 +69,7 @@
   
 									<tr>
 										<th>No</th>
+										<th>Unique Id</th>
 										<th>Partner Name</th>
 										<th>Email</th>
 										<th>Mobile</th>
@@ -308,7 +309,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="card-body prd-body">
+			<div class="card-body prd-body" style="height:820px;">
 
 				  <div class="loading-outer">
 					  <span class="spinner-loading">
@@ -415,6 +416,7 @@ $("#btnDetailClose").click(function()
 			
             columns: [
             {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable: false, searchable: false},
+			{data: 'unique_id', name: 'unique_id'},
             {data: 'name', name: 'name'},
             {data: 'email', name: 'email'},
 			{data: 'mobile', name: 'mobile'},

@@ -22,7 +22,7 @@ class Partner extends Authenticatable
      */
 	 
     protected $fillable = [ 
-		'name','email','country_code','mobile','company_name','password','website','commission_percentage',
+		'unique_id','name','email','country_code','mobile','company_name','password','website','commission_percentage',
 		'team_size','country','country_name','state','state_name','city','pin_code',
 		'email_verified_at','password','agent_id','photo','bank_name',
 		'ifsc','branch','account_number','upi_id','company_logo','status'
