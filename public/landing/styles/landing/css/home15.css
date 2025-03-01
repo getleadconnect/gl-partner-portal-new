@@ -1,0 +1,427 @@
+/*
+Theme Name: PROGRISAAS
+
+Styles Home 15
+
+/* Header */
+@import url('https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap');
+body,
+button,
+input,
+select,
+optgroup,
+textarea {
+    font-family: 'Kumbh Sans', sans-serif;
+}
+#site-logo img {
+    width: 170px;
+}
+.main-navigation ul > li > a, .vertical-main-navigation ul > li > a {
+	color: #222;
+	font-weight: 400;
+}
+.main-navigation ul > li.menu-item-has-children:hover > a, .main-navigation > ul > li.current-menu-item > a,
+.vertical-main-navigation ul > li.current-menu-item > a, .main-navigation ul > li > a:hover, .vertical-main-navigation ul > li > a:hover,
+.main-navigation ul > li.menu-item-has-children:hover > a:after, .main-navigation ul > li.current-menu-item > a:after,
+.main-navigation > ul > li.mega-dropdown ul li.current-menu-item a, .ot-image-box__content .image-box-title a:hover {
+    color: #DF5727;
+}
+.main-navigation > ul > li > a:before, .vertical-main-navigation > ul > li > a:before {
+    background-color: #DF5727;
+}
+.main-navigation ul li li a:hover, .main-navigation ul ul li.current-menu-item > a {
+    background-color: rgba(223, 87, 39, 0.1);
+    color: #DF5727;
+}
+.title-link {
+    background-image: linear-gradient(0deg, #fff, #DF5727);
+}
+.octf-header-btn .octf-btn {
+	width: 180px;
+    padding: 13px 10px 13px 10px;
+    background-color: #fff;
+    color: #222;
+    font-weight: 400;
+    font-size: 16px;
+    letter-spacing: .1px;
+}
+.octf-header-btn .octf-btn:hover {
+	background-color: #DF5727;
+	color: #fff;
+}
+.top-15 {
+	background-color: #FBF2E1;
+}
+.top-15 h1 {
+    color: #222;
+    font-family: "Kumbh Sans",Sans-serif;
+    font-size: 72px;
+    font-weight: 700;
+    line-height: 80px;
+}
+.top-15 h6 {
+    color: #212121;
+    font-family: "Kumbh Sans",Sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 36px;
+}
+.top-15 p {
+    font-family: "Kumbh Sans",Sans-serif;
+    font-weight: 400;
+}
+.top-img {
+	position: relative;
+	z-index: 1;
+}
+svg {
+    width: 1em;
+    height: 1em;
+    position: relative;
+    display: block;
+}
+.top-position-1 {
+	position: absolute;
+	font-size: 122px;
+	left: -26%;
+	top: -6%;
+}
+.top-position-2 {
+	position: absolute;
+	font-size: 160px;
+	top: 25%;
+	right: 27%;
+}
+.top-position-3 {
+	position: absolute;
+	font-size: 640px;
+	top: 16%;
+	left: -75%;
+	z-index: 0;
+}
+.top-position-4 {
+	position: absolute;
+	font-size: 68px;
+	top: 16%;
+	right: -12%;
+	transform: rotate(55deg);
+}
+.top-position-5 {
+	font-size: 495px;
+	position: absolute;
+	top: -27%;
+	right: -72.5%;
+}
+.top-position-5 svg {
+	transform: rotate(200deg);
+}
+.octf-btn {
+    width: 240px;
+    padding: 18px 40px 15px 40px;
+    font-size: 18px;
+    background-color: #FF561E;
+}
+.octf-btn:hover, .octf-btn:focus {
+    color: #222;
+    background-color: #FFF;
+}
+.text-link svg {
+	display: inline;
+}
+h2 {
+    color: #222;
+    font-weight: 700;
+    line-height: 60px;
+}
+.text-link {
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 21px;
+    letter-spacing: .1px;
+    fill: #FF561E;
+    color: #FF561E;
+    background-color: #61CE7000;
+    padding: 0 0 0 0;
+}
+.meeting-15 {
+	background-color: #F6F6F6;
+}
+.meeting-img-box {
+	margin-right: 35px;
+}
+.meeting-img-box-right {
+	margin-right: 0;
+	margin-left: 35px;
+}
+.meeting-img-box .ot-image-box__content .image-box-title {
+	color: #222;
+	font-weight: 700;
+    line-height: 36px;
+}
+.meeting-img-box .ot-image-box__content .image-box-title a {
+    background-image: linear-gradient(0deg,#fff,#FF561E);
+}
+.meeting-img-box .ot-image-box__content .image-box-des {
+	font-size: 18px;
+}
+.meeting-img-box .ot-image-box__content .image-box-btn {
+    font-size: 18px;
+    letter-spacing: .1px;
+}
+.meeting-img-box .ot-image-box__content .image-box-btn a {
+	color: #222;
+}
+.meeting-img-box .ot-image-box__content .image-box-btn a:hover {
+	color: #FF561E;
+}
+.ot-blockquote-simple .ot-blockquote-item blockquote {
+    padding-left: 22px;
+}
+.ot-blockquote-simple .ot-blockquote-item blockquote:before {
+    background: #FF561E;
+    width: 3px;
+}
+.ot-blockquote-simple .ot-blockquote__content {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 36px;
+}
+.ot-blockquote-simple .ot-blockquote__author {
+    color: #FF561E;
+    font-family: "Kumbh Sans",Sans-serif;
+}
+.image-position-1 {
+	position: absolute;
+	left: -6%;
+	bottom: -20%;
+	font-size: 100px;
+}
+.image-position-2 {
+	position: absolute;
+	right: 20%;
+	top: -1%;
+	font-size: 68px;
+	transform: rotate(55deg);
+}
+.list-s2 .list-icon {
+	font-size: 12px;
+	margin-right: 15px;
+	fill: #FF561E;
+	padding-top: 10px;
+}
+.list-s2 .list-text {
+	color: #222;
+	font-weight: 400;
+}
+.image-position-3 {
+	position: absolute;
+	left: -8%;;
+	top: 5%;
+	font-size: 63px;
+	transform: rotate(315deg);
+}
+.image-position-4 {
+	position: absolute;
+	right: 11%;
+	top: 30%;
+	font-size: 42px;
+	transform: rotate(184deg);
+}
+.slide-15 {
+	background-image: url('../images/background/bg1-home15.jpg');
+    background-position: top center;
+    background-repeat: no-repeat;
+}
+.octf-btn-light {
+	background-color: #fff;
+	color: #FF561E;
+}
+.octf-btn-light:hover {
+	color: #fff;
+	background-color: #FF561E;
+}
+.custom-nav [class*=owl-] {
+	color: #FFF;
+    background: #FFF3;
+}
+.custom-nav [class*=owl-]:hover {
+    color: #DF5727;
+    background: #FFF;
+}
+.ot-image-slider-sync-tab {
+	margin-right: -250px;
+}
+.ot-tabs__heading {
+    margin: 0 calc(-32px/2);
+}
+.ot-tabs__heading .tab-link {
+    margin: 0 calc(32px/2);
+    font-family: "Kumbh Sans",Sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 36px;
+}
+.ot-tabs__heading .tab-link:not(.current) {
+    color: #FFF3;
+    opacity: 1;
+}
+.ot-tabs__heading .tab-link.current, .ot-tabs__heading .tab-link:hover {
+    color: #FFF;
+    opacity: 1;
+}
+.ot-image-slider-sync-tab .ot-tabs__content {
+    margin-top: 5px;
+    padding: 0 200px 0 0;
+    color: #FFF;
+    font-family: "Kumbh Sans",Sans-serif;
+    font-size: 16px;
+    line-height: 30px;
+}
+.plan-15 {
+	background-color: #F6F6F6;
+	margin-top: -198px;
+}
+.plan-box {
+	background-color: #fff;
+	padding: 60px 30px 55px 30px;
+	border-radius: 10px;
+}
+.plan-box h5 {
+    color: #223354;
+    font-weight: 700;
+    line-height: 32px;
+}
+.plan-box .save {
+    text-align: center;
+    color: #FF561E;
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1em;
+}
+.plan-box .save del {
+	color: #d3d3d3;
+    font-size: 36px;
+}
+.plan-box.feature {
+	background-color: #FFF5DE;
+}
+.plam-position-1 {
+	position: absolute;
+	font-size: 68px;
+	right: -9%;
+	top: -5%;
+	transform: rotate(55deg);
+}
+.plam-position-2 {
+	position: absolute;
+	font-size: 105px;
+	right: 47%;
+	bottom: -3%;
+}
+.ot-testimonial-s2 .owl-nav {
+	position: relative;
+	margin-top: 45px;
+	margin-left: 36px;
+	text-align: left;
+}
+.owl-carousel .owl-nav button.owl-next, .owl-carousel .owl-nav button.owl-prev, .owl-carousel button.owl-dot {
+	background: #f6f6f6;
+}
+.owl-theme .owl-nav [class*=owl-]:hover {
+	background: #FF561E;
+}
+.owl-theme .owl-nav .owl-prev {
+	margin-right: 5px;
+}
+.chat-15 {
+    background-color: #F7E5F3;
+    background-image: url('../images/background/bg2-home15.png');
+    background-position: top left;
+    background-repeat: no-repeat;
+}
+.chat-position-1 {
+	position: absolute;
+	right: -2%;
+	bottom: 1%;
+	font-size: 68px;
+	transform: rotate(132deg);
+}
+.chat-position-2 {
+	position: absolute;
+	left: 3%;
+	bottom: 15%;
+	font-size: 120px;
+}
+.chat-position-3 {
+	position: absolute;
+	left: 17%;
+	top: 3%;
+	font-size: 63px;
+	transform: rotate(315deg);
+}
+.site-footer {
+	background-color: #222;
+}
+.footer-widget .footer-title {
+	font-weight: 700;
+    line-height: 30px;
+}
+.footer-contact-info span, .footer-widget ul a, .ft-menu li a {
+	color: #fff;
+}
+.footer-contact-info span {
+	line-height: 24px;
+}
+.footer-contact-info a, .footer-widget ul a:hover {
+	color: #FF561E;
+}
+.copyright {
+	color: #FFF;
+	font-family: "Kumbh Sans",Sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+}
+@media (min-width: 1200px){
+	.top-img {
+		margin: 0 0 0 -298px;
+	}
+	.ot-testimonial-wrap {
+		margin-right: 50px;
+		margin-left: 100px;
+	}
+	.chat-img {
+		margin: 0 -375px 0 0;
+	}
+}
+@media (max-width: 1200px) {
+	.slide-15 {
+		background-size: cover;
+	}
+}
+@media (max-width: 1024px){
+	.ot-image-slider-sync-tab {
+		margin: 0;
+	}
+}
+@media (max-width: 767px) {
+	.top-15 h1 {
+		font-size: 42px;
+    	line-height: 55px;
+	}
+	h2 {
+		font-size: 34px;
+		line-height: 48px;
+	}
+	.plan-15 {
+		margin-top: 0;
+	}
+	.ot-image-slider-sync-tab .ot-tabs__content {
+		padding-right: 0;
+		padding-bottom: 60px;
+	}
+	.ot-blockquote__content {
+	    font-size: 24px;
+	    line-height: 42px;
+	}
+}

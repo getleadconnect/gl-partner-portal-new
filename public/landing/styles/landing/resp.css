@@ -1,0 +1,110 @@
+/*************Responsive Styles*****************/
+/***************iPhone Portrait**************/
+@media only screen and (max-width: 479px) and (min-width: 320px){
+    .octf-btn.color-third{
+        width: 100%;
+        padding: 18px 20px;
+    }
+
+}
+/**********************iPhone Landscape*************/
+@media only screen and (max-width: 767px) and (min-width: 480px){
+ 
+    .navbar-collapse{
+        background: rgb(255, 255, 255);
+          padding: 15px;
+          margin-top: 15px;
+      }
+
+
+}
+/*************************iPad Portrait***************/
+@media only screen and (max-width: 985px) and (min-width: 768px){
+    .services-list-icon{
+        height: 100%;
+    }
+    .gl-services-section .row .col-sm-12{
+        margin-bottom: 20px;
+    }
+    .space-30{
+        display: none;
+    }
+    h2{
+        font-size: 42px;
+        margin-bottom: 20px !important;
+    }
+    .top-h1 h2{
+        font-size: 48px !important;
+    }
+    .navbar-collapse{
+        background: rgb(255, 255, 255);
+          padding: 15px;
+          margin-top: 15px;
+      }
+
+}
+/**************iPad Landscape***************/
+@media only screen and ( max-width: 1026px ) and (min-width: 987px){
+    .services-list-icon{
+        height: 100%;
+    }
+    .box-offer .none-style li{
+        display: flex;
+    }
+
+}
+/*******************************************/
+
+
+@media only screen and ( max-width: 1182px ) and (min-width: 1027px){
+    .services-list-icon{
+        height: 100%;
+    }
+    .icon-box-title{
+        padding-right: 0px !important;
+    }
+    .box-offer{
+        height: 100%;
+    }
+    .box-offer .none-style li{
+        display: flex;
+    }
+
+}
+
+/*******************************************/
+
+
+
+@media only screen and ( max-width: 767px ){
+.header-desktop .octf-main-header .row{
+    text-align: center;
+}
+.header-desktop .octf-main-header .btn-cta-group{
+    text-align: center;
+    width: 100%;
+    padding-top: 10px !important;
+}
+.box-offer{
+    padding: 30px;
+}
+
+.box-offer .none-style li{
+    display: flex;
+}
+.header-desktop a{
+    font-size: 16px;
+}
+h2{
+    font-size: 42px;
+    margin-bottom: 20px !important;
+}
+.top-h1 h2{
+    font-size: 48px !important;
+}
+.navbar-collapse{
+    background: rgb(255, 255, 255);
+      padding: 15px;
+      margin-top: 15px;
+  }
+}

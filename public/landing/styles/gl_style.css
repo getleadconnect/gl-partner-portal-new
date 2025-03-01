@@ -1,0 +1,368 @@
+.navbar-brand {
+    margin: 44px 0px 0px 0px;
+    width: 209px;
+    height: 57px;
+
+}
+
+.nav-item{  
+    margin-top: 53px; 
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 13px;
+    color: #000000;
+}
+
+.nav-link {
+    color: #000000 !important;
+    padding-left: 40px !important;
+}
+.nav-link {
+    color: #000000 !important;
+    padding-left: 40px !important;
+}
+.btn-outline-danger {
+    margin-top: 46px;
+    width: 127px;
+    height: 39px;
+    float: left;
+    color: #000000 !important;
+    border-color: #FF4B4B !important;
+}
+.heading {
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 60px;
+    line-height: 100.7%;
+    color: #000000;
+    padding-top: 130px;
+}
+.heading2 {
+    margin-top: -50px;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 61px;
+    line-height: 100.7%;
+    color: #FF4B4B;
+}
+.para {
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 13px;
+    color: #000000 !important;
+}
+.rectangle {
+    width: 100%;
+    height: 100%;
+    margin-top: 80px;
+    background: #FFFFFF;
+    padding: 20px 25px 20px 45px;
+    box-shadow: 23px 25px 68px rgb(54 144 251 / 7%);
+}
+.section3 .rect{
+    height: 100%;
+}
+.arm-image img{
+    width: 65px;
+    height: 65px;
+    object-fit: contain;
+}
+.arm-para {
+    font-family: Montserrat;
+    font-weight: 300;
+    font-size: 16px;
+    color: #000000;
+    margin-top: 10px;
+}
+.register {
+    margin-top: 97px;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 100.7%;
+    text-align: center;
+    color: #000000;
+}
+.text-center {
+    text-align: center !important;
+}
+.group1 {
+    width: 100%;
+    margin-top: 80px;
+}
+.heading3 {
+    margin-top: 56px;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 40px;
+    line-height: 100.7%;
+    text-align: center;
+    color: #000000;
+}
+.para2 {
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 165.7%;
+    text-align: center;
+    color: #313131 !important;
+}
+.heading4 {
+    margin-top: -40px;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 40px;
+    line-height: 100.7%;
+    text-align: center;
+    color: #FF4B4B;
+}
+.footer {
+    margin-top: 101px;
+    margin-bottom: 70px;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 165.7%;
+    color: #5879A5;
+}
+.right {
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 165.7%;
+    color: #5879A5;
+}
+.list-footer {
+    list-style-type: none;
+}
+.li-footer {
+    float: left;
+    margin-top: 0px;
+    padding-left: 25px;
+    color: #5879A5;
+}
+
+.rectangle4 {
+    margin-top: 45px;
+    background: #FFFFFF;
+    box-shadow: 27px -10px 68px rgb(54 144 251 / 7%);
+}
+
+.lbtn-danger {
+    width: 100%;
+    height: 65px;
+    background: #FF4B4B;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 165.7%;
+    color: #FFFFFF;
+    margin-top: 50px !important;
+    margin-left: 30px;
+    border-radius: 0px !important;
+}   
+
+#form-name {
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 12px;
+    line-height: 165.7%;
+    color: #49424E;
+    padding-top: 20px;
+}
+
+.rectangle4 .kt-form input[type=text], select, textarea {
+    width: 280px;
+    height: 45px;
+    background: #F1F7FF;
+    border: none;
+    border-radius: 0px;
+} 
+
+.rectangle4 .kt-form input[type=number], select, textarea {
+    width: 280px;
+    height: 45px;
+    background: #F1F7FF;
+    border: none;
+    border-radius: 0px;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 13px;
+} 
+
+.rectangle4 .kt-form input[type=email], select, textarea {
+    width: 280px;
+    height: 45px;
+    background: #F1F7FF;
+    border: none;
+    border-radius: 0px;
+} 
+
+.rectangle4 .kt-form input[type=website], select, textarea {
+    width: 280px;
+    height: 45px;
+    background: #F1F7FF;
+    border: none;
+    border-radius: 0px;
+} 
+.rectangle4 .kt-form {
+    padding-top: 76px;
+    padding-bottom: 74px;
+}
+.section-4 select option::placeholder {
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 13px;
+    color: #495057;
+}
+.section-4 select{
+    color: #495057; 
+    padding: 6px 12px;    
+    border: none;
+    outline: none;
+}
+input{
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 13px;
+}
+
+/************** Login Page **************************/
+.login-section{
+    background-image: url('https://partner.getlead.co.uk/admin/assets/media/bg/bg-3.jpg');
+    background-repeat: no-repeat;
+/*    padding: 60px 0px;*/
+    position: relative;
+    height: 100vh;
+    max-height: 100vh;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+.login-section .row{
+    align-items: center;
+    overflow: scroll;
+    height: 100vh;
+    padding: 40px 0px;
+}
+.login-section .row::-webkit-scrollbar {
+    display: none;
+}
+.login-section .kt-login__title{
+    color: #595d6e;
+    font-size: 18px;
+    margin-top: 65px;
+    margin-bottom: 25px;
+}
+.kt-login__content .kt-login__actions{
+    margin: 45px 0px;
+}
+.kt-login__actions button {
+    height: 46px;
+    text-align: center;
+    color: #22b9ff;
+    padding: 10px 40px;
+    border-radius: 45px;
+    border: 1px solid #22b9ff;
+    background: transparent;
+    outline: none !important;
+    vertical-align: middle;
+    display: inline-block;
+    font-weight: normal;
+    -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+    font-size: 13px;
+}
+.kt-login__actions button:hover{
+    background-color: #22b9ff;
+    border-color: #22b9ff;
+    color: #ffffff;
+}
+.kt-login__content .kt-login__desc{
+    color: #74788d;
+    font-size: 13px;
+}
+.kt-login__content{
+    text-align: center;
+}
+.kt-login__logo .partner-logo{
+    width: 100px;
+}   
+.login-form-col h3{
+    text-align: center;
+    font-size: 20px;
+    font-weight: 500;
+    color: #595d6e;
+    margin-bottom: 20px;
+}
+.login-section .login-form-col{
+    width: 300px;
+    margin: auto;
+    text-align: center;
+}
+.login-section .login-form input:focus{
+    outline: none;
+    box-shadow: none;
+    border-color: transparent!important;
+}
+.login-section .login-form input,
+.login-section .login-form select{
+    height: 40px;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid #ebecf1;
+    padding: 10px 0;
+    margin-top: 5px;
+    font-size: 13px;
+    outline: none;
+    width: 100%;
+}
+.login-section .login-form input::placeholder{
+    font-size: 13px;
+}
+.login-section .container{
+    max-width: 1280px;
+}
+.login-form .kt-login__actions button{
+    -webkit-box-shadow: 0px 4px 16px 0px rgb(34 185 255 / 15%);
+    box-shadow: 0px 4px 16px 0px rgb(34 185 255 / 15%);
+    background-color: #22b9ff;
+    border-color: #22b9ff;
+    color: #ffffff;
+    margin: 25px 0px;
+    cursor: pointer;
+}
+.login-form .kt-login__actions button:hover{
+    -webkit-box-shadow: 0px 9px 16px 0px rgb(34 185 255 / 25%) !important;
+    box-shadow: 0px 9px 16px 0px rgb(34 185 255 / 25%) !important;
+}
+
+#sign-up-form{
+    display: none;
+}
+.login-form  .sign-up-cancel{
+    margin-left: 25px !important;
+    background-color: transparent !important;
+    color: #22b9ff !important;
+    border-color: #22b9ff !important;
+}

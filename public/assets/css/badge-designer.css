@@ -1,0 +1,39 @@
+#draggable-elements {
+    margin-bottom: 20px;
+}
+
+.draggable-element {
+    padding: 10px;
+    margin: 5px 0;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    cursor: move;
+    text-align: center;
+}
+
+#badge-designer {
+    border: 1px solid #dee2e6;
+    height: 500px;
+    position: relative;
+    background-color: #ffffff;
+}
+
+#badge-area {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+}
+
+.draggable-item {
+    position: absolute;
+    padding: 5px;
+    border: 1px dashed #000;
+    background-color: rgba(255, 255, 255, 0.7);
+    cursor: move;
+}
+
+#badge-upload {
+    margin-right: 10px;
+}

@@ -1,0 +1,356 @@
+/*
+Theme Name: PROGRISAAS
+
+Styles Home 10
+
+/* Header */
+.header-desktop .col-logo {
+	width: 20%;
+}
+.header-desktop .col-cta {
+	width: 40%;
+}
+.main-navigation > ul > li.current-menu-item > a, .vertical-main-navigation ul > li.current-menu-item > a,
+.main-navigation ul > li.menu-item-has-children:hover > a, .main-navigation ul > li > a:hover, .vertical-main-navigation ul > li > a:hover,
+.main-navigation ul > li.menu-item-has-children:hover > a:after, .main-navigation ul > li.current-menu-item > a:after {
+  color: #8922FF;
+}
+.main-navigation > ul > li > a:before, .vertical-main-navigation > ul > li > a:before {
+  background-color: #8922FF;
+}
+.main-navigation ul li li a:hover, .main-navigation ul ul li.current-menu-item > a {
+	color: #8922FF;
+	background: #7627FF1A;
+}
+.octf-header-btn .octf-btn {
+	width: 180px;
+  padding: 14px 20px 14px 20px;
+  border-radius: 25px 25px 25px 25px;
+  font-size: 14px;
+  background-color: #8922FF;
+}
+.octf-header-btn .octf-btn:hovẻ {
+	background-color: #fff;
+	color: #8922FF;
+}
+.octf-cta-header .toggle_search i:hover {
+	color: #8922FF;
+}
+#site-logo img {
+  width: 208px;
+}
+.octf-btn {
+	width: 240px;
+  background-color: #EF51B7;
+}
+.octf-btn:hover, .octf-btn:focus {
+	background-color: #8922FF;
+}
+.octf-btn.btn-light {
+	color: #8922FF;
+	background-color: #fff;
+}
+.octf-btn.btn-light:hover ,.octf-btn.btn-light:focus, .btn-light:not(:disabled):not(.disabled):active {
+	color: #fff;
+  background-color: #8922FF;
+  border-color: #8922FF;
+}
+.list-s1 svg {
+  width: 11px;
+  margin-right: 14px;
+}
+.top-10 {
+  background-color: #E7F9FF;
+}
+.top-desc-10 {
+  color: #223354;
+  font-family: "DM Sans",Sans-serif;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 36px;
+} 
+.top-img-10 img{
+  width: 100%;
+}
+.top-img-10 {
+  z-index: 1;
+  position: relative;
+}
+.feature-10 {
+  margin-top: -200px;
+  background-color: #fff;
+}
+.ot-icon-box-10 {
+  padding: 48px 36px 30px 36px;
+  background-image: url('../images/background/bg-iconbox-home10.png');
+  background-position: 55% 40px;
+  background-repeat: no-repeat;
+  border-radius: 10px 10px 10px 10px;
+  transition: all 0.3s linear;
+  -webkit-transition: all 0.3s linear;
+  -moz-transition: all 0.3s linear;
+  -o-transition: all 0.3s linear;
+  -ms-transition: all 0.3s linear;
+}
+.ot-icon-box-10:hover {
+  background-color: #FCF1FF;
+  background-image: url('../images/background/bg-hover-iconbox-home10.png');
+  background-position: 55% 40px;
+  background-repeat: no-repeat;
+  box-shadow: 3px 3px 10px 0 rgb(55 55 55 / 7%);
+}
+.ot-icon-box-10 .ot-icon-box__icon {
+  margin-bottom: 19px;
+}
+.ot-icon-box-10 .ot-icon-box__icon {
+  font-size: 48px;
+}
+.ot-icon-box-10 .icon-box-title {
+  margin-bottom: 5px;
+  line-height: 36px;
+}
+.project-manager-10 {
+  background-color: #EDFFF6;
+}
+.project-manager-iconb-10 {
+  margin: 0 0 12px 0;
+  padding: 10px 0 10px 30px;
+  border-radius: 10px 10px 10px 10px;
+  transition: all 0.3s linear;
+  -webkit-transition: all 0.3s linear;
+  -moz-transition: all 0.3s linear;
+  -o-transition: all 0.3s linear;
+  -ms-transition: all 0.3s linear;
+}
+.project-manager-iconb-10:hover {
+  background-color: #FFF;
+  box-shadow: 3px 3px 10px 0 rgb(57 57 57 / 7%);
+}
+.project-manager-iconb-10 .ot-icon-box__icon {
+  font-size: 22px;
+}
+.project-manager-iconb-10 .ot-icon-box__icon svg {
+  fill: #FFF;
+}
+.project-manager-iconb-10 .icon-box-title {
+  margin-top: 14px;
+  color: #223354;
+}
+.program-iconb-10 {
+  padding: 15px 0 48px 0;
+}
+.program-iconb-10 .ot-icon-box__icon {
+  font-size: 10px;
+}
+.ot-position-left .program-iconb-10 .ot-icon-box__icon {
+  margin-right: 20px;
+}
+.program-iconb-10 .icon-box-title {
+  margin-top: -15px;
+  font-size: 30px;
+  line-height: 40px;
+}
+.program-iconb-10 .icon-box-des {
+  font-size: 18px;
+}
+.work-10 {
+  background-image: url('../images/background/bg1-home10.jpg');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.ot-client-logo-slider .client-logo {
+  padding: 26px 23px 26px 28px;
+  border-radius: 10px 10px 10px 10px;
+}
+.ot-client-logo-slider .owl-item svg {
+  fill: #BFBFC3;
+}
+.client-text-10 h6 {
+  font-family: "DM Sans",Sans-serif;
+  color: #223354;
+  font-size: 14.4px;
+  line-height: 1.2;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: .1px;
+}
+.cta-10 {
+  background-color: #8922FF;
+  background-image: url('../images/background/bg3-home10.png');
+  background-position: 100% 129px;
+  background-repeat: no-repeat;
+}
+.cta-10 .overlay {
+  background-image: url('../images/background/bg2-home10.png');
+  background-position: 0% 84%;
+  background-repeat: no-repeat;
+  opacity: 1;
+  z-index: 0;
+  background-color: transparent;
+}
+.ot-icon-box__icon svg {
+  fill: #8922FF;
+}
+.ot-heading__sub {
+	color: #D053B4;
+}
+.text-link {
+	color: #8922FF;
+	fill: #8922FF;
+}
+.ot-view-stacked .ot-icon-box__icon.ot-icon-box__icon-color1 {
+	background-color: #A6BBFF;
+}
+.ot-icon-box__content .icon-box-title a:hover {
+	color: #223354;
+}
+.ot-view-stacked .ot-icon-box__icon.ot-icon-box__icon-color2 {
+	background-color: #69DAB3;
+}
+.ot-view-stacked .ot-icon-box__icon.ot-icon-box__icon-color3 {
+	background-color: #E077E4;
+}
+.ot-view-stacked .ot-icon-box__icon.ot-icon-box__icon-color4 {
+	background-color: #EFBF7B;
+}
+.octf-btn-main {
+	width: 240px;
+  background-color: #8922FF;
+}
+.octf-btn-main:hover {
+	background-color: #EF51B7;
+}
+.icon-color-main-10 i {
+  color: #7627FF;
+}
+.icon-color-second-10 i {
+  color: #E077E4;
+}
+.icon-color-third-10 i {
+  color: #69DAB3;
+}
+.service-box__number span {
+  color: #8922FF;
+  background: #FFF;
+  box-shadow: 0 0 0 0 rgb(0 0 0 / 50%);
+}
+.service-box:hover .service-box__number span {
+  color: #FFF;
+  background: #8922FF;
+}
+.service-box__content .service-box-title a:hover {
+  color: #8922FF;
+}
+.projects-grid.style-2 .portfolio-info h5 a:hover, .ot-project-slider.style-2 .portfolio-info h5 a:hover {
+	color: #8922FF;
+}
+.title-link {
+	background-image: linear-gradient(0deg,#8922FF,#8922FF);
+}
+.projects-box .portfolio-info .portfolio-btn a {
+  color: #8922FF;
+}
+.projects-box .portfolio-info .portfolio-btn a:hover {
+  color: #FD77E8;
+}
+.ot-client-logo-slider-h7 .client-logo:hover {
+  background: #FCF1FF;
+}
+.ot-client-logo-slider-h7 .client-logo:hover svg {
+  fill: #8922FF;
+}
+.cta-10 .octf-btn.btn-light:hover, .cta-10 .octf-btn.btn-light:focus, .cta-10 .btn-light:not(:disabled):not(.disabled):active {
+	color: #FFF;
+  background-color: #EF51B7;
+  border-color: #EF51B7;
+}
+ #back-to-top {
+  background: #D053B4;
+}
+#back-to-top:hover {
+  background: #2E2E4D;
+  color: #fff;
+}
+.site-footer {
+	background-color: #fff;
+}
+.footer-widget .footer-title {
+  color: #223354;
+}
+.footer-contact-info .number-phone, .footer-contact-info span, .footer-widget ul a {
+  color: #646E83;
+}
+.footer-widget ul a:hover {
+	color: #7627FF;
+}
+.footer-contact-info a {
+	color: #7627FF;
+}
+
+@media (min-width: 768px){
+  .ot-position-left .ot-icon-box__icon {
+    margin-right: 18px;
+  }
+}
+@media(min-width: 993px){
+}
+@media(min-width: 1200px){
+  .cta-img-10 {
+    margin-right: -70px;
+  }
+  .organize-img-10 {
+    margin: 0 -150px 50px -14px;
+  }
+  .project-manager-img-10 {
+    margin-left: -131px;
+  }
+  .top-img-10 {
+    margin: 0 -117px 0 -193px;
+  }
+  .program-img-1 {
+    margin-left: -91px;
+  }
+}
+@media(max-width: 1024px){
+  .cta-10, .cta-10 .overlay {
+    background-size: 0;
+  }
+}
+@media(max-width: 992px){
+}
+@media(max-width: 767px){
+  .program-iconb-10 .ot-icon-box__icon {
+    display: none;
+  }
+  .project-manager-iconb-10 .icon-box-title {
+    margin-top: 0;
+  }
+  .project-manager-iconb-10 {
+    padding-left: 0;
+  }
+}
+@media(max-width: 480px){
+
+}
+
+@media (min-width: 1024px) and (max-width: 1280px) {
+  .header-desktop .col-logo {
+    -ms-flex-order: -1;
+    order: -1;
+  }
+  .header-desktop .col-menu {
+    width: 50%;
+  }
+  .header-desktop .col-cta {
+    width: 30%;
+  }
+}
+@media (min-width: 1280px) and (max-width: 1800px) {
+  .header-desktop .col-logo {
+    width: 14%;
+  }
+  .header-desktop .col-cta {
+    width: 36%;
+  }
+}

@@ -1,0 +1,132 @@
+/*
+Theme Name: PROGRISAAS
+
+Styles Home 1
+
+/* Header */
+
+.top-h1 {
+	background-image: url('/images/background/bg1-home1.png');
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+.top-h1 h2 {
+	font-family: "DM Sans", Sans-serif;
+	font-size: 60px;
+	font-weight: 600;
+	line-height: 65px;
+	margin-bottom: 15px;
+}
+.services-h1 .ot-icon-box__icon {
+	font-size: 44px;
+}
+.about-h1 {
+	background-image: linear-gradient(180deg, #F0FAFF 52%, #FFFFFF 100%);
+}
+.about-h1 .overlay {
+	background-image: url('/images/background/bg3-home1.png');
+	background-position: -3% -11em;
+	background-repeat: no-repeat;
+	opacity: 1;
+	z-index: 0;
+	background-color: transparent;
+}
+.about-img2-h1 {
+	margin: -370px -365px 0px 0px;
+	padding: 0px 0px 200px 0px;
+	background-image: url('../images/background/bg4-home1.png');
+	background-position: 100% 120px;
+	background-repeat: no-repeat;
+}
+.service-box__content .service-box-title {
+	margin-bottom: 0;
+	line-height: 58px;
+}
+.service-box__content .service-box-des {
+	font-size: 18px;
+}
+.offer-h1 {
+  	margin-top: -212px;
+}
+.offer-bg-2 .list-s1 svg {
+	fill: #ff6b52;
+}
+.octf-btn.color-third:hover{
+	background-color: #223354;
+}
+.project-h1 {
+	background-color: transparent;
+	background-image: linear-gradient(180deg, #F0FAFF 55%, #FFFFFF 100%);
+}
+.project-h1 .overlay {
+	background-image: url('../images/background/bg1-philosophy.png');
+	background-position: bottom center;
+	background-repeat: no-repeat;
+	opacity: 1;
+	z-index: 0;
+	background-color: transparent;
+}
+.ot-project-slider.visible .owl-stage-outer, .visible .owl-stage-outer {
+	overflow: visible;
+}
+.visible .owl-item {
+	opacity: 0.5;
+	transition: all 0.3s linear;
+	-webkit-transition: all 0.3s linear;
+	-moz-transition: all 0.3s linear;
+	-o-transition: all 0.3s linear;
+	-ms-transition: all 0.3s linear;
+}
+.visible .owl-item.active {
+	opacity: 1;
+}
+.testti-h1 {
+	margin-top: -30px;
+}
+.post-grid .post-inner {
+	margin-bottom: 0;
+}
+.post-grid .inner-post .post-cat {
+	margin-bottom: 0;
+}
+.post-grid .entry-title {
+	margin-bottom: 18px;
+}
+.post-box .entry-date {
+	top: 20px;
+	left: 20px;
+}
+@media (min-width: 1200px){
+  .about-img-h1 {
+    margin-left: -375px;
+  }
+}
+@media (max-width: 1200px){
+  .about-img2-h1 {
+    padding-bottom: 60px;
+  }
+  .offer-h1 {
+    margin-top: 0;
+  }
+}
+@media (max-width: 992px){
+  .about-img2-h1 {
+    padding-bottom: 0;
+    background-image: none;
+  }
+  .project-h1 .overlay {
+    background-size: 0;
+  }
+}
+@media (max-width: 767px){
+  .top-h1 h2 {
+    font-size: 37px;
+    line-height: 46px;
+  }
+}
+@media (max-width: 480px){
+	.offer-bg-1, .offer-bg-2 {
+	    background-size: 0;
+	}
+}

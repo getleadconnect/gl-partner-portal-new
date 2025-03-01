@@ -1,0 +1,201 @@
+/*
+Theme Name: PROGRISAAS
+
+Styles Home 4
+
+/* Header */
+.site-header-4 .col-logo {
+  width: 17.8%;
+}
+.site-header-4 .col-cta {
+  width: 22.2%;
+}
+.site-header-4 .col-menu {
+  width: 60%;
+}
+.site-header-4 .octf-header-btn .octf-btn {
+  padding: 13px 40px 13px 40px;
+  font-size: 14px;
+}
+.site-header-4 .octf-cta-header {
+  margin-left: 50px;
+}
+.top-h4 {
+  background-image: url('../images/background/bg1-home4.jpg');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.top-h4 .overlay {
+  background-image: url('../images/background/image1-home4.png');
+  background-position: top right;
+  background-repeat: no-repeat;
+  opacity: 1;
+  z-index: 0;
+  background-color: transparent;
+}
+.icon-box-h4 .ot-icon-box__icon {
+  padding: 0.5em;
+  margin-bottom: 9px;
+  font-size: 35px;
+  border-radius: 10px 10px 10px 10px;
+  background-color: #FFF;
+  box-shadow: 3px 3px 10px 0 rgb(55 55 55 / 7%);
+}
+.icon-box-h4 .ot-icon-box__icon svg {
+  fill: #FF6B52;
+}
+.icon-box-h4 .icon-box-title {
+  font-size: 18px;
+}
+.icon-box-h4.ot-icon-box:hover .ot-icon-box__icon {
+  background-color: #1080D0;
+  box-shadow: 0 0 0 0 rgb(0 0 0 / 0%);
+}
+.icon-box-h4.ot-icon-box:hover .ot-icon-box__icon svg {
+  fill: #FFF;
+}
+.top-h4 h1 {
+  font-family: "DM Sans",Sans-serif;
+  font-weight: 700;
+  line-height: 65px;
+}
+.about-h4 {
+  background-image: url('../images/background/bg3-home4.png');
+  background-position: 0% 46%;
+  background-repeat: no-repeat;
+}
+.about-h4 .overlay {
+  background-image: url('../images/background/bg2-home4.png');
+  background-position: 100% 8.5%;
+  background-repeat: no-repeat;
+  opacity: 1;
+  z-index: 0;
+  background-color: transparent;
+}
+.iconb-h4 .ot-icon-box__icon {
+  font-size: 30px;
+  margin-right: 20px;
+}
+.iconb-h4:hover .ot-icon-box__icon svg {
+  fill: #ff6b52;
+}
+.services-h4 {
+  background-color: #F1FAFF;
+  background-image: url('../images/background/bg5-home4.png');
+  background-position: bottom left;
+  background-repeat: no-repeat;
+}
+.services-h4 .overlay {
+  background-image: url('../images/background/bg4-home4.png');
+  background-position: top right;
+  background-repeat: no-repeat;
+  opacity: 1;
+  z-index: 0;
+  background-color: transparent;
+}
+.ot-icon-box.service-h4 {
+  padding: 40px 30px 30px 30px;
+  border-radius: 10px;
+  transition: all 0.3s linear;
+  -webkit-transition: all 0.3s linear;
+  -moz-transition: all 0.3s linear;
+  -o-transition: all 0.3s linear;
+  -ms-transition: all 0.3s linear;
+}
+.ot-icon-box.service-h4:hover {
+  background-color: #FFF;
+  box-shadow: 3px 3px 10px 0 rgb(55 55 55 / 7%);
+}
+.service-h4 .ot-icon-box__icon {
+  font-size: 40px;
+}
+.ot-position-left .service-h4 .ot-icon-box__icon {
+  margin-right: 30px;
+}
+.plan-h4 {
+  background-image: url('../images/background/bg6-home4.png');
+  background-position: 100% 16%;
+  background-repeat: no-repeat;
+}
+.plan-h4 .overlay {
+  background-image: url('../images/background/bg7-home4.png');
+  background-position: 0% 55%;
+  background-repeat: no-repeat;
+  opacity: 1;
+  background-color: transparent;
+  z-index: 0;
+}
+.join-h4 {
+  background-image: url('../images/background/bg8-home4.jpg');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.testi-h4 {
+  background-image: url('../images/background/bg9-home4.png');
+  background-position: 100% 18%;
+  background-repeat: no-repeat;
+}
+.testi-h4 .overlay {
+  background-image: url('../images/background/bg10-home4.png');
+  background-position: 0% 73%;
+  background-repeat: no-repeat;
+  opacity: 1;
+}
+.ot-pricing-table__footer .octf-btn-third:hover, .ot-pricing-table__footer .octf-btn-third:focus {
+  background-color: #fff;
+  color: #39b14a;
+  border-color: #39b14a;
+}
+.ot-client-logo-slider .owl-item svg {
+	fill: #69687187;
+}
+@media(min-width: 768px){
+
+}
+@media(min-width: 993px){
+
+}
+@media(min-width: 1200px){
+  .bullet-home-1.tp-bullets {
+    width: 1200px !important;
+    margin: 0 auto;
+    position: relative!important;
+    padding-right: 40px;
+    padding-left: 40px;
+  }
+  .counter-wrap-h3 {
+    margin-right: 100px;
+  }
+  .counter-img-h3 {
+    margin-left: -110px;
+  }
+  .join-img-h4 {
+    margin: 0 -312px 0 -20px
+  }
+}
+@media(max-width: 1200px){
+
+}
+@media(max-width: 1024px){
+  .about-h4, .about-h4 .overlay, .services-h4 .overlay, .plan-h4, .plan-h4 .overlay, .testi-h4, .testi-h4 .overlay {
+    background-size: 0;
+  }
+  .join-h4 {
+    background-size: 0;
+    background-color: #1080d0;
+  }
+}
+@media(max-width: 992px){
+
+}
+@media(max-width: 767px){
+  .work-together {
+    margin-top: -150px;
+  }
+
+}
+@media(max-width: 480px){
+
+}

@@ -1,0 +1,72 @@
+.gl-invite-modal .modal-content .modal-body{
+    padding: 0px;
+}
+.gl-invite-modal h3{ margin: 10px 0px;}
+.gl-invite-modal .modal-dialog{width: 500px;max-width: 500px;}
+.gl-invite-modal .body-message{
+    padding: 6px 30px;
+}
+.gl-invite-modal .members-col,
+.gl-invite-modal .link-copy-col{
+    padding: 0px 30px;
+}
+.gl-invite-modal .link-copy-col{
+    padding-bottom: 40px;
+}
+.invite-form{
+    border-top: 1px solid #ddd;
+    padding: 15px 30px;
+}
+.gl-invite-modal .invite-form .form-fields {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.gl-invite-modal  input{
+    outline: none;
+    border: 1px solid #EBEBEB;
+    background-color: transparent;
+    border-radius: 6px 0px 0px 6px;
+    padding: 10px 15px;
+    width: 100%;
+    color:#000;
+}
+.gl-invite-modal .invite-form .form-fields button{
+    border: none;
+    outline: none;
+    background: #337ab7;
+    border: 1px solid #337ab7;
+    color: #fff; 
+    border-radius: 0px 6px 6px 0px;
+    padding: 10px 15px;
+    display: inline-block;
+    min-width: 130px;
+    margin-left: 0px;
+}
+.gl-invite-modal  .read-only-col{
+    position: relative;
+}
+.gl-invite-modal  .read-only-col input{
+    border: none;
+    background-color: #EBEBEB;
+    border-radius: 6px;
+    width: 100%;
+    color: #a4a0a0;
+}
+.gl-invite-modal h4{
+    margin-bottom: 20px;
+}
+.gl-invite-modal  .read-only-col button{
+    position: absolute;
+    right: 10px;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    background-color: #fff;
+    border-radius: 15px;
+    border: none;
+    outline: none;
+    padding: 5px 15px;
+    height: fit-content;
+    color: #000;
+}

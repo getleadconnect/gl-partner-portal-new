@@ -1,0 +1,359 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap');
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+font,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+	background: transparent;
+}
+
+
+
+
+body{
+    font-family: 'Open Sans', sans-serif;
+    color: #888888;
+    line-height: 1.5;
+    font-size: 14px;
+    position: relative;
+}
+
+
+
+/* Header */
+
+header{
+    padding: 1.875rem;
+    position: fixed;
+    width: 100%;
+    margin: auto;
+    top: 0;
+    z-index: 999;
+}
+
+header .navbar-nav .nav-link{
+    -webkit-transition: all 0.8s;
+    transition: all 0.8s;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    text-transform: uppercase;
+    padding: 10px 0px;
+    margin: 10px 30px;
+}
+header .navbar-nav .nav-item.active .nav-link{
+    border-bottom: 2px solid #d70000;
+}
+header .navbar-nav .nav-link:hover {
+    color: #ff3d00;
+}
+.navbar-toggler{
+    color: #fff;
+    border: none;
+    outline: none;
+}
+.navbar-toggler:focus{
+    border: none;
+    outline: none;
+}
+
+
+/* Banner section */
+.banner-section{
+    padding: 100px 0px;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+//    background: url('/images/mgallery.jpg');
+    background-repeat:no-repeat;
+    background-position: center;
+    background-size: cover;
+    position: relative;
+    z-index: 9;
+}
+.banner-section:before{
+    position: absolute;
+    left: 0;
+    top: 0;
+    content: '';
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background: radial-gradient(circle, rgba(33, 33, 33, 0.6) 0%, #333);
+
+}
+.banner-section .banner-contents h2{
+    font-size: 5rem;
+    color: #ffffff;
+    line-height: 1.1;
+    text-align: center;
+    margin-bottom: 1.875rem;
+}
+.banner-section .banner-contents{
+    text-align: center;
+}
+.banner-section .banner-contents  p{
+    text-align: center;
+    width: 80%;
+    margin: auto;
+    opacity: 0.8;
+    color: #fff;
+    font-size: 1.125rem;
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
+}
+.banner-section .banner-contents a{
+    border-color: #ff3d00;
+    background-color: #ff3d00;
+    color: #ffffff;
+    padding: 20px 35px;
+    font-size: 20px;
+    line-height: 1;
+    text-transform: uppercase;
+    /* position: relative; */
+    outline: 0px auto -webkit-focus-ring-color !important;
+    font-weight: 700;
+    display: inline-block;
+    text-align: center;
+    width: fit-content;
+    padding-left: 40px;
+    padding-right: 40px;
+    border-radius: 100px;
+    text-decoration: none;
+}
+.banner-section .banner-contents a:hover{
+    background-color: #fec302;
+    border-color: #fec302;
+}
+
+/* Social icons */
+.social-icons-fixed{
+    position: fixed;
+    padding: 1.875rem;
+    bottom: 0;
+    left: 0;
+}
+.social-icons ul{
+    list-style-type: none;
+}
+.social-icons{
+    z-index: 999;
+}
+.social-icons ul li a{
+    color: #ffffff;
+    font-size: 1rem;
+    
+}
+.social-icons ul li{
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.625rem;
+}
+header .social-icons{
+    display: none !important;
+}
+
+/*************Responsive Styles*****************/
+/***************iPhone Portrait**************/
+@media only screen and (max-width: 479px) and (min-width: 320px){
+    header .navbar-nav  .nav-link{
+        text-align: center;
+    }
+    .social-icons-fixed{
+        display: none;
+    }
+    h2{
+        font-size: 40px !important;
+        line-height: normal !important;
+    }
+    p{
+        font-size: 16px !important;
+        line-height: normal !important;
+    }
+    .navbar-collapse{
+        background-color: #333;
+        height: 100vh;
+    }
+    .social-icons ul{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    header{
+        padding: 0;
+    }
+    header .navbar{
+        position: absolute;
+        width: 100%;
+        background-color: #333;
+        display: flex;
+        align-items: baseline;
+    }
+    .banner-section .banner-contents p{
+        opacity: 1;
+    }
+    header .social-icons{
+        display: block !important;
+    }
+    
+
+}
+/**********************iPhone Landscape*************/
+@media only screen and (max-width: 767px) and (min-width: 480px){
+    header .navbar-nav  .nav-link{
+        text-align: center;
+    }
+    .social-icons-fixed{
+        display: none;
+    }
+    h2{
+        font-size: 40px !important;
+        line-height: normal !important;
+    }
+    p{
+        font-size: 16px !important;
+        line-height: normal !important;
+    }
+    .navbar-collapse{
+        background-color: #333;
+        height: 100vh;
+    }
+    .social-icons ul{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    header{
+        padding: 0;
+    }
+    header .navbar{
+        position: absolute;
+        width: 100%;
+        background-color: #333;
+        display: flex;
+        align-items: baseline;
+    }
+    .banner-section .banner-contents p{
+        opacity: 1;
+    }
+    header .social-icons{
+        display: block !important;
+    }
+}
+/*************************iPad Portrait***************/
+@media only screen and (max-width: 985px) and (min-width: 768px){
+    header .navbar-nav  .nav-link{
+        text-align: center;
+    }
+    .social-icons-fixed{
+        display: none;
+    }
+    h2{
+        font-size: 40px !important;
+        line-height: normal !important;
+    }
+    p{
+        font-size: 16px !important;
+        line-height: normal !important;
+    }
+    .navbar-collapse{
+        background-color: #333;
+        height: 100vh;
+    }
+    .social-icons ul{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    header{
+        padding: 0;
+    }
+    header .navbar{
+        position: absolute;
+        width: 100%;
+        background-color: #333;
+        display: flex;
+        align-items: baseline;
+    }
+    .banner-section .banner-contents p{
+        opacity: 1;
+    }
+    header .social-icons{
+        display: block !important;
+    }
+
+}
+/**************iPad Landscape***************/
+@media only screen and ( max-width: 1024px ) and (min-width: 986px){
+
+
+}
+/*******************************************/
