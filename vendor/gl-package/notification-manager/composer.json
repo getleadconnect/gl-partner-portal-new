@@ -1,0 +1,36 @@
+{
+    "name": "gl-package/notification-manager",
+    "description": "A notification manager package for Laravel.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "GlPackage\\NotificationManager\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ajay Ashok",
+            "email": "ajayashirvad@gmail.com",
+            "role": "Sr Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.0 || >=8.0",
+        "guzzlehttp/guzzle": "^7.5.4"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "suggest": {
+        "ext-imagick": "Allows the generation of PNG QrCodes.",
+        "illuminate/support": "Allows for use within Laravel."
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "GlPackage\\NotificationManager\\Providers\\NotificationManagerServiceProvider"
+            ]
+        }
+    },
+    "version": "1.0.1"
+}
