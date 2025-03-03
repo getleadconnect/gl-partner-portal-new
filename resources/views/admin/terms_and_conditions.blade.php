@@ -25,8 +25,7 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
-						sasdsD SADSADSADSAASDAS
-						
+
 						<h2>Getlead CRM Partner Program</h2>
 						<p>Document Version 1.0</p>
 						<p>Last Updated : 01-01-2024</p>
