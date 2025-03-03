@@ -7,6 +7,7 @@
 }
 .span-weight{min-width: 100px; font-weight:700;}
 .input-weight{font-weight:700;}
+
 </style>
 
 <div style="width:99.5%;">

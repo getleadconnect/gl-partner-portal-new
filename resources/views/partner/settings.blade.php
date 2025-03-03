@@ -82,6 +82,7 @@
 									@endif
 								
 								<h4>{{ \Str::upper($partner->name) }}</h4>
+								<h6>@if($partner->unique_id!=null) ID: {{ \Str::upper($partner->unique_id)}} @endif</h6>
 								<h6>{{ $partner->company_name ? $partner->company_name : 'GL-Partner Associate' }}</h6>
 								
 								<ul class="list-group">
@@ -98,6 +99,7 @@
 								<div class="row mt-3">
 										<label class="col-lg-4">Name</label>
 										<div class="col-lg-6"><p>:<strong> {{ \Str::upper($partner->name) }}</strong></p></div>
+										
 								</div>
 									<div class="row">
 										<label class="col-lg-4">Company Name</label>
