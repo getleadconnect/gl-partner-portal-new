@@ -23,7 +23,12 @@
 
 	
 	@yield('style')
-	
+	<style>
+	.text-left
+	{
+		text-align:left;
+	}
+	</style>
 </head>
 <body data-layout="vertical" data-sidebar="dark" data-sidebar-size="lg">
 <div id="layout-wrapper">
@@ -210,7 +215,7 @@
     <footer class="footer">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-sm-6">
+                <div class="col-sm-6 text-left">
                     <script>document.write(new Date().getFullYear())</script> &copy; Getlead Partner Portal.
                 </div>
                 <div class="col-sm-6">
