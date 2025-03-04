@@ -1,6 +1,22 @@
 @extends('admin.master')
 @section('content')
 
+<style>
+table tr
+{
+	line-height:45px;
+}
+table td,th
+{
+	padding-left:15px;
+}
+
+.mtop-3
+{
+	margin-top:3rem;
+}
+</style>
+
     <div class="page-content">
         <div class="container-fluid">
             <!-- Start page title -->
@@ -101,17 +117,17 @@
 						requirements are met:</p>
 						<p>Reliable internet connectivity.</p>
 						<p>Compatible web browsers and devices as specified in the system
-						requirements documentation.</p>
+							requirements documentation.</p>
 
 
 						<h4>Future Developments</h4>
+						
 						<p>Our commitment to innovation means that Getlead CRM will continue to
 						evolve. We are actively working on future updates and enhancements to
 						provide partners and users with even more valuable features and capabilities.
 						Stay tuned for our product roadmap updates</p>
-
+						
 						<hr>
-
 
 						<h3 class="mt-4">Pricing and Subscription Plans</h3>
 						<p><b>Cost of Getlead CRM:</b> ₹6999/user/year.</p>

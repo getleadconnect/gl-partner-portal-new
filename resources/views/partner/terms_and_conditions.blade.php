@@ -3,7 +3,7 @@
 <style>
 table tr
 {
-	line-height:30px;
+	line-height:45px;
 }
 table td,th
 {
@@ -261,10 +261,10 @@ information.</p>
 <h4 class="mt-4">Commissions and Benefits</h4>
 <p>Below is the table detailing commissions based on sales volume:</p>
 <table width="100%" border=1 cellspacing=0 cellpadding=0 >
-<tr ><th>Monthly Sales Amount (INR)</th><th>Referral Partner Commission</th><th>Implementation Partner Commission</th><th>Renewal Commission (Year 2 Onwards)</th></tr>
-<tr ><td>Up to 50,000</td><td> 10%</td><td>25% + Implementation charges </td><td>5%<td></tr>
-<tr ><td>50,001 - 2 Lakh</td><td> 15%</td><td>28% + Implementation charges</td><td>5%</td></tr>
-<tr ><td>Above 2 Lakh</td><td> 20%</td><td>30% + Implementation charges</td><td>5%</td></tr>
+<tr height="45px"><th >Monthly Sales Amount (INR)</th><th>Referral Partner Commission</th><th>Implementation Partner Commission</th><th>Renewal Commission (Year 2 Onwards)</th></tr>
+<tr height="45px"><td >Up to 50,000</td><td> 10%</td><td>25% + Implementation charges </td><td>5%<td></tr>
+<tr height="45px"><td >50,001 - 2 Lakh</td><td> 15%</td><td>28% + Implementation charges</td><td>5%</td></tr>
+<tr height="45px"><td >Above 2 Lakh</td><td> 20%</td><td>30% + Implementation charges</td><td>5%</td></tr>
 </table>
 
 <h4 class="mt-4">Support & Communication</h4>
