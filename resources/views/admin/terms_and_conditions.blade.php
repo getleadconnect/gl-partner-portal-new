@@ -347,11 +347,11 @@
             <div class="row">
                 <div class="col-12">
                     <div class="page-title-box d-flex align-items-center justify-content-between">
-                        <h4 class="mb-0">TERMS & CONDITIONS</h4>
+                        <!--<h4 class="mb-0">TERMS & CONDITIONS</h4>-->
                         <div class="page-title-right">
                             <ol class="breadcrumb m-0">
                                 <li class="breadcrumb-item"><a href="javascript: void(0);">Home</a></li>
-                                <li class="breadcrumb-item active">Dashboard</li>
+                                <li class="breadcrumb-item active">About Program</li>
                             </ol>
                         </div>
                     </div>
@@ -373,7 +373,7 @@
             <h1>GETLEAD CRM PARTNER PROGRAM</h1>
             <p class="version">Document Version 2.0</p>
             <p>Last Updated: March 01, 2025</p>
-            <a href="#contact" class="btn">Become a Partner</a>
+            <!--<a href="#contact" class="btn">Become a Partner</a>-->
         </div>
     </header>
     
@@ -970,7 +970,7 @@
             <div class="container">
                 <p>Thank you for your interest in becoming a Getlead CRM partner. We look forward to growing together and helping businesses in Kerala reach new heights of success!</p>
                 <p style="margin-top: 20px;">Warm Regards,<br>Team Getlead CRM</p>
-                <a href="#contact" class="btn" style="margin-top: 20px;">Become a Partner Today</a>
+                <!--<a href="#contact" class="btn" style="margin-top: 20px;">Become a Partner Today</a>-->
             </div>
         </footer>
     </div>
