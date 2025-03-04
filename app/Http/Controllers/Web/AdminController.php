@@ -298,7 +298,7 @@ public function createPartner(Request $request)
 				
 				//unique_id ----------------------
 				$id=$result->id;
-				$uniq_id="GL".substr("00000",strlen($id)).$id;
+				$uniq_id="GLP".substr("00000",strlen($id)).$id;
 				$res=Partner::where('id',$id)->update(['unique_id'=>$uniq_id]);
 				//-------------------------------
 				
