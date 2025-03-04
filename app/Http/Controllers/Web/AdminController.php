@@ -124,7 +124,6 @@ public function check(Request $request){
 
     public function channelPartners()
     {
-       
 	    $agents = Agent::pluck('name','id');
         $partner_count = Partner::all()->count();
 		$countries = CountryState::getCountries();
@@ -238,6 +237,9 @@ public function check(Request $request){
         }
     }
 
+
+
+
 	
 public function createPartner(Request $request)
     {
@@ -256,7 +258,7 @@ public function createPartner(Request $request)
 		{
 			try
 			{
-				//---unique code-----------
+				/*	//---UNIQUE CODE
 					$code='';
 					do
 					{
@@ -266,7 +268,8 @@ public function createPartner(Request $request)
 						$res=Partner::where('unique_id',$code)->first();
 					}
 					while(!empty($res));
-				//---------------------------
+				//---------------------------------	
+				*/
 
 				$result=Partner::create([
 					'unique_id'=>$code,
@@ -293,6 +296,10 @@ public function createPartner(Request $request)
 					'upi_id'=>$request->upi_id,
 					'status'=>$request->partner_status,
 				]);
+				
+				$id=$result->id;
+				$uniq_id=substr("000000",strlen($id)).$id;
+				$res=Partner::where('id',$id)->update(['unique_id'=>$uniq_id]);
 			
 				if($result)
 				{

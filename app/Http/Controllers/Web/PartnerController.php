@@ -166,7 +166,7 @@ class PartnerController extends Controller
 
 			try
 			{
-				//---UNIQUE CODE
+			   /*	//---UNIQUE CODE
 					$code='';
 					do
 					{
@@ -177,6 +177,7 @@ class PartnerController extends Controller
 					}
 					while(!empty($res));
 				//---------------------------------	
+				*/
 				
 				
 				$partner = new Partner();
@@ -192,6 +193,11 @@ class PartnerController extends Controller
 				$save = $partner->save();
 
 				$login_url=url("/")."/partner/login";
+				
+				$id=$save->id;
+				$uniq_id=substr("000000",strlen($id)).$id;
+				$res=Partner::where('id',$id)->update(['unique_id'=>$uniq_id]);
+								
 
 				if( $save )
 				{
