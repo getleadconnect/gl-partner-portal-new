@@ -180,24 +180,25 @@ class PartnerController extends Controller
 				*/
 			
 				$pdata=[
-				'name' => request('name'),
-				'country_code' => request('country_code'),
-				'mobile' => request('mobile'),
-				'company_name' => request('company_name'),
-				'email' => request('email'),
-				'photo' => 'partner_dummy.png',
-				'password' => \Hash::make($request->password),
-				'status' =>1,
+					'name' => request('name'),
+					'country_code' => request('country_code'),
+					'mobile' => request('mobile'),
+					'company_name' => request('company_name'),
+					'email' => request('email'),
+					'photo' => 'partner_dummy.png',
+					'password' => \Hash::make($request->password),
+					'status' =>1,
 				];
 				
 				$result=Partner::create($pdata);
 			
 				$login_url=url("/")."/partner/login";
 				
+				// unique id ----------------------------
 				$id=$result->id;
 				$uniq_id="GL".substr("00000",strlen($id)).$id;
 				$res=Partner::where('id',$id)->update(['unique_id'=>$uniq_id]);
-								
+				//--------------------------------------	
 
 				if( $result )
 				{

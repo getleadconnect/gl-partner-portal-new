@@ -296,10 +296,12 @@ public function createPartner(Request $request)
 					'status'=>$request->partner_status,
 				]);
 				
+				//unique_id ----------------------
 				$id=$result->id;
 				$uniq_id="GL".substr("00000",strlen($id)).$id;
 				$res=Partner::where('id',$id)->update(['unique_id'=>$uniq_id]);
-			
+				//-------------------------------
+				
 				if($result)
 				{
 					//------SEND PARTNER TO CRM-----
