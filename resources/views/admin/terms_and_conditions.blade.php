@@ -44,7 +44,7 @@ table td,th
 
 						<h2>Getlead CRM Partner Program</h2>
 						<p>Document Version 1.0</p>
-						<p>Last Updated : 01-01-2024</p>
+						<p>Last Updated : 01-01-2025</p>
 						
 						<h4>Introduction</h4>
 						<p>Getlead Analytics Private Limited, hereinafter referred to as "Company," is the creator
