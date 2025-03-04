@@ -193,7 +193,7 @@ class PartnerController extends Controller
 				$login_url=url("/")."/partner/login";
 				
 				$id=$save->id;
-				$uniq_id="GL".substr("000000",strlen($id)).$id;
+				$uniq_id="GL".substr("00000",strlen($id)).$id;
 				$res=Partner::where('id',$id)->update(['unique_id'=>$uniq_id]);
 								
 
