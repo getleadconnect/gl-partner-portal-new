@@ -186,7 +186,7 @@ class PartnerController extends Controller
 				'company_name' => request('company_name'),
 				'email' => request('email'),
 				'photo' => 'partner_dummy.png',
-				'password' = \Hash::make($request->password),
+				'password' => \Hash::make($request->password),
 				'status' =1,
 				];
 				
