@@ -237,7 +237,7 @@
 				<li>
                     <a href="{{ route('admin.terms')}}">
                         <i class="bx bx-file icon nav-icon"></i>
-                        <span class="menu-item" data-key="t-notifications">Terms & Conditions</span>
+                        <span class="menu-item" data-key="t-notifications">About Program</span>
                     </a>
                 </li>
 

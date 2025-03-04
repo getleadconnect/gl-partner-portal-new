@@ -184,7 +184,7 @@
 				<li>
                     <a href="{{ route('partner.terms')}}" >
                         <i class="bx bx-user-circle icon nav-icon"></i>
-                        <span class="menu-item" data-key="t-partners">Terms & Conditions</span>
+                        <span class="menu-item" data-key="t-partners">About Program</span>
                     </a>
                 </li>
 
