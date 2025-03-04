@@ -272,7 +272,6 @@ public function createPartner(Request $request)
 				*/
 
 				$result=Partner::create([
-					'unique_id'=>$code,
 					'name'=>$request->name,
 					'country_code'=>$request->country_code,
 					'mobile'=>$request->mobile,

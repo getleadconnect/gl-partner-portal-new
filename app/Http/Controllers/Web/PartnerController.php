@@ -178,10 +178,8 @@ class PartnerController extends Controller
 					while(!empty($res));
 				//---------------------------------	
 				*/
-				
-				
+								
 				$partner = new Partner();
-				$partner->unique_id=$code;
 				$partner->name = request('name');
 				$partner->country_code = request('country_code');
 				$partner->mobile = request('mobile');
