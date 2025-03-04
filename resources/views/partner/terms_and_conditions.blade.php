@@ -298,7 +298,7 @@
             color: var(--primary);
         }
         
-        .btn {
+        .btn-ap {
             display: inline-block;
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
@@ -312,7 +312,7 @@
             margin-top: 1rem;
         }
         
-        .btn:hover {
+        .btn-ap:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 10px rgba(0, 102, 204, 0.4);
         }
@@ -350,7 +350,7 @@
                         <!--<h4 class="mb-0">TERMS & CONDITIONS</h4>-->
                         <div class="page-title-right">
                             <ol class="breadcrumb m-0">
-                                <li class="breadcrumb-item"><a href="javascript: void(0);">Home</a></li>
+                                <li class="breadcrumb-item"><a href="{{url('partner/dashboard')}}">Home</a></li>
                                 <li class="breadcrumb-item active">About Program</li>
                             </ol>
                         </div>
