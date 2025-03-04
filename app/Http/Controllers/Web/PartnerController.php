@@ -178,26 +178,28 @@ class PartnerController extends Controller
 					while(!empty($res));
 				//---------------------------------	
 				*/
-								
-				$partner = new Partner();
-				$partner->name = request('name');
-				$partner->country_code = request('country_code');
-				$partner->mobile = request('mobile');
-				$partner->company_name = request('company_name');
-				$partner->email = request('email');
-				$partner->photo = 'partner_dummy.png';
-				$partner->password = \Hash::make($request->password);
-				$partner->status =1;
-				$save = $partner->save();
-
+			
+				$pdata=[
+				'name' => request('name'),
+				'country_code' => request('country_code'),
+				'mobile' => request('mobile'),
+				'company_name' => request('company_name'),
+				'email' => request('email'),
+				'photo' => 'partner_dummy.png',
+				'password' = \Hash::make($request->password),
+				'status' =1,
+				];
+				
+				$result=Partner::create($pdata);
+			
 				$login_url=url("/")."/partner/login";
 				
-				$id=$save->id;
+				$id=$result->id;
 				$uniq_id="GL".substr("00000",strlen($id)).$id;
 				$res=Partner::where('id',$id)->update(['unique_id'=>$uniq_id]);
 								
 
-				if( $save )
+				if( $result )
 				{
 					
 					//------send partner to crm-----
