@@ -73,12 +73,11 @@ table tr
 					</div>
 						
 					<div class="row mt-2">
-						<div class="col-lg-6" style="border-right:1px solid #8c8b8f;">
-							
-							<div class="table-responsive">
+						<div class="col-lg-6 col-xl-6 col-xxl-6 " style="border-right:1px solid #8c8b8f;">
+							<!--<div class="table-responsive">-->
 							<h5 class="mt-3 mb-3"><u>Payments</u></h5>
 							
-							<table id="payments_table" class="table table-striped table-hover table-nowrap mb-0" style="width:100% !important;">
+							<table id="payments_table" class="table table-striped table-hover  mb-0" style="width:100% !important;">
 								<thead>
 								<tr id="tab-row">
 									<th>No</th>
@@ -87,7 +86,7 @@ table tr
 									<th>Commission</th>
 									<th>Paid</th>
 									<th>Balance</th>
-									<th>Status</th>
+									<th width="50px;">Status</th>
 								</tr>
 									
 								</thead>
@@ -95,16 +94,15 @@ table tr
 							   
 								</tbody>
 							</table>
-							</div>
-
+							<!--</div>-->
 					  </div>
 					  
-					  <div class="col-lg-6">
-							
-							<div class="table-responsive">
+					  <div class="col-lg-6 col-xl-6 col-xxl-6">
+
+							<!--<div class="table-responsive">-->
 							<h5 class="mt-3 mb-3"><u>Payment Histories</u></h5>
 
-							 <table id="payment_history" class="table table-striped table-hover table-nowrap mb-0" style="width:100% !important;">
+							 <table id="payment_history" class="table table-striped table-hover  mb-0" style="width:100% !important;">
 								<thead>
 								<tr id="tab-row">
 									<th>No</th>
@@ -120,7 +118,7 @@ table tr
 							   
 								</tbody>
 							</table>
-						</div>
+						<!--</div>-->
 
 					  </div>
 					  
