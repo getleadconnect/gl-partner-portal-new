@@ -187,7 +187,7 @@ class PartnerController extends Controller
 				'email' => request('email'),
 				'photo' => 'partner_dummy.png',
 				'password' => \Hash::make($request->password),
-				'status' =1,
+				'status' =>1,
 				];
 				
 				$result=Partner::create($pdata);
