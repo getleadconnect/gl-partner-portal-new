@@ -18,6 +18,7 @@
 }
 .prd-body{width:100%;	height:513px;	overflow-y:scroll;	scrollbar-width:thin; }
 
+.dropdown:hover{ cursor:pointer;}
 </style>
 
  <div class="page-content">
