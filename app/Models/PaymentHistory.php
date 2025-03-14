@@ -14,5 +14,8 @@ class PaymentHistory extends Model
 	
 	protected $guarded = [];  
 	
-		
+	public static function totalPayout($id)
+    {
+        return self::where('partner_id',$id)->sum('paid_amount');
+    }
 }

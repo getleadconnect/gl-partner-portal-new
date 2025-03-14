@@ -38,6 +38,7 @@ use App\Models\News;
 use App\Models\VerificationOtp;
 use App\Models\AdminMessageSetting;
 use App\Models\PaymentHistory;
+use App\Models\LeadCommission;
 
 use App\Mail\InviteCreated;
 use App\Traits\LeadNotificationTrait;
@@ -103,15 +104,16 @@ public function check(Request $request){
         }
    }
 
-   function logout(){
-       Auth::guard('admin')->logout();
-       return redirect('/');
-   }
+ public function logout()
+ {
+    Auth::guard('admin')->logout();
+    return redirect('/');
+ }
    
-   public function terms()
-   {
-       return view('admin.terms_and_conditions');
-   }
+ public function terms()
+  {
+    return view('admin.terms_and_conditions');
+  }
    
    
 //-----------------------------------------------
@@ -236,9 +238,6 @@ public function check(Request $request){
             return response()->json(['msg' =>$e->getmessage() , 'status' => false]);
         }
     }
-
-
-
 
 	
 public function createPartner(Request $request)
@@ -841,7 +840,7 @@ public function createPartner(Request $request)
 						else
 						{
 							$clas='';
-							$html = '<select class="form-select '.$clas.'" name="lead_status" id="lead_status" data-lead-id='.$row->id.' data-commission='.$row->commission_percentage.'>'.$options.'</select>';
+							$html = '<select class="form-select '.$clas.'" style="font-weight:500;" name="lead_status" id="lead_status" data-leadid='.$row->id.' data-commission='.$row->commission_percentage.'>'.$options.'</select>';
 						}
                         return $html;
 				
@@ -851,15 +850,10 @@ public function createPartner(Request $request)
 
 						$pay_status="";
 												
-						if($row->payment_status == 0){$clas=' payment-inactive';}else {$clas=' payment-pending';}
-						
-						$pay_status = '<select name="payment_status" id="payment_status" class="form-select '.$clas .'" data-lead-id='.$row->id.'>';
-						$pay_status.= '<option  value="0"' . ($row->payment_status == 0 ? ' selected' : '') . '>Not Paid</option>';
-						$pay_status.= '<option  value="2"' . ($row->payment_status == 2 ? ' selected' : '') . '>Pending</option>';
-						$pay_status.= '</select>';
-						
-						if($row->balance == 0 and $row->lead_status =="Got Business")
-						{
+						if($row->payment_status ==0){
+							$pay_status	="<span class='payment-inactive'>Not Paid</span>";
+						}
+						else {
 							$pay_status	="<span class='success'>Paid</span>";
 						}
 
@@ -868,9 +862,7 @@ public function createPartner(Request $request)
 
 					->addColumn('mobile', function($row)
 					{
-						
-						$mobile= ($row->country_code?'+'.$row->country_code:'').' '.$row->mobile."<br>";
-						$mobile.= $row->email??'';
+						$mobile= ($row->country_code?'+'.$row->country_code:'').' '.$row->mobile;
 						return $mobile;
                     })
 					
@@ -925,41 +917,38 @@ public function createPartner(Request $request)
     }
 
 
-	public function updateLeadCommission(Request $request)
+public function updateLeadCommission(Request $request)
     {
        
 	   DB::beginTransaction();
+	   
 	   try
 	   {
 		 
 	    $lead_id = $request->set_comm_lead_id;
-		$lead_camt = $request->set_collected_amount;
-		$lead_comm = $request->set_commission;
-		$lead_status= $request->set_comm_lead_status;
-		$comm_per= $request->set_comm_percentage;
+						
+        $lead = Lead::find($lead_id);
+		$partner_id=$lead['partner_id'];
 		
-        $lead = Lead::where('id',$lead_id)->first();
-		$partner_id=$lead->partner_id;
+		$data=[
+				'partner_id' => $partner_id,
+				'lead_id' => $request->set_comm_lead_id,
+				'amount_collected' => $request->set_collected_amount,
+				'commission_amount' => $request->set_commission,
+				'description' => $request->description,
+				'paid_amount' => null,
+				'balance' => $request->set_commission,
+				'lead_status' => $request->set_comm_lead_status,
+				'renewal_status'=>$request->renewal_status??null,
+			];
+			
+		$result=LeadCommission::create($data);
 		
-        $lead->amount_collected = $lead_camt;
-		$lead->commission_amount = $lead_comm;
-		$lead->paid_amount =null;
-		$lead->balance = $lead_comm;
-		$lead->lead_status = $lead_status;
+		$lead->lead_status = $request->set_comm_lead_status;
         $lead->save();
-		
-		$result=PaymentDetail::create([
-			'lead_id'=>$lead_id,
-			'partner_id'=>$partner_id,
-			'collected_amount'=>$lead_camt,
-			'commission'=>$lead_comm,
-			'amount'=>0,
-			'balance'=>$lead_comm,
-			'percentage'=>$comm_per,
-		]);
-	
+
 		DB::commit();
-        return response()->json(['status'=>1,'msg'=>'Commition successfully added!']);
+        return response()->json(['status'=>1,'msg'=>'Commission successfully added!']);
 		
 	   }
 	   catch(\Exception $e)
@@ -1121,7 +1110,7 @@ public function payouts(Request $request)
     
         $partners = Partner::whereIn('id',Lead::pluck('partner_id')->toArray())->pluck('name','id')->toArray();
 		$lead_status = LeadStatus::all();
-		return view('admin.payouts',compact('partners','lead_status'));
+		return view('admin.payouts_list',compact('partners','lead_status'));
     }
 
 public function payoutHistory(Request $request)
@@ -1143,14 +1132,27 @@ public function gotBusinessUnPaidLeads(Request $request)
                 $request->partner_id !=0 ? $q->where('partner_id',$request->partner_id):'';
             })->where('leads.lead_status',"Got Business")
 			  ->where('leads.payment_status',0)
-			  ->latest()->get();
+			  ->latest()->get()->map(function($q)
+			  {
+				  $sum=LeadCommission::where('lead_id',$q->id)->selectRaw('SUM(amount_collected) as amount,SUM(commission_amount) as com_amount,SUM(paid_amount)as paid_amount,SUM(balance)as comm_balance')->first();
+				  $q['amount_collected']=$sum->amount;
+				  $q['commission_amount']=$sum->com_amount;
+				  $q['paid_amount']=$sum->paid_amount;
+				  $q['balance']=$sum->comm_balance;
+				  return $q;
+			  });
 
             return Datatables::of($data)
                     ->addIndexColumn()
                     ->addColumn('partner', function($row){
-                       
-                        return $row->partner_name;
+					   $pname='<a href="'.route('admin.pay-partner-payment',$row->partner_id).'" style="color:#2020db;">'.strtoupper($row->partner_name).'</a>';
+                       return $pname;
                     })
+					->addColumn('lead_name', function($row){
+						$nam=$row->name;
+						return $nam;
+                    })
+										
 					->addColumn('amount_collected', function($row){
 						$col_amount="₹ ".number_format($row->amount_collected,'2','.','');
 						return $col_amount;
@@ -1184,41 +1186,96 @@ public function gotBusinessUnPaidLeads(Request $request)
                     })
 					->addColumn('actions', function($row)
 					{
-					
-						if($row->balance==0)
-						{
-						   $btn1='<li>
-								  <a class="dropdown-item dropdown-item-size set-commission" href="javascript:;" data-percentage="'.$row->commission_percentage
+
+						   $btn='<li>
+								  <a class="dropdown-item dropdown-item-size set-commission" href="javascript:;" data-partnerid="'.$row->partner_id.'" data-percentage="'.$row->commission_percentage
 								  .'" data-leadid="'.$row->id.'" data-leadstatus="'.$row->lead_status.'" data-bs-toggle="modal" data-bs-target="#set-commission-modal">
 								  <i class="ico-icon icon-billing-payment"></i>New Commission</a> </li>
-								  <li><li>
-								  <a class="dropdown-item dropdown-item-size close-payment" href="javascript:;" data-leadid="'.$row->id.'">
-								  <i class="ico-icon icon-billing-payment"></i>Close</a> </li>';
-						}
-						else 
-						{
-						   $btn1='<li>
-								  <a class="dropdown-item dropdown-item-size btn-pay" href="javascript:;" data-leadid="'.$row->id.'" data-bs-toggle="modal" data-bs-target="#set-payment-modal">
-								  <i class="ico-icon icon-billing-payment"></i>Pay</a> </li>';
-						}
+								  <li>
+									<a class="dropdown-item dropdown-item-size btn-pay" href="'.route('admin.pay-partner-payment',$row->partner_id).'">
+								   <i class="ico-icon icon-billing-payment"></i>Pay</a> </li>';
 										
 						$action= '<div class="fs-5 ms-auto dropdown">
 					 		   <div class="dropdown-toggle cursor-pointer" data-bs-toggle="dropdown"><i class="fa fa-ellipsis-v"></i></div>
-								<ul class="dropdown-menu">'.$btn1.
+								<ul class="dropdown-menu">'.$btn.
 								
 								 '</div>';
 					return $action;
 					})
 					
-                    ->rawColumns(['actions','email','status','pay_status'])
+                    ->rawColumns(['actions','partner','email','status','pay_status'])
                     ->make(true);
     }
+	
 
-					
 public function gotBusinessPaidLeads(Request $request)
     {
 
+			$data = Lead::select('leads.*','partners.name as partner_name','partners.commission_percentage')
+			->leftJoin('partners','leads.partner_id','=','partners.id')
+			->where(function($q)use($request)
+            {
+                $request->partner_id !=0 ? $q->where('partner_id',$request->partner_id):'';
+            })->where('leads.lead_status',"Got Business")
+			  ->where('leads.payment_status',1)
+			  ->latest()->get()->map(function($q)
+			  {
+				  $sum=PaymentHistory::selectRaw('SUM(commission) as camount,SUM(paid_amount) as pamount')->where('lead_id',$q->id)->first();
+				  $q['com_amount']=$sum->camount;
+				  $q['com_paid']=$sum->pamount;
+				  return $q;
+			  });
+
+            return Datatables::of($data)
+                    ->addIndexColumn()
+                    ->addColumn('partner', function($row){
+					   $pname='<a href="'.route('admin.pay-partner-payment',$row->partner_id).'" style="color:#2020db;">'.strtoupper($row->partner_name).'</a>';
+                       return $pname;
+                    })
+					
+					->addColumn('com_amount', function($row){
+						$com_amount="₹ ". number_format($row->com_amount,'2','.','');
+						return $com_amount;
+                    })
+					
+					->addColumn('paid_amount', function($row){
+						$paid_amt="₹ ". number_format($row->com_paid,'2','.','');
+						return $paid_amt;
+                    })
+					
+					->addColumn('balance', function($row){
+
+						$bal_amount="₹ ". number_format($row->balance,'2','.','');
+								return $bal_amount;
+                    })
+					
+					->addColumn('status', function($row){
+						$lst='<span style="color:green;">'.$row->lead_status.'</span>';
+						return $lst;
+                    })
+
+					->addColumn('email', function($row)
+					{
+						$email = $row->email.'<br/>';
+						$email .= $row->mobile;
+						return $email;
+                    })
+					->addColumn('pay_status', function($row)
+					{
+						$pay_stat='<span style="color:green;">Paid</span>';
+						return $pay_stat;
+					})
+
+                    ->rawColumns(['actions','partner','email','status','pay_status'])
+                    ->make(true);
+    }
+	
+		
+/*public function gotBusinessPaidLeads(Request $request)
+    {
+
 		$data = Lead::latest()->leftJoin('partners','leads.partner_id','=','partners.id')
+		->leftJoin('lead_commissions','leads.id','=','lead_commissions.lead_id')
 		->where(function($q)use($request)
 		{
 			$request->partner_id !=0 ? $q->where('partner_id',$request->partner_id):'';
@@ -1281,16 +1338,17 @@ public function gotBusinessPaidLeads(Request $request)
 			->rawColumns(['email','status','pay_status'])
 		  ->make(true);
     }
+*/
 
 
-public function viewPaymentDetails(Request $request)
+public function viewPaymentDetails(Request $request)  //payment history page
     {
 
-		$data = PaymentDetail::select('payment_details.*','leads.name','leads.mobile')
-		->leftJoin('leads','payment_details.lead_id','=','leads.id')
+		$data = LeadCommission::select('lead_commissions.*','leads.name','leads.mobile')
+		->leftJoin('leads','lead_commissions.lead_id','=','leads.id')
 		->where(function($q)use($request)
 		{
-			$request->partner_id !="" ? $q->where('payment_details.partner_id',$request->partner_id):'';
+			$request->partner_id !="" ? $q->where('lead_commissions.partner_id',$request->partner_id):'';
 		})->get();
 				
 
@@ -1301,16 +1359,16 @@ public function viewPaymentDetails(Request $request)
 					return $row->name;
 				})
 				->addColumn('collected_amount', function($row){
-					$col_amount="₹ ".number_format($row->collected_amount,'2','.','');
+					$col_amount="₹ ".number_format($row->amount_collected,'2','.','');
 					return $col_amount;
 				})
 				->addColumn('commission', function($row){
-					$com_amount="₹ ". number_format($row->commission,'2','.','');
+					$com_amount="₹ ". number_format($row->commission_amount,'2','.','');
 					return $com_amount;
 				})
 				
 				->addColumn('amount', function($row){
-					$paid_amt="₹ ". number_format($row->amount,'2','.','');
+					$paid_amt="₹ ". number_format($row->paid_amount,'2','.','');
 					return $paid_amt;
 				})
 				
@@ -1338,7 +1396,8 @@ public function viewPaymentDetails(Request $request)
     }
 
 
-public function viewPaymentHistory(Request $request)
+
+public function viewAllPaymentHistory(Request $request)
     {
 
 		$data = PaymentHistory::select('payment_histories.*','leads.name','leads.mobile')
@@ -1354,7 +1413,7 @@ public function viewPaymentHistory(Request $request)
 					return $row->name;
 				})
 				->addColumn('amount', function($row){
-					$amount="₹ ".number_format($row->amount,'2','.','');
+					$amount="₹ ".number_format($row->paid_amount,'2','.','');
 					return $amount;
 				})
 				->addColumn('payment_date', function($row){
@@ -1379,43 +1438,135 @@ public function viewPaymentHistory(Request $request)
     }
 
   
- public function getLeadDetails($lead_id)
- {
-	 $lead=Lead::leftJoin('partners','leads.partner_id','partners.id')
-	 ->select('leads.*','partners.commission_percentage')->where('leads.id',$lead_id)->first();
-	 return response()->json(['status'=>1,'data'=>$lead]);
- }
   
- public function getPartnerPaymentDetails($lead_id)
- {
-	 $lead=Lead::select('leads.*','partners.commission_percentage')
-	 ->leftJoin('partners','leads.partner_id','partners.id')
-	 ->where('leads.id',$lead_id)->first();
-	 
-	 $pay_history=PaymentHistory::where('lead_id',$lead_id)->get();
+ // PAY PARTNR PAYMENT PAGE---------------------------------
+ 
+  public function payPartnerPayment($pid)
+  {
+    $partner=Partner::where('id',$pid)->first();
+	$total=LeadCommission::selectRaw('SUM(commission_amount) as sum_commission, SUM(balance) as sum_balance')->where('partner_id',$pid)->first();
+	$lead_status = LeadStatus::all();
+	$tot_paid=PaymentHistory::totalPayout($pid);
+	return view('admin.payouts',compact('lead_status','total','tot_paid','partner','pid'));
+  }
+   
+  
+  public function gotBusinessPartnerUnpaidLeads($id)
+  {
+	$data = LeadCommission::select('lead_commissions.*','leads.name','leads.mobile','leads.email','partners.name as partner_name','partners.commission_percentage')
+	->leftJoin('leads','lead_commissions.lead_id','=','leads.id')
+	->leftJoin('partners','leads.partner_id','=','partners.id')
+	->where('lead_commissions.partner_id',$id)
+	->where('lead_commissions.lead_status',"Got Business")
+	->where('lead_commissions.payment_status',0)
+	->latest()->get();
 
-	 return view('modals.set_payment',compact('lead','pay_history'));   
+
+	return Datatables::of($data)
+		->addIndexColumn()
+		->addColumn('name', function($row){
+			
+			if($row->renewal_status!='')
+				$nam=$row->name.'&nbsp;<sup class="fs-10">R</sup>';
+			else
+				$nam=$row->name;
+			return $nam;
+		})
+				
+		->addColumn('amount_collected', function($row){
+			$col_amount=number_format($row->amount_collected,'2','.','');
+			return $col_amount;
+		})
+		->addColumn('commission_amount', function($row){
+			$com_amount=number_format($row->commission_amount,'2','.','');
+			return $com_amount;
+		})
+		
+		->addColumn('amount', function($row){
+			$paid_amt=number_format($row->paid_amount,'2','.','');
+			return $paid_amt;
+		})
+		
+		->addColumn('balance', function($row){
+
+			$bal_amount=number_format($row->balance,'2','.','');
+					return $bal_amount;
+		})
+		
+		->addColumn('status', function($row){
+			$lst='<span style="color:green;">'.$row->lead_status.'</span>';
+			return $lst;
+		})
+
+		->addColumn('email', function($row)
+		{
+			$email = $row->email.'<br/>';
+			$email .= $row->mobile;
+			return $email;
+		})
+		->rawColumns(['name','email','status','pay_status'])
+		->make(true);
  }
-   
- /*public function getLeadPaymentDetails(Request $request)
- {
-	 $lead_id=$request->lead_id;
-	 
-	 $pdat=PaymentDetail::where('lead_id',$lead_id)->get()->map(function($q)
-	 {
-		 $q->payment_receipt=url('uploads/receipts')."/".$q->payment_receipt;
-		 $q->payment_date=Carbon::createFromDate($q->payment_date)->format('d-m-Y');
-		 return $q;
-	 });
-	 
-	 return response()->json(['status'=>1,'data'=>$pdat]);
- }*/
-   
+
+  
+  
+  
+  
+ public function viewPartnerPaymentHistory($id)
+    {
+
+		$data = PaymentHistory::select('payment_histories.*','leads.name','leads.mobile')
+		->leftJoin('leads','payment_histories.lead_id','=','leads.id')
+		->where('payment_histories.partner_id',$id)->get();
+
+		return Datatables::of($data)
+				->addIndexColumn()
+				->addColumn('name', function($row){
+					return $row->name;
+				})
+				->addColumn('commission', function($row){
+					$amount=number_format($row->commission,'2','.','');
+					return $amount;
+				})
+				->addColumn('paid_amount', function($row){
+					$amount=number_format($row->paid_amount,'2','.','');
+					return $amount;
+				})
+				->addColumn('payment_date', function($row){
+					
+					$date=Carbon::createFromFormat('Y-m-d',$row->payment_date)->format('d-m-Y');
+					return $date;
+				})
+				->addColumn('receipt', function($row){
+					
+					if($row->receipt!="")
+					{
+						$url='<a href="'.url('/uploads/receipts')."/".$row->receipt.'" target="_blank">view</a>';
+					}
+					else
+					{
+						$url='--';
+					}
+					return $url;
+				})
+		->rawColumns(['receipt'])
+		->make(true);
+    }
+
   
 public function savePayout(Request $request)
 {
+	
+	DB::beginTransaction();
+	
 	try
 		{
+
+		if($request->pay_amount>$request->pay_balance)
+		{
+			return redirect()->back()->withInput()->withError("Invalid amount.");
+		}
+
 			$lead_id=$request->pay_lead_id;
 			
 			$fileName='';
@@ -1429,48 +1580,55 @@ public function savePayout(Request $request)
 			$result=PaymentHistory::create([
 				'lead_id' => $request->pay_lead_id,
 				'partner_id' => $request->pay_partner_id,
-				'amount' => $request->pay_amount,
+				'collected_amount' => $request->collected_amount,
+				'commission' => $request->commission_amount,
+				'paid_amount' => $request->pay_amount,
 				'payment_date' => $request->payment_date,
 				'payment_id' => $request->payment_id,
 				'receipt'=>$fileName,
 			]);
 			
-			//update in lead table
-			$lad=Lead::whereId($lead_id)->first();
-			$lad->paid_amount=$lad->paid_amount+$request->pay_amount;
-			$lad->balance=$request->pay_balance-$request->pay_amount;
-			$lad->save();
+			$id=$request->pay_commission_id;
 			
-			//update in payment details table
-			$pdt=PaymentDetail::where('lead_id',$lead_id)->latest()->first();
-			$pdt->amount=$pdt->amount+$request->pay_amount;
-			$pdt->balance=$request->pay_balance-$request->pay_amount;
-			$pdt->save();
-
+			$leadC=LeadCommission::whereId($id)->first();
+			$leadC->paid_amount=$leadC->paid_amount+$request->pay_amount;
+			$leadC->balance=$request->pay_balance-$request->pay_amount;
+			
+			if($request->pay_amount==$request->pay_balance)
+			{
+				$leadC->payment_status=1;
+				$ld=Lead::whereId($lead_id)->first();
+				$ld->payment_status=1;
+				$ld->save();
+			}
+			$leadC->save();
+					
+			DB::commit();
 			
 			if($result)
 			{
-
+				
 				$partner=Partner::where('id',$request->pay_partner_id)->first();
-				
 				// general notification ----
-				
 				$msg="Hi,".$partner->name.", Your commission Rs. ".$request->pay_commission." credited to your account on ".$request->payment_date.", Thank You!";
 				$ndat=['notification'=>$msg, 'partner_id'=>$request->pay_partner_id,'category'=>2,'status'=>0];
 				Notification::create($ndat);
 				//--------------------------
 				
-				return redirect()->back()->withSuccess("Payment successfully submited!");
+			
+			return response()->json(['status'=>true,'msg'=>'Payment successfully submited!']);
 			}
 			else
 			{
-				return redirect()->back()->withError("Something wrong, Please check.");
+				DB::rollback();
+				return response()->json(['status'=>false,'msg'=>'Something wrong, Please try again.']);
 			}
 
 		}catch(\Exception $e)
 		{
+			DB::rollback();
 			\Log::info($e->getMessage());
-			return redirect()->back()->withError($e->getMessage());
+			return response()->json(['status'=>false,'msg'=>$e->getMessage()]);
 		}
 		
 }

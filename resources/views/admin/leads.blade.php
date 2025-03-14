@@ -27,7 +27,7 @@
 }
 
 .payment-active { color:green;}
-.payment-inactive{ color:red;}
+.payment-inactive{ color:#f32c2c;}
 .payment-pending{ color:purple;}
 .form-select option{ color:black;}
 .t-amt{ font-size:14px;font-weight:600;}
@@ -105,13 +105,14 @@
  										
 									<tr id="tab-row">
 										<th>No</th>
-										<th>Lead</th>
-										<th>Email/Mobile</th>
-										<th>Company</th>
 										<th>Partner</th>
+										<th>Lead</th>
+										<th>Mobile</th>
+										<th>Email</th>
+										<th>Company</th>
 										<th>Lead Status</th>
-										<th>Amount</th>
-										<th>Commission</th>
+										<!--<th>Amount</th>
+										<th>Commission</th>-->
 										<th>Payments</th>
 										<th>Actions</th>
 									</tr>
@@ -286,40 +287,58 @@
 
 	
  <div class="modal fade" id="set-commission-modal" tabindex="-1" aria-labelledby="addPartnerModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-sm">
+	<div class="modal-dialog modal-md">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title" id="addPartnerModalLabel">Set Collected Amount</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
+			
+			<input type="hidden" name="temp_comm_percentage" id="temp_comm_percentage">
+			
 			<form id="setLeadCommission">
 			@csrf
 			<input type="hidden" class="form-control" name="set_comm_lead_id" id="set_comm_lead_id">
 			<input type="hidden" class="form-control" name="set_comm_lead_status" id="set_comm_lead_status">
+			<input type="hidden" class="form-control" name="renewal_status" id="renewal_status">
+						
+			<div class="form-group ">
+				<input type="checkbox"  name="cbox_renewal" id="cbox_renewal" style="width:20px;height:20px;font-size:16px;vertical-align:middle;">&nbsp;&nbsp;Renewal Amount
+			</div>
+					
 			
-			<div class="form-group">
+			<div class="form-group mt-2">
 				<label for="recipient-name" class="form-label">Commission (%)</label>
 				<input type="text" class="form-control" name="set_comm_percentage" id="set_comm_percentage" readonly>
 			</div>
 			
+		
 			<div class="form-group">
+			
+			<div class="row">
+			<div class="col-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
 				<label for="recipient-name" class="form-label">Collected Amount</label>
-				<div class="input-group">
-				  <input type="text" class="form-control"  name="set_collected_amount" id="set_collected_amount" aria-describedby="button-addon2">
-				  <button class="btn btn-primary" type="button" id="btnSetAmount" >Set</button>
-				</div>
+				<input type="number" class="form-control"  name="set_collected_amount" id="set_collected_amount" aria-describedby="button-addon2">
 				<label class="error" id="err-msg" style="display:none;"></label>
+			</div>
+			<div class="col-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+			<div class="form-group">
+				<label for="recipient-name" class="form-label">Commission</label>
+				<input type="number" class="form-control" name="set_commission" id="set_commission" >
+			</div>
+			</div>
+			</div>
 			</div>
 			
 			<div class="form-group">
-				<label for="recipient-name" class="form-label">Commission</label>
-				<input type="text" class="form-control" name="set_commission" id="set_commission" >
+				<label for="recipient-name" class="form-label">Description</label>
+				<textarea rows=3 class="form-control" name="description" id="description" required></textarea>
 			</div>
 									
 			<div class="form-group mt-3 mb-3" style="text-align:right;">
 				<button type="button" class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close">Close</button>
-				<button type="button" id="btnLeadCommSubmit"  class="btn btn-primary">Submit</button>
+				<button type="submit"  class="btn btn-primary">Submit</button>
 			</div>
 			</form>
 			
@@ -384,13 +403,14 @@ var phone_number = window.intlTelInput(document.querySelector("#mobile"), {
             },
             columns: [
 				{data: 'DT_RowIndex', name: 'DT_RowIndex',orderable: false, searchable: false},
+				{data: 'partner', name: 'partner'},
 				{data: 'name', name: 'name'},
 				{data: 'mobile', name: 'mobile'},
+				{data: 'email', name: 'email'},
 				{data: 'company_name', name: 'company_name'},
-				{data: 'partner', name: 'partner'},
 				{data: 'status', name: 'status'},
-				{data: 'amount_collected', name: 'amount_collected'},
-				{data: 'commission_amount', name: 'commission_amount'},
+				//{data: 'amount_collected', name: 'amount_collected'},
+				//{data: 'commission_amount', name: 'commission_amount'},
 				{data: 'pay_status', name: 'pay_status'},
 				{data: 'action', name: 'action'},
             ],
@@ -502,22 +522,7 @@ $(".button-close").click(function()
 	});
 
 			
-		$("#leads-table tbody").on( 'click', '.edit_lead', function ()
-		  {
-			var id=$(this).attr('id');
-			var Result=$("#edit-lead-modal .modal-body");
-			
-					jQuery.ajax({
-					type: "GET",
-					url: "{{url('admin/edit-lead')}}"+"/"+id,
-					dataType: 'html',
-					//data: {vid: vid},
-					success: function(res)
-					{
-					   Result.html(res);
-					}
-				});
-		  });
+		
 
 
         $("#country").on('change',function()
@@ -561,6 +566,24 @@ $(".button-close").click(function()
                 });
         })
 		
+		
+		$("#leads-table tbody").on( 'click', '.edit_lead', function ()
+		  {
+			var id=$(this).attr('id');
+			var Result=$("#edit-lead-modal .modal-body");
+			
+					jQuery.ajax({
+					type: "GET",
+					url: "{{url('admin/edit-lead')}}"+"/"+id,
+					dataType: 'html',
+					//data: {vid: vid},
+					success: function(res)
+					{
+					   Result.html(res);
+					}
+				});
+		  });
+		  
 		// set commission -------------------------------------------------------
 		
 		var lstat='';
@@ -569,12 +592,28 @@ $(".button-close").click(function()
             lstat=$(this).val();
 		});
 		
+		
+		$(document).on('change','#cbox_renewal',function()
+		{
+			if($(this).is(':checked'))
+			{
+				$("#set_comm_percentage").val(5);
+				$("#renewal_status").val('Renewal');
+			}				
+			else
+			{
+				$("#set_comm_percentage").val($("#temp_comm_percentage").val());
+				$("#renewal_status").val('');
+			}
+			
+		});
+				
 				
 		$(document).on('change','#lead_status',function()
         {
 
-		    lead_id = $(this).data('lead-id')
-			var lstatus=$(this).val()
+		    lead_id = $(this).data('leadid');
+			var lstatus=$(this).val();
 			var com_per=$(this).data('commission');
 			
 			if(com_per==0 && lstatus=="Got Business")
@@ -589,9 +628,12 @@ $(".button-close").click(function()
 					
 					$("#setLeadCommission")[0].reset();
 					var id=$(this).attr('id');
+
 					$("#set_comm_lead_id").val(lead_id);
 					$("#set_comm_lead_status").val(lstatus);
 					$("#set_comm_percentage").val(com_per);
+					$("#temp_comm_percentage").val(com_per);
+					
 					$("#set-commission-modal").modal('show');
 				}
 				else
@@ -614,9 +656,10 @@ $(".button-close").click(function()
 				}
 			}
         });
-				
 		
-		$(document).on('click','#btnSetAmount',function()
+
+		
+		$(document).on('keyup','#set_collected_amount',function()
         {
             var camt=$("#set_collected_amount").val();
 			var com_per=$("#set_comm_percentage").val();
@@ -634,19 +677,24 @@ $(".button-close").click(function()
         });
 		
 		
-		
-		$(document).on('click','#btnLeadCommSubmit',function()
-        {
-            var camt=$("#set_collected_amount").val();
-			var comm=$("#set_commission").val();
-			
-			if(camt!="" && comm!="")
-			{
-				$.ajax({
+		var sValidator=$('#setLeadCommission').validate({ 
+                rules: {
+
+					set_comm_percentage:{required:true,},
+					set_collected_amount:{required:true,},
+					set_commission:{required:true,},
+					description:{required:true,}
+                },
+                submitHandler: function(form) 
+                {
+
+					formData=new FormData(document.getElementById('setLeadCommission'));
+					
+                    $.ajax({
 					url: "{{ route('admin.update-lead-commission') }}",
 					type: 'post',
 					dataType:'json',
-					data: $("#setLeadCommission").serialize(),
+					data: formData,
 					success: function(result)
 					{
 						if(result.status==1)
@@ -658,14 +706,13 @@ $(".button-close").click(function()
 							
 						}
 						
-					}
-				});
-			}
-			else
-			{
-				$("#err-msg").html("Invalid Amount!").css('display','block');
-			}
-        });
+					},
+					cache: false,
+					contentType: false,
+					processData: false
+                    });
+				}
+            });
 		
 		
 		//-------------------------------------------------
@@ -698,6 +745,7 @@ $(".button-close").click(function()
 		$("#export_to_excel").attr('href',lnk);	
 	});
 	
+
 
 
 /// SET PAYMENT DETAILS -------------same functions added into payout blade file-------------------------------------------------------

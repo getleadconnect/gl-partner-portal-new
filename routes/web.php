@@ -42,6 +42,11 @@ Route::get('/', function () {
     return view('landing_page');
 });
 
+Route::get('/admin', function () {
+    // return view('index');
+    return redirect('admin/login');
+});
+
 Route::get('design', function () {
     return view('design');
 });
@@ -134,9 +139,9 @@ Route::prefix('admin')->name('admin.')->group(function(){
 			Route::get('payout-history','payoutHistory')->name('payout-history');
 			Route::post('save-payout','savePayout')->name('save-payout');
 			//Route::get('get-lead-payment-details','getLeadPaymentDetails')->name('get-lead-payment-details');
-			
+
 			Route::get('view-payment-details','viewPaymentDetails')->name('view-payment-details');
-			Route::get('view-payment-history','viewPaymentHistory')->name('view-payment-history');
+			Route::get('view-all-payment-history','viewAllPaymentHistory')->name('view-all-payment-history');
 			
 			Route::post('update-payout-payment-status','updateLeadPaymentStatus')->name('update-payout-payment-status');
 			
@@ -166,11 +171,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
 			
 			Route::post('/save-lead-status', 'saveLeadStatus')->name('save-lead-status');
 			Route::get('/delete-lead-status/{id}', 'deleteLeadStatus')->name('delete-lead-status');
-			
-			//Route::get('/get-lead-details/{id}', 'getLeadDetails')->name('get-lead-details');
-			
-			Route::get('/get-partner-payment-details/{id}', 'getPartnerPaymentDetails')->name('get-partner-payment-details');
-			
+
 			Route::get('/got-business-paid-leads', 'gotBusinessPaidLeads')->name('got-business-paid-leads');
 			Route::get('/got-business-unpaid-leads', 'gotBusinessUnPaidLeads')->name('got-business-unpaid-leads');
 			
@@ -196,8 +197,10 @@ Route::prefix('admin')->name('admin.')->group(function(){
 			Route::post('update-business-category','updateBusinessCategory')->name('update-business-category'); 
 			Route::post('update-email-whatsapp-no','updateEmailWhatsappNo')->name('update-email-whatsapp-no'); 
 						
+			Route::get('pay-partner-payment/{id}','payPartnerPayment')->name('pay-partner-payment'); 
+			Route::get('got-business-partner-unpaid-leads/{id}', 'gotBusinessPartnerUnpaidLeads')->name('got-business-partner-unpaid-leads');
+			Route::get('view-partner-payment-history/{id}','viewPartnerPaymentHistory')->name('view-partner-payment-history');
 			
-						
 		});
 		
 		Route::controller(WhatsappController::class)->group(function()

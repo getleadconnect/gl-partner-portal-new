@@ -108,7 +108,7 @@ table tr
 									<th>No</th>
 									<th>Lead</th>
 									<th>Payment Date</th>
-									<th>Amount</th>
+									<th>Paid_Amount</th>
 									<th>Payment Id</th>
 									<th>Receipt</th>
 								</tr>
@@ -121,9 +121,6 @@ table tr
 						<!--</div>-->
 
 					  </div>
-					  
-					  
-					  
 					  
 					</div>
 				</div>
@@ -209,7 +206,7 @@ $("#filter_partner_id").select2();
 			"lengthMenu": [10, 25, 50,100,150,200],
 			
             ajax: {
-                url: "{{ route('admin.view-payment-history') }}",
+                url: "{{ route('admin.view-all-payment-history') }}",
                 data: function (d) 
                 {
                     d.partner_id = $('#filter_partner_id').val()   
