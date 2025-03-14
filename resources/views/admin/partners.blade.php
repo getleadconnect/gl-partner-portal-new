@@ -13,7 +13,7 @@
 #err-msg {color:red;	font-size:12px; }
 .filter-select{	width:110px;	height:34px;	margin:8px 0px 8px 8px;	border-color:#aaa !important;
 }
-.pr-detail{position:fixed;	left:83px;	top:20px;	width:93%;	height:93%;	border:1px solid #b9d5ca;
+.pr-detail{position:fixed;	left:83px;	top:20px;	width:93%;	height:93%;	border:2px solid #b9d5ca;
 	background:#fff; z-index:9999999;	
 }
 .prd-body{width:100%;	height:513px;	overflow-y:scroll;	scrollbar-width:thin; }
