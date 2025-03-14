@@ -49,8 +49,5 @@ class Lead extends Model
 		->whereRaw('UPPER(lead_status)=(?)',Str::upper($status))->count();
     }
 	
-	public static function partnerTotalCommission($partner_id)
-    {
-        return self::where('partner_id',$partner_id)->sum('commission_amount');
-    }
+	
 }

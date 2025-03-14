@@ -477,7 +477,7 @@ public function createPartner(Request $request)
 		$data['total_leads']=Lead::partnerTotalLeadsCount($id);
 		$data['open_leads']=Lead::partnerStatusWiseLeadsCount($id,"New");
 		$data['business_leads']=Lead::partnerStatusWiseLeadsCount($id,"Got Business");
-		$data['total_commission']=Lead::partnerTotalCommission($id);
+		$data['total_commission']=LeadCommission::partnerTotalCommission($id);
 		$data['commission_paid']=PaymentDetail::where('partner_id',$id)->sum('commission');
 		return view('admin.partner_details_new',compact('data'));  
 	}

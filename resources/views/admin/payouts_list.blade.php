@@ -317,7 +317,8 @@
 			{data: 'actions', name: 'action',orderable: false, searchable: false,className:"text-center"},
             ],
         });
-		
+
+	
 $("#unpaid_leads_table_filter").append(unpaid_partner_filter);
 
 $("#unpaid_partner_filter").change(function()
@@ -372,8 +373,6 @@ $("#paid-tab").click(function()
 		{
 			table2.ajax.reload();
 		});
-		
-
 
 
 /// SET PAYMENT DETAILS -------------same functions added into leads blade file-------------------------------------------------------
