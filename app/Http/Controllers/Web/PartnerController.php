@@ -27,6 +27,7 @@ use App\Models\ProductAndService;
 use App\Models\BussinessCategory;
 use App\Models\PaymentDetail;
 use App\Models\PaymentHistory;
+use App\Models\LeadCommission;
 use App\Models\LeadStatus;
 use App\Models\News;
 use App\Models\Notification;
@@ -1272,15 +1273,18 @@ public function payoutHistory(Request $request)
 		return view('partner.payouts_history');
     }
 
-public function viewPaymentDetails(Request $request)
+public function viewPaymentDetails(Request $request)  //payment history page
     {
+
 		$pid=Auth::user()->id;
-		$data = PaymentDetail::select('payment_details.*','leads.name','leads.mobile')
-		->leftJoin('leads','payment_details.lead_id','=','leads.id')
+
+		$data = LeadCommission::select('lead_commissions.*','leads.name','leads.mobile')
+		->leftJoin('leads','lead_commissions.lead_id','=','leads.id')
 		->where(function($q)use($pid)
 		{
-			$pid!="" ? $q->where('payment_details.partner_id',$pid):'';
+			$pid!="" ? $q->where('lead_commissions.partner_id',$pid):'';
 		})->get();
+				
 
 		return Datatables::of($data)
 				->addIndexColumn()
@@ -1288,11 +1292,11 @@ public function viewPaymentDetails(Request $request)
 				   
 					return $row->name;
 				})
-				->addColumn('amount_collected', function($row){
+				->addColumn('collected_amount', function($row){
 					$col_amount="₹ ".number_format($row->amount_collected,'2','.','');
 					return $col_amount;
 				})
-				->addColumn('commission_amount', function($row){
+				->addColumn('commission', function($row){
 					$com_amount="₹ ". number_format($row->commission_amount,'2','.','');
 					return $com_amount;
 				})
@@ -1330,20 +1334,34 @@ public function viewPaymentHistory(Request $request)
     {
 
 		$pid=Auth::user()->id;
+
 		$data = PaymentHistory::select('payment_histories.*','leads.name','leads.mobile')
 		->leftJoin('leads','payment_histories.lead_id','=','leads.id')
 		->where(function($q)use($pid)
 		{
 			$pid!=0 ? $q->where('payment_histories.partner_id',$pid):'';
-		})->get();
+		})->get()->map(function($q)
+		{
+			if($q->multiple_leads!=null)
+			{
+				$ids=explode(',',$q->multiple_leads);
+				$lead=Lead::whereIn('id',$ids)->pluck('name')->toArray();
+				$lead_names=implode(', ',$lead);
+				$q['multiple_lead_name']=$lead_names;
+			}
+			return $q;
+		});
 
 		return Datatables::of($data)
 				->addIndexColumn()
 				->addColumn('name', function($row){
-					return $row->name;
+					if($row->multiple_leads!=null)
+						return $row->multiple_lead_name;
+					else
+						return $row->name;
 				})
 				->addColumn('amount', function($row){
-					$amount="₹ ".number_format($row->amount,'2','.','');
+					$amount="₹ ".number_format($row->paid_amount,'2','.','');
 					return $amount;
 				})
 				->addColumn('payment_date', function($row){
@@ -1355,7 +1373,7 @@ public function viewPaymentHistory(Request $request)
 					
 					if($row->receipt!="")
 					{
-						$url='a href="'.url('/uploads/receipts')."/".$row->receipt.'" target="_blank">view</a>';
+						$url='<a href="'.url('/uploads/receipts')."/".$row->receipt.'" target="_blank">view</a>';
 					}
 					else
 					{
@@ -1366,7 +1384,6 @@ public function viewPaymentHistory(Request $request)
 		->rawColumns(['receipt'])
 		->make(true);
     }
-
 
 
 

@@ -160,15 +160,15 @@ table tr
                 url: "{{ route('partner.view-payment-details') }}",
                 data: function (d) 
                 {
-                    d.partner_id = $('#filter_partner_id').val()   
+                    //d.partner_id = $('#filter_partner_id').val()   
                 }
             },
             columns: [
             
             {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable: false, searchable: false},
             {data: 'name', name: 'name'},
-			{data: 'amount_collected', name: 'amount_collected',className:'numericCol'},
-			{data: 'commission_amount', name: 'commission_amount',className:'numericCol'},
+			{data: 'collected_amount', name: 'collected_amount',className:'numericCol'},
+			{data: 'commission', name: 'commission',className:'numericCol'},
 			{data: 'amount', name: 'amount',className:'numericCol'},
 			{data: 'balance', name: 'balance',className:'numericCol'},
 			{data: 'status', name: 'status'},
@@ -193,7 +193,7 @@ table tr
                 url: "{{ route('partner.view-payment-history') }}",
                 data: function (d) 
                 {
-                    d.partner_id = $('#filter_partner_id').val()   
+                    //d.partner_id = $('#filter_partner_id').val()   
                 }
             },
 			

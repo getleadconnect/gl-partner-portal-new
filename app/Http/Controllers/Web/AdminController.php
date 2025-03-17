@@ -1396,7 +1396,6 @@ public function viewPaymentDetails(Request $request)  //payment history page
     }
 
 
-
 public function viewAllPaymentHistory(Request $request)
     {
 
