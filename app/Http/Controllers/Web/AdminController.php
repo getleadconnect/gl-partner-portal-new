@@ -1405,12 +1405,25 @@ public function viewAllPaymentHistory(Request $request)
 		->where(function($q)use($request)
 		{
 			$request->partner_id !=0 ? $q->where('payment_histories.partner_id',$request->partner_id):'';
-		})->get();
+		})->get()->map(function($q)
+		{
+			if($q->multiple_leads!=null)
+			{
+				$ids=explode(',',$q->multiple_leads);
+				$lead=Lead::whereIn('id',$ids)->pluck('name')->toArray();
+				$lead_names=implode(', ',$lead);
+				$q['multiple_lead_name']=$lead_names;
+			}
+			return $q;
+		});
 
 		return Datatables::of($data)
 				->addIndexColumn()
 				->addColumn('name', function($row){
-					return $row->name;
+					if($row->multiple_leads!=null)
+						return $row->multiple_lead_name;
+					else
+						return $row->name;
 				})
 				->addColumn('amount', function($row){
 					$amount="₹ ".number_format($row->paid_amount,'2','.','');
@@ -1464,6 +1477,12 @@ public function viewAllPaymentHistory(Request $request)
 
 	return Datatables::of($data)
 		->addIndexColumn()
+		
+		->addColumn('chkbox', function($row){
+			$chk="<input type='checkbox' class='selbox' data-leadid='".$row->lead_id."' style='width:20px;height:20px;'>";
+			return $chk;
+		})
+		
 		->addColumn('name', function($row){
 			
 			if($row->renewal_status!='')
@@ -1504,25 +1523,35 @@ public function viewAllPaymentHistory(Request $request)
 			$email .= $row->mobile;
 			return $email;
 		})
-		->rawColumns(['name','email','status','pay_status'])
+		->rawColumns(['chkbox','name','email','status','pay_status'])
 		->make(true);
  }
 
-  
-  
-  
   
  public function viewPartnerPaymentHistory($id)
     {
 
 		$data = PaymentHistory::select('payment_histories.*','leads.name','leads.mobile')
 		->leftJoin('leads','payment_histories.lead_id','=','leads.id')
-		->where('payment_histories.partner_id',$id)->get();
+		->where('payment_histories.partner_id',$id)->get()->map(function($q)
+		{
+			if($q->multiple_leads!=null)
+			{
+				$ids=explode(',',$q->multiple_leads);
+				$lead=Lead::whereIn('id',$ids)->pluck('name')->toArray();
+				$lead_names=implode(', ',$lead);
+				$q['multiple_lead_name']=$lead_names;
+			}
+			return $q;
+		});
 
 		return Datatables::of($data)
 				->addIndexColumn()
 				->addColumn('name', function($row){
-					return $row->name;
+					if($row->multiple_leads!=null)
+						return $row->multiple_lead_name;
+					else
+						return $row->name;
 				})
 				->addColumn('commission', function($row){
 					$amount=number_format($row->commission,'2','.','');
@@ -1567,8 +1596,6 @@ public function savePayout(Request $request)
 			return redirect()->back()->withInput()->withError("Invalid amount.");
 		}
 
-			$lead_id=$request->pay_lead_id;
-			
 			$fileName='';
 
 			if($request->file('payment_receipt'))
@@ -1576,32 +1603,70 @@ public function savePayout(Request $request)
 				$fileName = "rec_".time().'.'.$request->payment_receipt->extension();  
 				$request->payment_receipt->move(public_path('uploads/receipts/'), $fileName);
 			}
-						
-			$result=PaymentHistory::create([
-				'lead_id' => $request->pay_lead_id,
-				'partner_id' => $request->pay_partner_id,
-				'collected_amount' => $request->collected_amount,
-				'commission' => $request->commission_amount,
-				'paid_amount' => $request->pay_amount,
-				'payment_date' => $request->payment_date,
-				'payment_id' => $request->payment_id,
-				'receipt'=>$fileName,
-			]);
 			
-			$id=$request->pay_commission_id;
-			
-			$leadC=LeadCommission::whereId($id)->first();
-			$leadC->paid_amount=$leadC->paid_amount+$request->pay_amount;
-			$leadC->balance=$request->pay_balance-$request->pay_amount;
-			
-			if($request->pay_amount==$request->pay_balance)
+			$lcids=explode(',',substr($request->lead_commission_id,1));
+			if(!empty($lcids) and count($lcids)==1)		
 			{
-				$leadC->payment_status=1;
-				$ld=Lead::whereId($lead_id)->first();
-				$ld->payment_status=1;
-				$ld->save();
+				
+				$id=$lcids[0];
+				$leadC=LeadCommission::whereId($id)->first();
+				$leadC->paid_amount=$leadC->paid_amount+$request->pay_amount;
+				$leadC->balance=$request->pay_balance-$request->pay_amount;
+				if($request->pay_amount==$request->pay_balance)
+				{
+					$leadC->payment_status=1;
+					$ld=Lead::whereId($leadC->lead_id)->first();
+					$ld->payment_status=1;
+					$ld->save();
+				}
+				$leadC->save();
+								
+				$result=PaymentHistory::create([
+					'lead_id' => $leadC->lead_id,
+					'partner_id' => $request->pay_partner_id,
+					'collected_amount' => $request->collected_amount,
+					'commission' => $request->commission_amount,
+					'paid_amount' => $request->pay_amount,
+					'payment_date' => $request->payment_date,
+					'payment_id' => $request->payment_id,
+					'description'=>$request->description,
+					'receipt'=>$fileName,
+				]);
+				
 			}
-			$leadC->save();
+			else if(!empty($lcids))
+			{
+
+				$leadC=LeadCommission::whereIn('id',$lcids)->get();
+				foreach($leadC as $row)
+				{
+					if($row->paid_amount!='')
+						$row->paid_amount=$row->paid_amount+$row->balance;
+					else
+						$row->paid_amount=$row->balance;
+					
+					$row->balance=0;
+					$row->payment_status=1;
+					$row->save();
+				
+					$ld=Lead::whereId($row->lead_id)->first();
+					$ld->payment_status=1;
+					$ld->save();
+				}
+				
+				$result=PaymentHistory::create([
+					'lead_id' => null,
+					'multiple_leads'=>substr($request->lead_ids,1),
+					'partner_id' => $request->pay_partner_id,
+					'collected_amount' => $request->collected_amount,
+					'commission' => $request->pay_amount,
+					'paid_amount' => $request->pay_amount,
+					'payment_date' => $request->payment_date,
+					'payment_id' => $request->payment_id,
+					'description'=>$request->description,
+					'receipt'=>$fileName,
+				]);
+			}
 					
 			DB::commit();
 			
@@ -1614,8 +1679,7 @@ public function savePayout(Request $request)
 				$ndat=['notification'=>$msg, 'partner_id'=>$request->pay_partner_id,'category'=>2,'status'=>0];
 				Notification::create($ndat);
 				//--------------------------
-				
-			
+						
 			return response()->json(['status'=>true,'msg'=>'Payment successfully submited!']);
 			}
 			else

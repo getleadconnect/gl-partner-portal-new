@@ -129,49 +129,50 @@
 
 						<form  id="paymentForm" enctype="multipart/form-data">
 						@csrf
-						
-						<input type="hidden" class="form-control" name="pay_commission_id" id="pay_commission_id" value="{{old('pay_commission_id')}}">
-						<input type="hidden" class="form-control" name="pay_lead_id" id="pay_lead_id" value="{{old('pay_lead_id')}}">
+
 						<input type="hidden" class="form-control" name="pay_partner_id" id="pay_partner_id" value="{{$partner->id}}">
-						<input type="hidden" class="form-control"  name="pay_percentage" id="pay_percentage" value="{{$partner->commission_percentage}}" >
-						<input type="hidden" class="form-control"  name="collected_amount" id="collected_amount"  >
+						<input type="hidden" class="form-control" name="pay_percentage" id="pay_percentage" value="{{$partner->commission_percentage}}" >
+						<input type="hidden" class="form-control" name="collected_amount" id="collected_amount"  value="0">
+						<input type="hidden" class="form-control" name="commission_amount" id="commission_amount"  value="0">
+						
+						<input type="text"  class="form-control" name="lead_ids" id="lead_ids">
+						<input type="text"  class="form-control" name="lead_commission_id" id="lead_commission_id">
 
 						<div class="form-group">
 						<div class="row">
-
 						<div class="col-lg-6 col-xl-6 col-xxl-6">
-							<label for="commission_amount" class="form-label">Commission</label>
-							  <input type="text" class="form-control disabled"  name="commission_amount" id="commission_amount" value="{{old('commission_amount')}}" required readonly>
+							<label for="pay_balance" class="form-label">Payable Amount</label>
+							  <input type="text" class="form-control disabled"  name="pay_balance" id="pay_balance"  value="{{old('pay_balance')??0}}" required readonly>
 						</div>
-
-						<div class="col-lg-6 col-xl-6 col-xxl-6">
-							<label for="pay_balance" class="form-label">Balance Amount</label>
-							  <input type="text" class="form-control disabled"  name="pay_balance" id="pay_balance" value="{{old('pay_balance')}}" required readonly>
-						</div>
-
-						</div>
-						</div>
-
-						<div class="form-group">
-						<div class="row">
+						
 						<div class="col-lg-6 col-xl-6 col-xxl-6">
 							<label for="pay_amount" class="form-label">Amount</label>
-							  <input type="number" class="form-control"  name="pay_amount" id="pay_amount"  value="{{old('pay_amount')}}" required >
+							  <input type="number" class="form-control"  name="pay_amount" id="pay_amount"  value="{{old('pay_amount')}}" value="0" required >
 							  <label id="err_amt" style="color:red;font-size:12px;margin:0px;">{{Session::get('error')}}</label>
 						</div>
+						</div>
+						</div>
+
+						<div class="form-group">
+						<div class="row">
 						<div class="col-lg-6 col-xl-6 col-xxl-6">
 							<label for="payment_date" class="form-label">Payment Date</label>
 							  <input type="date" class="form-control"  name="payment_date" id="payment_date"  value="{{old('payment_date')}}" required>
 						</div>
-						</div>
-						</div>
-
-						<div class="form-group">
+												
+						<div class="col-lg-6 col-cl-6 col-xxl-6">
 							<label for="payment_id" class="form-label">Payment Id</label>
 							  <input type="text" class="form-control"  name="payment_id" id="payment_id"  value="{{old('payment_id')}}" required>
 						</div>
-
-						<div class="form-group">
+						</div>
+						</div>
+						
+						<div class="form-group mt-2">
+							<label for="description" class="form-label">Description</label>
+							<textarea rows=3 class="form-control" name="description" id="description" required></textarea>
+						</div>
+						
+						<div class="form-group mt-2">
 							<label for="payment_receipt" class="form-label">Upload Payment Receipt</label>
 							<input type="file" class="form-control" name="payment_receipt" id="payment_receipt" >
 						</div>
@@ -222,6 +223,7 @@
 							  <div class="tab-pane fade show active" id="unpaid-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
 							  
 								<input type="hidden" name="partner_id" id="partner_id" value="{{$pid}}">
+
 								<label style="color:#1b1bf3;"><span class="required">*</span>&nbsp;Click on the table row to pay commission amount </label>
 									<div class="table-responsive">
 									<!--<table id="partner-table" class="table table-striped table-centered align-middle table-nowrap mb-0" style="width:100%;">-->
@@ -229,6 +231,8 @@
 											<thead>
 												
 											<tr id="tab-row">
+												<th>&nbsp;</th>
+												<th>Lead_Id</th>
 												<th>No</th>
 												<th>Lead</th>
 												<th>Description</th>
@@ -347,7 +351,7 @@ $("#btn_payment").prop('disabled',true);
             serverSide: true,
 			stateStatus: true,
 			bAutoWidth: false,
-			
+										
 			"language": {
 				searchPlaceholder: 'Search',
 				sSearch: '',
@@ -358,7 +362,11 @@ $("#btn_payment").prop('disabled',true);
                 url: "{{ url('admin/got-business-partner-unpaid-leads')}}"+"/"+pid,
                 //data: function (d) {}
             },
+			
+				
             columns: [
+			{data: 'chkbox', name: 'chkbox',orderable: false, searchable: false},
+			{data: 'lead_id', name: 'lead_id',orderable: false, searchable: false,visible:false},
 			{data: 'DT_RowIndex', name: 'DT_RowIndex',orderable: false, searchable: false},
             {data: 'name', name: 'name'},
 			{data: 'description', name: 'description'},
@@ -374,26 +382,64 @@ $("#unpaid_partner_filter").change(function()
  {
 	table.draw();
  });
- 
-table.on('click', 'tbody tr', (e) => {
-    let classList = e.currentTarget.classList;
- 
-    if (classList.contains('selected')) {
-        classList.remove('selected');
-    }
-    else {
-        table.rows('.selected').nodes().each((row) => row.classList.remove('selected'));
-        classList.add('selected');
+
+
+table.on('click', '.selbox', function()
+{
+	$("#pay_amount").val('');
+	if($(this).is(':checked'))
+	{
+		$(this).closest('tr').addClass('selected');
+		//var data=table.row('.selected').data();
+		var data=table.row($(this).closest('tr')).data();
+				
+		var lid=$("#lead_ids").val();
+			lid+=','+data.lead_id;
+			$("#lead_ids").val(lid);
 		
-		var data=table.row('.selected').data();
+		var lcid=$("#lead_commission_id").val();
+			lcid+=','+data.id;
+			$("#lead_commission_id").val(lcid);
 		
-		$("#collected_amount").val(data.amount_collected);
-		$("#commission_amount").val(data.commission_amount);
-		$("#pay_balance").val(data.balance);
-		$("#pay_lead_id").val(data.lead_id);
-		$("#pay_commission_id").val(data.id);
+		var col_amt=parseInt($("#collected_amount").val());
+			col_amt+=parseInt(data.amount_collected);
+			$("#collected_amount").val(col_amt);
+
+		var camt=parseInt($("#commission_amount").val());
+			camt+=parseInt(data.commission_amount);
+			$("#commission_amount").val(camt);
+				
+		var amt=(parseInt($("#pay_balance").val()));
+			amt+=parseInt(data.balance);
+			$("#pay_balance").val(amt);
+	}
+	else
+	{
+		$(this).closest('tr').removeClass('selected');
+		var data=table.row($(this).closest('tr')).data();
+		
+		var lid=$("#lead_ids").val();
+			lid-=','+data.lead_id;
+			$("#lead_ids").val(lid);
+		
+		var lcid=$("#lead_commission_id").val();
+			id=','+data.id;
+			lcid=lcid.replace(id,'');
+			$("#lead_commission_id").val(lcid);
+				
+		var coamt=parseInt($("#collected_amount").val());
+			coamt-=parseInt(data.amount_collected);
+			$("#collected_amount").val(coamt);
+		
+		var com_amt=parseInt($("#commission_amount").val());
+			com_amt-=parseInt(data.commission_amount);
+			$("#commission_amount").val(com_amt);
+		
+		var amt=(parseInt($("#pay_balance").val()));
+			amt-=parseInt(data.balance);
+			$("#pay_balance").val(amt);
+	}
 	
-    }
 });
  
 
@@ -425,8 +471,11 @@ $('#pay_history').dataTable().fnDestroy();
                 }
             },
 			
+			columnDefs:[
+				{width:'30%','targets':1},
+			],
+			
             columns: [
-            
             {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable: false, searchable: false},
             {data: 'name', name: 'name'},
 			{data: 'payment_date', name: 'payment_date'},
@@ -443,8 +492,16 @@ $("#pay_amount").keyup(function()
 {
 	var bal=parseFloat($("#pay_balance").val());
 	var pamt=parseFloat($("#pay_amount").val());
+	
+	var ids1=$("#lead_commission_id").val();
+	var ids=ids1.split(',');
 
-	if(pamt<=bal)
+	if(pamt<=bal && ids.length<=2)
+	{
+		$("#err_amt").html('');
+		$("#btn_payment").prop('disabled',false);
+	}
+	else if(pamt==bal && ids.length>2)
 	{
 		$("#err_amt").html('');
 		$("#btn_payment").prop('disabled',false);
