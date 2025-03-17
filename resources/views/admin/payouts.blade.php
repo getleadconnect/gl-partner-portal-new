@@ -141,13 +141,13 @@
 						<div class="form-group">
 						<div class="row">
 						<div class="col-lg-6 col-xl-6 col-xxl-6">
-							<label for="pay_balance" class="form-label">Payable Amount</label>
+							<label for="pay_balance" class="form-label">Payable Amount<span class="required">*</span></label>
 							  <input type="text" class="form-control disabled"  name="pay_balance" id="pay_balance"  value="{{old('pay_balance')??0}}" required readonly>
 						</div>
 						
 						<div class="col-lg-6 col-xl-6 col-xxl-6">
-							<label for="pay_amount" class="form-label">Amount</label>
-							  <input type="number" class="form-control"  name="pay_amount" id="pay_amount"  value="{{old('pay_amount')}}" value="0" required >
+							<label for="pay_amount" class="form-label">Amount<span class="required">*</span></label>
+							  <input type="number" class="form-control"  name="pay_amount" id="pay_amount"  value="{{old('pay_amount')}}??0" required >
 							  <label id="err_amt" style="color:red;font-size:12px;margin:0px;">{{Session::get('error')}}</label>
 						</div>
 						</div>
@@ -156,20 +156,20 @@
 						<div class="form-group">
 						<div class="row">
 						<div class="col-lg-6 col-xl-6 col-xxl-6">
-							<label for="payment_date" class="form-label">Payment Date</label>
+							<label for="payment_date" class="form-label">Payment Date<span class="required">*</span></label>
 							  <input type="date" class="form-control"  name="payment_date" id="payment_date"  value="{{old('payment_date')}}" required>
 						</div>
 												
 						<div class="col-lg-6 col-cl-6 col-xxl-6">
-							<label for="payment_id" class="form-label">Payment Id</label>
+							<label for="payment_id" class="form-label">Payment Id<span class="required">*</span></label>
 							  <input type="text" class="form-control"  name="payment_id" id="payment_id"  value="{{old('payment_id')}}" required>
 						</div>
 						</div>
 						</div>
 						
 						<div class="form-group mt-2">
-							<label for="description" class="form-label">Description</label>
-							<textarea rows=3 class="form-control" name="description" id="description" required></textarea>
+							<label for="description" class="form-label">Description<span class="required">*</span></label>
+							<textarea rows=3 class="form-control" name="description" id="description" required>{{old('description')}}</textarea>
 						</div>
 						
 						<div class="form-group mt-2">
@@ -224,8 +224,7 @@
 							  
 								<input type="hidden" name="partner_id" id="partner_id" value="{{$pid}}">
 
-								<label style="color:#1b1bf3;"><span class="required">*</span>&nbsp;Click on the table row to pay commission amount </label>
-									<div class="table-responsive">
+								<div class="table-responsive">
 									<!--<table id="partner-table" class="table table-striped table-centered align-middle table-nowrap mb-0" style="width:100%;">-->
 										<table id="unpaid_leads_table" class="table-hover table-nowrap mb-0" style="width:100% !important;">
 											<thead>

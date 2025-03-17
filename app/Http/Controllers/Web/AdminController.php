@@ -1479,7 +1479,7 @@ public function viewAllPaymentHistory(Request $request)
 		->addIndexColumn()
 		
 		->addColumn('chkbox', function($row){
-			$chk="<input type='checkbox' class='selbox' data-leadid='".$row->lead_id."' style='width:20px;height:20px;'>";
+			$chk="<input type='checkbox' class='selbox' data-leadid='".$row->lead_id."' style='width:20px;height:20px;vertical-align: middle;'>";
 			return $chk;
 		})
 		
