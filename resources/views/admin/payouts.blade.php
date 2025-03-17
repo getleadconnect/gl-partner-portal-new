@@ -114,7 +114,7 @@
             </div>
 
             <div class="row">
-                <div class="col-12 col-lg-4 col-xl-4 col-xxl-4">
+                <div class="col-12 col-lg-3 col-xl-3 col-xxl-3">
                     <div class="card">
                         <div class="card-header">
                             <div class="d-flex justify-content-between align-items-center">
@@ -189,7 +189,7 @@
 					
 					</div>	
 						
-					<div class="col-lg-8 col-xl-8 col-xxl-8">
+					<div class="col-lg-9 col-xl-9 col-xxl-9">
 
 					<div class="card">
                         <div class="card-header">
