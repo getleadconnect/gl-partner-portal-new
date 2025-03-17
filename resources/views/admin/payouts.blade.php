@@ -135,8 +135,8 @@
 						<input type="hidden" class="form-control" name="collected_amount" id="collected_amount"  value="0">
 						<input type="hidden" class="form-control" name="commission_amount" id="commission_amount"  value="0">
 						
-						<input type="text"  class="form-control" name="lead_ids" id="lead_ids">
-						<input type="text"  class="form-control" name="lead_commission_id" id="lead_commission_id">
+						<input type="hidden"  class="form-control" name="lead_ids" id="lead_ids">
+						<input type="hidden"  class="form-control" name="lead_commission_id" id="lead_commission_id">
 
 						<div class="form-group">
 						<div class="row">
