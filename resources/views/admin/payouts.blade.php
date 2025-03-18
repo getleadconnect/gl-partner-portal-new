@@ -121,6 +121,7 @@
                                 <h5 class="card-title mb-0">Pay Commission</span></h5>
                                 <div>
 								{{--<button id="btnOffcanvas" class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Add Lead</button>--}}
+								<button id="btnClear" class="btn btn-primary" type="button" > Clear </button>
                                 </div>
                             </div>
                         </div>
@@ -350,19 +351,19 @@ $("#btn_payment").prop('disabled',true);
             serverSide: true,
 			stateStatus: true,
 			bAutoWidth: false,
+			pageLength:50,
+			lengthChange: false,
 										
 			"language": {
 				searchPlaceholder: 'Search',
 				sSearch: '',
 			},
-			"lengthMenu": [10, 25, 50,100,150,200],
-			
+
             ajax: {
                 url: "{{ url('admin/got-business-partner-unpaid-leads')}}"+"/"+pid,
                 //data: function (d) {}
             },
 			
-				
             columns: [
 			{data: 'chkbox', name: 'chkbox',orderable: false, searchable: false},
 			{data: 'lead_id', name: 'lead_id',orderable: false, searchable: false,visible:false},
@@ -375,12 +376,23 @@ $("#btn_payment").prop('disabled',true);
 			{data: 'amount', name: 'amount',className:'numericCol'},
 			{data: 'balance', name: 'balance',className:'numericCol'},
             ],
+			
         });
 
 $("#unpaid_partner_filter").change(function()
  {
 	table.draw();
  });
+
+$("#btnClear").click(function()
+{
+	$("#pay_balance").val(0);
+	$("#pay_amount").val(0);
+	$('#unpaid_leads_table tbody input:checkbox').prop('checked', false);
+	$('#unpaid_leads_table tbody tr').removeClass('selected');
+	$("#lead_commission_id").val('');
+	$("#lead_ids").val('');
+});
 
 
 table.on('click', '.selbox', function()
@@ -442,8 +454,10 @@ table.on('click', '.selbox', function()
 });
  
 
+
 $("#payment-history-tab").click( function()
 {
+
 var pid=$("#partner_id").val();
 
 $('#pay_history').dataTable().fnClearTable();
@@ -485,6 +499,9 @@ $('#pay_history').dataTable().fnDestroy();
             ],
         });
 });
+
+
+
 
 
 $("#pay_amount").keyup(function()
