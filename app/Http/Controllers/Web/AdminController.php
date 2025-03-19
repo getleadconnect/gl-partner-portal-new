@@ -72,14 +72,12 @@ public function __construct()
 		$this->admin_email=$ams->email;
 		$this->admin_whatsapp_no=$ams->whatsapp_no;
 	}
-	
 }
 
-
-    public function login()
-    {
-		return view('admin.auth-login');
-    }
+public function login()
+ {
+	return view('admin.auth-login');
+ }
 
 public function check(Request $request){
         //Validate Inputs
@@ -1604,6 +1602,7 @@ public function savePayout(Request $request)
 			}
 			
 			$lcids=explode(',',substr($request->lead_commission_id,1));
+
 			if(!empty($lcids) and count($lcids)==1)		
 			{
 				
