@@ -1,3 +1,14 @@
+
+breakwaterpalace.co.in
+DB_NAME: breakpuw_breakfvm
+DB_USER : breakpuw_bfvm
+DB_PASSWORD :bf20vm25rock
+
+
+119.18.54.125
+
+
+
 @extends('admin.master')
 @section('content')
 <style>

@@ -866,14 +866,14 @@ public function createPartner(Request $request)
 					
                      ->addColumn('action', function($row){
 						
-						if($row->payment_status==1)
+						/*if($row->payment_status==1)
 						{
 						 $btn = '<div class="btn-group">
 							<button type="button" class="btn btn-outline edit_lead" id="'.$row->id.'" data-bs-toggle="modal" data-bs-target="#edit-lead-modal" ><i class="fa fa-pencil"></i></button>';
 						}
 						else
-						{
-							$btn = '<div class="btn-group">
+						{*/
+						$btn = '<div class="btn-group">
 							<button type="button" class="btn btn-outline edit_lead" id="'.$row->id.'" data-bs-toggle="modal" data-bs-target="#edit-lead-modal" ><i class="fa fa-pencil"></i></button>
 							<button type="button" class="btn btn-outline dropdown-toggle"
 							data-bs-toggle="dropdown">
@@ -889,7 +889,8 @@ public function createPartner(Request $request)
 							</li>
 						</ul>
 						</div>';
-						}
+						
+						//}
                       return $btn;
                     })
                       ->rawColumns(['pay_status','mobile','status','action'])
