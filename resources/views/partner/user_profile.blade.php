@@ -112,7 +112,7 @@
 
                 {{-- <div class="panel panel-default">
                         <div class="panel-heading">Website <i class="fa fa-link fa-1x"></i></div>
-                        <div class="panel-body"><a href="https://partner.getlead.co.uk/">GL-PARTNER</a></div>
+                        <div class="panel-body"><a href="https://partner.getleadcrm.com/">GL-PARTNER</a></div>
                       </div> --}}
 
 

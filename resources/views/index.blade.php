@@ -16,7 +16,7 @@
       <section class="header">
          <nav class="navbar navbar-expand-lg navbar-light">
             <div class="container-fluid">
-               <a class="navbar-brand" href="https://partner.getlead.co.uk"><img src="https://partner.getlead.co.uk/frontend/image/Frame.png" alt="logo"></a>
+               <a class="navbar-brand" href="https://partner.getleadcrm.com"><img src="https://partner.getleadcrm.com/frontend/image/Frame.png" alt="logo"></a>
                <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                <span class="navbar-toggler-icon"></span>
                </button>
@@ -61,7 +61,7 @@
                <div class="col-lg-3 rect">
                   <div class="rectangle">
                      <div class="arm-image">
-                        <img src="https://partner.getlead.co.uk/frontend/image/arm-wrestling 1.png" class="arm">
+                        <img src="https://partner.getleadcrm.com/frontend/image/arm-wrestling 1.png" class="arm">
                      </div>
                      <p class="arm-para">Join our <br> partner program</p>
                   </div>
@@ -69,7 +69,7 @@
                <div class="col-lg-3 rect rect_1">
                   <div class="rectangle">
                      <div class="team-image arm-image">
-                        <img src="https://partner.getlead.co.uk/frontend/image/team 1.png" class="team">
+                        <img src="https://partner.getleadcrm.com/frontend/image/team 1.png" class="team">
                      </div>
                      <p class="team-para arm-para">Start selling <br>  behalf of Getlead</p>
                   </div>
@@ -77,7 +77,7 @@
                <div class="col-lg-3 rect rect_2">
                   <div class="rectangle">
                      <div class="growth-image arm-image">
-                        <img src="https://partner.getlead.co.uk/frontend/image/growth 1.png" class="growth">
+                        <img src="https://partner.getleadcrm.com/frontend/image/growth 1.png" class="growth">
                      </div>
                      <p class="growth-para arm-para">Increase your <br> Income </p>
                   </div>
@@ -91,7 +91,7 @@
                <h3 class="register">Register now</h3>
             </div>
             <div class="arrow text-center">
-               <img src="https://partner.getlead.co.uk/frontend/image/bi_arrow-down-circle-fill.png" class="down-arrow">
+               <img src="https://partner.getleadcrm.com/frontend/image/bi_arrow-down-circle-fill.png" class="down-arrow">
             </div>
          </div>
       </section>
@@ -100,7 +100,7 @@
             <div class="row ">
                <div class="col-lg-3"></div>
                <div class="col-lg-5 ml-5">
-                  <img src="https://partner.getlead.co.uk/frontend/image/Group 1.png" class="group1">
+                  <img src="https://partner.getleadcrm.com/frontend/image/Group 1.png" class="group1">
                </div>
             </div>
          </div>
@@ -109,6 +109,7 @@
             <p class="para2">We would be privileged to have you as one of our partners. Join GetLead family today and drive <br> your business forward &amp; increase your revenue. Let's grow together!</p>
          </div>
       </section>
+      
       <section class="section-4">
          <div class="container">
             <div class="col-lg-8 offset-sm-2">

@@ -16,7 +16,7 @@
                 <div class="col-lg-6 col-md-6 col-sm-12 side-col">
                     <div class="kt-login__content">
                         <a class="kt-login__logo" href="#">
-                            <img class="partner-logo" src="https://partner.getlead.co.uk/admin/assets/media/logos/getlead-logo.svg">
+                            <img class="partner-logo" src="https://partner.getleadcrm.com/admin/assets/media/logos/getlead-logo.svg">
                         </a>
                         <h3 class="kt-login__title">Partner with Getlead</h3>
                         <span class="kt-login__desc">

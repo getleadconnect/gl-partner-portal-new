@@ -16,7 +16,7 @@ trait ApiService
   public function sendLeadToCrm($data) 
   {	
 
-	$endpoint = "https://app.getlead.co.uk/api/gl-website-contacts";
+	$endpoint = "https://app.getleadcrm.com/api/gl-website-contacts";
 	$client = new \GuzzleHttp\Client();
 
 		$bcat=BussinessCategory::where('id',$data['bussiness_category_id'])->pluck('bussiness_category_name')->first();
@@ -52,7 +52,7 @@ return $content;
 public function sendPartnerDetailToCrm($data) 
   {	
 
-	$endpoint = "https://app.getlead.co.uk/api/gl-website-contacts";
+	$endpoint = "https://app.getleadcrm.com/api/gl-website-contacts";
 	$client = new \GuzzleHttp\Client();
 
 			$params=[
@@ -77,7 +77,7 @@ return $content;
 /*public function updateLeadStatusFromCrm($data) 
   {	
 
-	$endpoint = "https://app.getlead.co.uk/api/get-lead-status";
+	$endpoint = "https://app.getleadcrm.com/api/get-lead-status";
 	$client = new \GuzzleHttp\Client();
 	
 	//Case Closed
