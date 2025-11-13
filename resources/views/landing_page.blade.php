@@ -1,412 +1,758 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <title>{{ env('SITE_TITLE') }}</title>
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/images/fav.png')}}">
-    <link rel="stylesheet" href="{{asset('landing/styles/landing/css/bootstrap.min.css')}}"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
-        integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-    <link rel="stylesheet" href="{{asset('landing/styles/landing/css/flaticon.css')}}" />
-
-    <link rel="stylesheet" href="{{asset('landing/styles/landing/css/owl.carousel.min.css')}}" />
-    <link rel="stylesheet" href="{{asset('landing/styles/landing/css/owl.theme.css')}}" />
-    <link rel="stylesheet" href="{{asset('landing/styles/landing/css/lightgallery.css')}}" />
-    <link rel="stylesheet" href="{{asset('landing/styles/landing/css/woocommerce.css')}}" />
-   
-    <link rel="stylesheet" href="{{asset('landing/styles/landing/style.css')}}" />
-    <link rel="stylesheet" href="{{asset('landing/styles/landing/resp.css')}}" />
-    <link rel="stylesheet" href="{{asset('landing/styles/landing/css/home.css')}}" />
-    
-    <!-- <link rel="stylesheet" href="css/royal-preload.css" /> -->
-	<style>
-	.ot-button
-	{
-		text-align:center;
-		margin:auto;
-		display:block;
-	}
-	</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getlead Partner Program | Earn Up to 30% Revenue Share</title>
+    <meta name="description" content="Partner with Getlead and earn up to 30% recurring revenue share. Sell India's easy CRM for busy teams and build unlimited income. Join 500+ successful partners today!">
+    <link rel="icon" type="image/png" href="https://www.getleadcrm.com/website/images/fav-icon/icon.png">
+    <link rel="shortcut icon" href="https://www.getleadcrm.com/website/images/fav-icon/icon.png">
+    <link rel="apple-touch-icon" href="https://www.getleadcrm.com/website/images/fav-icon/icon.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{url('landing/new/styles.css')}}">
 </head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
+        <div class="container-lg">
+            <a class="navbar-brand" href="#home">
+                <img src="https://partner.getleadcrm.com/assets/images/logo.svg" alt="Getlead" class="navbar-logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#benefits">Benefits</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#program">Program</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#process">How It Works</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#cta">Get Started</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                    <li class="nav-item ms-2"><a class="btn btn-sm btn-primary" href="https://partner.getleadcrm.com/partner/login">Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-<body class="royal_preloader">
-    <div id="page" class="site">
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+        <div class="container-lg">
+            <div class="row align-items-center min-vh-100">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <div class="hero-content">
+                        <h1 class="display-3 fw-bold mb-4 hero-title">
+                            Partner With Getlead & <span class="text-gradient">Earn Up to 30% Revenue Share</span>
+                        </h1>
+                        <p class="lead text-muted mb-4">
+                            Sell the easy CRM for busy teams and earn generous commissions on every sale. Getlead CRM is the all-in-one solution for sales, marketing, and lead management that your clients will love.
+                        </p>
+                        <div class="d-flex gap-3 flex-wrap">
+                            <a href="https://partner.getleadcrm.com/partner/signup" class="btn btn-primary btn-lg px-4">Start Earning Today</a>
+                            <a href="#program" class="btn btn-outline-primary btn-lg px-4">View Programs</a>
+                        </div>
+                        <div class="hero-stats mt-5">
+                            <div class="stat-item">
+                                <div class="stat-number">30%</div>
+                                <div class="stat-label">Revenue Share</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">50+</div>
+                                <div class="stat-label">Active Partners</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">₹30L+</div>
+                                <div class="stat-label">Commissions Released</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="hero-image">
+                        <img src="https://partner.getleadcrm.com/assets/images/chess-board.svg"
+                             alt="Strategic Partnerships - Getlead"
+                             class="hero-main-image">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
+    <!-- Benefits Section -->
+    <section id="benefits" class="benefits-section py-5">
+        <div class="container-lg">
+            <div class="text-center mb-5">
+                <h2 class="display-4 fw-bold mb-3">Why Partner With Getlead?</h2>
+                <p class="lead text-muted max-w-lg mx-auto">
+                    Everything you need to succeed - from generous commissions to complete sales support
+                </p>
+            </div>
 
-        <header id="site-header" class="site-header header-static"> 
-			<div class="container">
-				<nav class="navbar navbar-expand-lg">
-					<div id="site-logo" class="site-logo">
-						<a href="javascript:;">
-							<img src="assets/images/logo.svg" alt="" class="">
-						</a>
-					</div>
-					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
-						aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-						<i class="fa fa-bars" aria-hidden="true"></i>
-					</button>
-					<div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
-						<div class="navbar-nav">
-							{{-- <a class="nav-item nav-link active" href="#">Home <span
-									class="sr-only">(current)</span></a> --}}
-
-								<a class="nav-link login-btn" href="{{route('partner.login')}}" >Login</a>
-							
-						</div>
-					</div>
-				</nav>
-			</div>
-
-        </header>
-
-        {{-- <header id="site-header" class="site-header header-static">
-            <!-- Main Header start -->
-            <div class="header-desktop">
-                <div class="octf-main-header is-fixed">
-                    <div class="container">
-
-						
-
-
-                        <div class="row">
-                            <div class="col-sm-6 align-self-center">
-                                <div id="site-logo" class="site-logo">
-                                    <a href="#">
-                                        <img src="images/background/logo.svg" alt="Progrisaas" class="">
-                                    </a>
+            <div class="row g-4">
+                <!-- Benefit 1 - Revenue Share -->
+                <div class="col-lg-6">
+                    <div class="benefit-card-modern h-100">
+                        <div class="d-flex align-items-start">
+                            <div class="benefit-icon-large">
+                                <i class="fas fa-percent"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center mb-2">
+                                    <h3 class="benefit-title-new mb-0">Up to 30% Revenue Share</h3>
+                                    <span class="badge-highlight ms-2">Top Tier</span>
+                                </div>
+                                <p class="benefit-desc mb-3">
+                                    Build unlimited recurring income with industry-leading commission rates
+                                </p>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <div class="feature-highlight">
+                                            <i class="fas fa-check-circle text-primary me-2"></i>
+                                            <span><strong>Recurring commissions</strong> on every subscription</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="feature-highlight">
+                                            <i class="fas fa-check-circle text-primary me-2"></i>
+                                            <span><strong>Monthly payouts</strong> directly to your account</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="feature-highlight">
+                                            <i class="fas fa-check-circle text-primary me-2"></i>
+                                            <span><strong>Performance bonuses</strong> for top performers</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                         
-                            <div class="col-sm-6">
-                                <div class="octf-btn-cta justify-content-end">
-                                    
-                                </div>   
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Benefit 2 - Easy to Sell -->
+                <div class="col-lg-6">
+                    <div class="benefit-card-modern h-100">
+                        <div class="d-flex align-items-start">
+                            <div class="benefit-icon-large">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center mb-2">
+                                    <h3 class="benefit-title-new mb-0">Easy to Sell Product</h3>
+                                    <span class="badge-highlight ms-2">Proven</span>
+                                </div>
+                                <p class="benefit-desc mb-3">
+                                    A product that practically sells itself with compelling features and value
+                                </p>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <div class="feature-highlight">
+                                            <i class="fas fa-check-circle text-primary me-2"></i>
+                                            <span><strong>All-in-one solution</strong> - complete CRM platform</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="feature-highlight">
+                                            <i class="fas fa-check-circle text-primary me-2"></i>
+                                            <span><strong>Affordable pricing</strong> that beats competitors</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="feature-highlight">
+                                            <i class="fas fa-check-circle text-primary me-2"></i>
+                                            <span><strong>Free 14-day trial</strong> - let customers try first</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Benefit 3 - Marketing Support -->
+                <div class="col-lg-6">
+                    <div class="benefit-card-modern h-100">
+                        <div class="d-flex align-items-start">
+                            <div class="benefit-icon-large">
+                                <i class="fas fa-bullhorn"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center mb-2">
+                                    <h3 class="benefit-title-new mb-0">Complete Sales Tools</h3>
+                                    <span class="badge-highlight ms-2">Ready</span>
+                                </div>
+                                <p class="benefit-desc mb-3">
+                                    Get everything you need to close deals faster and scale your business
+                                </p>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <div class="feature-highlight">
+                                            <i class="fas fa-check-circle text-primary me-2"></i>
+                                            <span><strong>Marketing collateral</strong> - brochures, presentations, demos</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="feature-highlight">
+                                            <i class="fas fa-check-circle text-primary me-2"></i>
+                                            <span><strong>Sales training</strong> - product certification programs</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="feature-highlight">
+                                            <i class="fas fa-check-circle text-primary me-2"></i>
+                                            <span><strong>Co-marketing support</strong> - joint campaigns & leads</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Benefit 4 - Partner Support -->
+                <div class="col-lg-6">
+                    <div class="benefit-card-modern h-100">
+                        <div class="d-flex align-items-start">
+                            <div class="benefit-icon-large">
+                                <i class="fas fa-headset"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center mb-2">
+                                    <h3 class="benefit-title-new mb-0">Dedicated Support Team</h3>
+                                    <span class="badge-highlight ms-2">24/7</span>
+                                </div>
+                                <p class="benefit-desc mb-3">
+                                    Your success is our priority - get expert help whenever you need it
+                                </p>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <div class="feature-highlight">
+                                            <i class="fas fa-check-circle text-primary me-2"></i>
+                                            <span><strong>Account manager</strong> - dedicated point of contact</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="feature-highlight">
+                                            <i class="fas fa-check-circle text-primary me-2"></i>
+                                            <span><strong>Technical support</strong> - 24/7 assistance for you & clients</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="feature-highlight">
+                                            <i class="fas fa-check-circle text-primary me-2"></i>
+                                            <span><strong>Partner portal</strong> - track leads, deals & commissions</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </header> --}}
-		
+        </div>
+    </section>
 
-        <section class="top-h1">
-            <div class="container">
-                <div class="space-150"></div>
-                <div class="row">
-                    <div class="col-lg-12 text-center">
-                        <h2>Become a Getlead Partner</h2>
-                        <p>Invest in outstanding startups, find investments for your business,<br>involve the best in
-                            your ideas.</p>
-                        <div class="space-10"></div>
-                        <div class="space-5"></div>
-                        <div class="ot-button">
-                            <a href="{{route('partner.home')}}" class="octf-btn octf-btn-main">Let’s Get Started</a>
-                        </div>
-                        <div class="space-70"></div>
-                        <div class="space-5"></div>
-                        <div class="space-2"></div>
-                        <img src="images/background/1.svg" alt="" width="50%">
-                    </div>
-                </div>
-                <div class="space-90"></div>
+    <!-- What You'll Sell Section -->
+    <section class="py-5" style="background: linear-gradient(135deg, rgba(232, 93, 93, 0.03) 0%, rgba(217, 48, 48, 0.03) 100%);">
+        <div class="container-lg">
+            <div class="text-center mb-5">
+                <h2 class="display-4 fw-bold mb-3">What You'll Sell</h2>
+                <p class="lead text-muted">
+                    Getlead CRM - The all-in-one solution that sells itself
+                </p>
             </div>
-        </section>
 
-        <section class="gl-services-section">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-12 text-center">
-                        <div class="ssub-yes">
-                            <div class="ot-heading">
-                                <!-- <span class="ot-heading__sub">Benefits</span> -->
-                                <h2 class="ot-heading__title">Benefits for partners</h2>
+            <div class="row g-4 align-items-center">
+                <div class="col-lg-6">
+                    <h3 class="h2 fw-bold mb-4">Ready, Set, Sell: The Easy CRM for Busy Teams</h3>
+                    <p class="lead text-muted mb-4">
+                        Getlead is the complete CRM solution for sales, marketing, customer service, and lead management.
+                        Your clients will love how easy it is to use!
+                    </p>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-tasks text-primary me-3 mt-1" style="font-size: 1.5rem;"></i>
+                                <div>
+                                    <h5 class="fw-bold mb-1">Lead Management</h5>
+                                    <p class="text-muted mb-0 small">Streamline lead tracking and nurturing</p>
+                                </div>
                             </div>
                         </div>
-                        <div class="space-40"></div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-handshake text-primary me-3 mt-1" style="font-size: 1.5rem;"></i>
+                                <div>
+                                    <h5 class="fw-bold mb-1">Deal Management</h5>
+                                    <p class="text-muted mb-0 small">Close deals faster with pipeline tracking</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-chart-bar text-primary me-3 mt-1" style="font-size: 1.5rem;"></i>
+                                <div>
+                                    <h5 class="fw-bold mb-1">Analytics</h5>
+                                    <p class="text-muted mb-0 small">Turn data into actionable insights</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-mobile-alt text-primary me-3 mt-1" style="font-size: 1.5rem;"></i>
+                                <div>
+                                    <h5 class="fw-bold mb-1">Mobile App</h5>
+                                    <p class="text-muted mb-0 small">Sell on the go with full mobile access</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <a href="https://www.getleadcrm.com" target="_blank" class="btn btn-outline-primary">
+                            <i class="fas fa-external-link-alt me-2"></i>Explore Getlead CRM
+                        </a>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-lg-3 col-md-6 col-sm-12">
-                        <div class="ot-icon-box services-list-icon services-h1">
-                            <div class="ot-icon-box__icon">
-                                <img src="images/background/partners.png" width="60px">
+                <div class="col-lg-6">
+                    <div class="customer-benefits-card">
+                        <h4 class="customer-benefits-title mb-4">
+                            <span class="title-accent">Why Customers</span> Choose Getlead
+                        </h4>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <div class="customer-feature-item">
+                                    <div class="customer-feature-icon">
+                                        <i class="fas fa-mouse-pointer"></i>
+                                    </div>
+                                    <div class="customer-feature-content">
+                                        <h6 class="customer-feature-title">Easy to Use</h6>
+                                        <p class="customer-feature-desc">Intuitive interface that teams love from day one</p>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="space-4"></div>
-                            <div class="ot-icon-box__content">
-                                <h3 class="icon-box-title">Joint marketing and cross-promotion</h3>
-                                <div class="space-3"></div>
-                                <div class="icon-box-des">But I must explain to you how all this mistaken idea of
-                                    denouncing.</div>
+                            <div class="col-12">
+                                <div class="customer-feature-item">
+                                    <div class="customer-feature-icon">
+                                        <i class="fas fa-tag"></i>
+                                    </div>
+                                    <div class="customer-feature-content">
+                                        <h6 class="customer-feature-title">Affordable Pricing</h6>
+                                        <p class="customer-feature-desc">Competitive pricing that fits any budget</p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="space-30 d-lg-none"></div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 col-sm-12">
-                        <div class="ot-icon-box services-list-icon services-h1">
-                            <div class="ot-icon-box__icon">
-                                <img src="images/background/brand-image.png" width="60px">
+                            <div class="col-12">
+                                <div class="customer-feature-item">
+                                    <div class="customer-feature-icon">
+                                        <i class="fas fa-gift"></i>
+                                    </div>
+                                    <div class="customer-feature-content">
+                                        <h6 class="customer-feature-title">Free 14-Day Trial</h6>
+                                        <p class="customer-feature-desc">Let customers try before they buy</p>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="space-4"></div>
-                            <div class="ot-icon-box__content">
-                                <h3 class="icon-box-title">Brand recognition and exposure with us</h3>
-                                <div class="space-3"></div>
-                                <div class="icon-box-des">Pleasure and praising pain was born and I will give you a
-                                    complete.</div>
+                            <div class="col-12">
+                                <div class="customer-feature-item">
+                                    <div class="customer-feature-icon">
+                                        <i class="fas fa-rocket"></i>
+                                    </div>
+                                    <div class="customer-feature-content">
+                                        <h6 class="customer-feature-title">Quick Setup</h6>
+                                        <p class="customer-feature-desc">Get up and running in minutes, not days</p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="space-30 d-lg-none"></div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 col-sm-12">
-                        <div class="ot-icon-box services-list-icon services-h1">
-                            <div class="ot-icon-box__icon">
-                                <img src="images/background/price-tag.png" width="60px">
-                            </div>
-                            <div class="space-4"></div>
-                            <div class="ot-icon-box__content">
-                                <h3 class="icon-box-title">Exclusive promotions and discounts</h3>
-                                <div class="space-3"></div>
-                                <div class="icon-box-des">Account of the system, and expound actual teachings of the
-                                    great explorer.</div>
-                            </div>
-                        </div>
-                        <div class="space-30 d-md-none"></div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 col-sm-12">
-                        <div class="ot-icon-box services-list-icon services-h1 pr-4">
-                            <div class="ot-icon-box__icon">
-                                <img src="images/background/sales.png" width="60px">
-                            </div>
-                            <div class="space-4"></div>
-                            <div class="ot-icon-box__content">
-                                <h3 class="icon-box-title pr-lg-5">Increase in sales and revenue</h3>
-                                <div class="space-3"></div>
-                                <div class="icon-box-des">To take a trivial example, which of us ever undertakes
-                                    laborious physical.</div>
+                            <div class="col-12">
+                                <div class="customer-feature-item">
+                                    <div class="customer-feature-icon">
+                                        <i class="fas fa-headset"></i>
+                                    </div>
+                                    <div class="customer-feature-content">
+                                        <h6 class="customer-feature-title">24/7 Support</h6>
+                                        <p class="customer-feature-desc">Always available to help your customers succeed</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="space-50"></div>
-
-
             </div>
-        </section>  
+        </div>
+    </section>
 
-
-
-        <section class="offer-h1" style="margin-top: 50px;">
-            <div class="container">
-
-                <div class="row">
-                    <div class="col-lg-12 text-center">
-                        <div class="ssub-yes">
-                            <div class="ot-heading">
-                                <!-- <span class="ot-heading__sub">What we offer</span> -->
-                                <h2 class="ot-heading__title">Explore our partnership programs </h2>
-                            </div>
-                        </div>
-                        <div class="space-30"></div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 offset-md-3 ">
-                        <div class="box-offer offer-bg-1">
-                            <h4 style="text-align:center;">Channel partners</h4>
-                            <p class="mb-0">Companies that oversee the entire customer experience, from marketing and
-                                sales to solution delivery and implementation.</p>
-                            <div class="space-10"></div>
-                            <div class="space-5"></div>
-                            <ul class="none-style list-s1 mb-0">
-                                <li>
-                                    <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 11">
-                                            <path
-                                                d="M13.6554 2.15622C14.1149 1.66307 14.1149 0.863266 13.6554 0.369866C13.1962 -0.123289 12.4514 -0.123289 11.9919 0.369866L4.93262 7.95072L2.00788 4.80998C1.54864 4.31658 0.80384 4.31658 0.344601 4.80998C-0.114867 5.30313 -0.114867 6.10294 0.344601 6.59609L4.10098 10.6301C4.56045 11.1233 5.30502 11.1233 5.76449 10.6301L13.6554 2.15622Z">
-                                            </path>
-                                        </svg></span>
-                                    <span>Lead generation and co-marketing opportunities</span>
-                                </li>
-                                <li>
-                                    <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 11">
-                                            <path
-                                                d="M13.6554 2.15622C14.1149 1.66307 14.1149 0.863266 13.6554 0.369866C13.1962 -0.123289 12.4514 -0.123289 11.9919 0.369866L4.93262 7.95072L2.00788 4.80998C1.54864 4.31658 0.80384 4.31658 0.344601 4.80998C-0.114867 5.30313 -0.114867 6.10294 0.344601 6.59609L4.10098 10.6301C4.56045 11.1233 5.30502 11.1233 5.76449 10.6301L13.6554 2.15622Z">
-                                            </path>
-                                        </svg></span>
-                                    <span>Discounts or incentives for volume purchases</span>
-                                </li>
-                                <li>
-                                    <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 11">
-                                            <path
-                                                d="M13.6554 2.15622C14.1149 1.66307 14.1149 0.863266 13.6554 0.369866C13.1962 -0.123289 12.4514 -0.123289 11.9919 0.369866L4.93262 7.95072L2.00788 4.80998C1.54864 4.31658 0.80384 4.31658 0.344601 4.80998C-0.114867 5.30313 -0.114867 6.10294 0.344601 6.59609L4.10098 10.6301C4.56045 11.1233 5.30502 11.1233 5.76449 10.6301L13.6554 2.15622Z">
-                                            </path>
-                                        </svg></span>
-                                    <span>Recognition or rewards for sales performance</span>
-                                </li>
-                                <li>
-                                    <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 11">
-                                            <path
-                                                d="M13.6554 2.15622C14.1149 1.66307 14.1149 0.863266 13.6554 0.369866C13.1962 -0.123289 12.4514 -0.123289 11.9919 0.369866L4.93262 7.95072L2.00788 4.80998C1.54864 4.31658 0.80384 4.31658 0.344601 4.80998C-0.114867 5.30313 -0.114867 6.10294 0.344601 6.59609L4.10098 10.6301C4.56045 11.1233 5.30502 11.1233 5.76449 10.6301L13.6554 2.15622Z">
-                                            </path>
-                                        </svg></span>
-                                    <span>Partner portal to access resources & track sales </span>
-                                </li>
-                            </ul>
-                            <div class="space-40"></div>
-                            <div class="ot-button" >
-                                <a href="{{route('partner.home')}}" class="octf-btn octf-btn-second color-third">Become a Channel
-                                    partners</a>
-                            </div>
-                            <div class="space-30"></div>
-                            <div class="space-5"></div>
-                            <div class="space-2"></div>
-                        </div>
-                    </div>
-					
-					{{-- <div class="col-lg-6">
-                        <div class="box-offer offer-bg-2">
-                            <h4>Referral partners</h4>
-                            <p class="mb-0">Advocates and consultants with extensive connections to potential
-                                clients.</p>
-                            <div class="space-10"></div>
-                            <div class="space-5"></div>
-                            <ul class="none-style list-s1 mb-0">
-                                <li>
-                                    <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 11">
-                                            <path
-                                                d="M13.6554 2.15622C14.1149 1.66307 14.1149 0.863266 13.6554 0.369866C13.1962 -0.123289 12.4514 -0.123289 11.9919 0.369866L4.93262 7.95072L2.00788 4.80998C1.54864 4.31658 0.80384 4.31658 0.344601 4.80998C-0.114867 5.30313 -0.114867 6.10294 0.344601 6.59609L4.10098 10.6301C4.56045 11.1233 5.30502 11.1233 5.76449 10.6301L13.6554 2.15622Z">
-                                            </path>
-                                        </svg></span>
-                                    <span>Increased revenue</span>
-                                </li>
-                                <li>
-                                    <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 11">
-                                            <path
-                                                d="M13.6554 2.15622C14.1149 1.66307 14.1149 0.863266 13.6554 0.369866C13.1962 -0.123289 12.4514 -0.123289 11.9919 0.369866L4.93262 7.95072L2.00788 4.80998C1.54864 4.31658 0.80384 4.31658 0.344601 4.80998C-0.114867 5.30313 -0.114867 6.10294 0.344601 6.59609L4.10098 10.6301C4.56045 11.1233 5.30502 11.1233 5.76449 10.6301L13.6554 2.15622Z">
-                                            </path>
-                                        </svg></span>
-                                    <span>New customers and markets </span>
-                                </li>
-                                <li>
-                                    <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 11">
-                                            <path
-                                                d="M13.6554 2.15622C14.1149 1.66307 14.1149 0.863266 13.6554 0.369866C13.1962 -0.123289 12.4514 -0.123289 11.9919 0.369866L4.93262 7.95072L2.00788 4.80998C1.54864 4.31658 0.80384 4.31658 0.344601 4.80998C-0.114867 5.30313 -0.114867 6.10294 0.344601 6.59609L4.10098 10.6301C4.56045 11.1233 5.30502 11.1233 5.76449 10.6301L13.6554 2.15622Z">
-                                            </path>
-                                        </svg></span>
-                                    <span>Expanded product/service offerings</span>
-                                </li>
-                                <li>
-                                    <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 11">
-                                            <path
-                                                d="M13.6554 2.15622C14.1149 1.66307 14.1149 0.863266 13.6554 0.369866C13.1962 -0.123289 12.4514 -0.123289 11.9919 0.369866L4.93262 7.95072L2.00788 4.80998C1.54864 4.31658 0.80384 4.31658 0.344601 4.80998C-0.114867 5.30313 -0.114867 6.10294 0.344601 6.59609L4.10098 10.6301C4.56045 11.1233 5.30502 11.1233 5.76449 10.6301L13.6554 2.15622Z">
-                                            </path>
-                                        </svg></span>
-                                    <span>Trust and credibility</span>
-                                </li>
-
-                                <li>
-                                    <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 11">
-                                            <path
-                                                d="M13.6554 2.15622C14.1149 1.66307 14.1149 0.863266 13.6554 0.369866C13.1962 -0.123289 12.4514 -0.123289 11.9919 0.369866L4.93262 7.95072L2.00788 4.80998C1.54864 4.31658 0.80384 4.31658 0.344601 4.80998C-0.114867 5.30313 -0.114867 6.10294 0.344601 6.59609L4.10098 10.6301C4.56045 11.1233 5.30502 11.1233 5.76449 10.6301L13.6554 2.15622Z">
-                                            </path>
-                                        </svg></span>
-                                    <span>Networking opportunities.</span>
-                                </li>
-
-
-                            </ul>
-                            <div class="space-40"></div>
-                            <div class="ot-button">
-                                <a href="{{route('agent.home')}}" class="octf-btn octf-btn-main">Become a Referral Partner</a>
-                            </div>
-                            <div class="space-30"></div>
-                        </div>
-                    </div> --}}
-					
-					
-                </div>
-                <div class="space-100"></div>
+    <!-- Partnership Program Section -->
+    <section id="program" class="program-section py-5 bg-light">
+        <div class="container-lg">
+            <div class="text-center mb-5">
+                <h2 class="display-4 fw-bold mb-3">Choose Your Partnership Model</h2>
+                <p class="lead text-muted">
+                    Both programs offer up to 30% revenue share - pick the one that fits your business
+                </p>
             </div>
-        </section>
 
-        <footer id="site-footer" class="site-footer">
-            <div class="container">
-
-                <div class="space-40"></div>
-
-                <div class="row">
-                    <div class="col-lg-12 col-md-12 mb-3 mb-md-0 align-self-center">
-                        <p class="copyright text-center">Copyright © 2023 Getlead Analytics Pvt. Ltd. All Rights
-                            Reserved.</p>
+            <div class="row g-4 mb-5">
+                <!-- Implementation Partner -->
+                <div class="col-lg-6">
+                    <div class="program-card">
+                        <div class="program-badge">Most Popular</div>
+                        <h3 class="program-title mb-3">Implementation Partner</h3>
+                        <div class="mb-4">
+                            <div class="h2 text-primary fw-bold mb-1">Up to 30% Revenue Share</div>
+                            <p class="text-muted">Recurring monthly commissions on all sales</p>
+                        </div>
+                        <p class="text-muted mb-4">
+                            Become a trusted Getlead reseller. Sell directly to customers, manage relationships, and build recurring revenue.
+                        </p>
+                        <div class="program-features">
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle text-primary"></i>
+                                <span><strong>Up to 30% revenue share</strong> with recurring commissions</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle text-primary"></i>
+                                <span>Complete sales & marketing collateral</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle text-primary"></i>
+                                <span>Partner portal & tracking dashboard</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle text-primary"></i>
+                                <span>Product training & certification</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle text-primary"></i>
+                                <span>Co-branded marketing campaigns</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle text-primary"></i>
+                                <span>Priority technical support</span>
+                            </div>
+                        </div>
                     </div>
-                    <!--  <div class="col-lg-5 col-md-4 text-md-right">
-                   <ul class="ft-menu">
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Use</a></li>
+                </div>
+
+                <!-- Referral Partner -->
+                <div class="col-lg-6">
+                    <div class="program-card">
+                        <h3 class="program-title mb-3">Referral Partner</h3>
+                        <div class="mb-4">
+                            <div class="h2 text-primary fw-bold mb-1">Up to 20% Commission</div>
+                            <p class="text-muted">Per successful referral + recurring income</p>
+                        </div>
+                        <p class="text-muted mb-4">
+                            Simply refer customers to Getlead and earn. No sales responsibility, no support required - just refer and earn!
+                        </p>
+                        <div class="program-features">
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle text-primary"></i>
+                                <span><strong>20% commission per sale</strong></span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle text-primary"></i>
+                                <span>Recurring monthly commissions</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle text-primary"></i>
+                                <span>Ready-to-use marketing materials</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle text-primary"></i>
+                                <span>Real-time commission tracking</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle text-primary"></i>
+                                <span>Monthly payouts via bank transfer</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check-circle text-primary"></i>
+                                <span>No sales or support responsibility</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="process" class="process-section py-5">
+        <div class="container-lg">
+            <div class="text-center mb-5">
+                <h2 class="display-4 fw-bold mb-3">Start Earning in 4 Simple Steps</h2>
+                <p class="lead text-muted">
+                    From signup to your first commission - it's quick and easy to get started
+                </p>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    <div class="process-timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-number">1</div>
+                            <div class="timeline-content">
+                                <h4>Sign Up</h4>
+                                <p>Complete our simple partner registration. Get approved within 48 hours and receive your unique partner credentials.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-number">2</div>
+                            <div class="timeline-content">
+                                <h4>Get Training</h4>
+                                <p>Access product training, sales materials, and demo resources. Learn everything you need to confidently sell Getlead CRM.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-number">3</div>
+                            <div class="timeline-content">
+                                <h4>Sell & Earn</h4>
+                                <p>Start promoting Getlead to your network. Close deals and earn up to 30% recurring revenue on every subscription.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-number">4</div>
+                            <div class="timeline-content">
+                                <h4>Scale Your Income</h4>
+                                <p>Build recurring revenue streams. Track performance in real-time and receive monthly payouts directly to your account.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="cta" class="cta-section">
+        <div class="container-lg">
+            <div class="cta-content text-center">
+                <h2 class="display-3 fw-bold mb-4">Ready to Start Earning?</h2>
+                <p class="lead mb-4 text-light">
+                    Join 50+ successful partners earning recurring income with Getlead. Sign up today and start building your revenue stream!
+                </p>
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                    <a href="https://partner.getleadcrm.com/partner/signup" class="btn btn-light btn-lg px-5">
+                        <i class="fas fa-rocket me-2"></i>Become a Partner Now
+                    </a>
+                    <a href="https://partner.getleadcrm.com/partner/login" class="btn btn-outline-light btn-lg px-5">Partner Login</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section py-5">
+        <div class="container-lg">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <h2 class="display-4 fw-bold mb-4">Have Questions?</h2>
+                    <p class="lead text-muted mb-4">
+                        Our partnership team is here to help you succeed. Get in touch with any questions about our program.
+                    </p>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <h5>Email</h5>
+                                <p><a href="mailto:partner@getleadcrm.com">partner@getleadcrm.com</a></p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <h5>Phone</h5>
+                                <p><a href="tel:+918453555000">+91 8453555000</a></p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <h5>Address</h5>
+                                <p>Unit-2, Upper Basement, Sahya Building<br>
+                                Govt. CyberPark, Kozhikode<br>
+                                Kerala 673016, India</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <form class="contact-form" id="contactForm">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="company" class="form-label">Company Name</label>
+                            <input type="text" class="form-control" id="company" name="company" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea class="form-control" id="message" name="message" rows="4"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container-lg">
+            <!-- Main Footer Content -->
+            <div class="row g-4 mb-5">
+                <!-- Brand Section -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="footer-brand mb-4">
+                        <img src="https://getleadcrm.com/website/images/logo/logo.svg" alt="Getlead" class="footer-logo mb-3">
+                        <p class="footer-description">
+                            Empowering businesses through strategic partnerships. Join our thriving partner ecosystem and unlock unlimited growth potential.
+                        </p>
+                    </div>
+                    <div class="footer-contact">
+                        <div class="contact-item-footer mb-2">
+                            <i class="fas fa-phone-alt me-2"></i>
+                            <a href="tel:+918453555000">+91 8453555000</a>
+                        </div>
+                        <div class="contact-item-footer mb-2">
+                            <i class="fas fa-envelope me-2"></i>
+                            <a href="mailto:partner@getleadcrm.com">partner@getleadcrm.com</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Partner Resources -->
+                <div class="col-lg-2 col-md-6 col-6">
+                    <h6 class="footer-heading">Partner Program</h6>
+                    <ul class="footer-links">
+                        <li><a href="#benefits">Benefits</a></li>
+                        <li><a href="#program">Programs</a></li>
+                        <li><a href="#process">How It Works</a></li>
+                        <li><a href="https://partner.getleadcrm.com/partner/signup">Sign Up</a></li>
+                        <li><a href="https://partner.getleadcrm.com/partner/login">Partner Login</a></li>
                     </ul>
-                </div>-->
                 </div>
-                <div class="space-40"></div>
+
+                <!-- Product Links -->
+                <div class="col-lg-2 col-md-6 col-6">
+                    <h6 class="footer-heading">Product</h6>
+                    <ul class="footer-links">
+                        <li><a href="https://www.getleadcrm.com/#features">Features</a></li>
+                        <li><a href="https://www.getleadcrm.com/pricing">Pricing</a></li>
+                        <li><a href="https://www.getleadcrm.com/integrations">Integrations</a></li>
+                        <li><a href="https://www.getleadcrm.com/crm-mobile-app">Mobile App</a></li>
+                        <li><a href="https://www.getleadcrm.com/#demo">Get Demo</a></li>
+                    </ul>
+                </div>
+
+                <!-- Company Links -->
+                <div class="col-lg-2 col-md-6 col-6">
+                    <h6 class="footer-heading">Company</h6>
+                    <ul class="footer-links">
+                        <li><a href="https://www.getleadcrm.com/about-us">About Us</a></li>
+                        <li><a href="https://www.getleadcrm.com/blog">Blog</a></li>
+                        <li><a href="https://www.getleadcrm.com/careers">Careers</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="https://www.getleadcrm.com/contact-us">Support</a></li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter & Social -->
+                <div class="col-lg-2 col-md-6 col-6">
+                    <h6 class="footer-heading">Stay Connected</h6>
+                    <p class="footer-social-text">Follow us on social media for updates and insights.</p>
+                    <div class="social-links mb-3">
+                        <a href="https://www.facebook.com/getleadcrm" target="_blank" rel="noopener" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/getleadcrm" target="_blank" rel="noopener" title="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.youtube.com/getleadcrm" target="_blank" rel="noopener" title="YouTube"><i class="fab fa-youtube"></i></a>
+                        <a href="https://twitter.com/getleadcrm" target="_blank" rel="noopener" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.linkedin.com/company/getleadcrm" target="_blank" rel="noopener" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
             </div>
-        </footer><!-- #site-footer -->
-    </div><!-- #page -->
-    <a id="back-to-top" href="#" class="show"><i class="fa fa-arrow-up" aria-hidden="true"></i></a>
-    <!-- jQuery -->
 
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <div class="row align-items-center">
+                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                        <p class="footer-copyright mb-0">
+                            Design with love &copy; Getlead Analytics 2025. All rights reserved.
+                        </p>
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        <ul class="footer-legal">
+                            <li><a href="https://www.getleadcrm.com/privacy-policy">Privacy Policy</a></li>
+                            <li><a href="https://www.getleadcrm.com/terms-and-conditions">Terms of Service</a></li>
+                            <li><a href="https://www.getleadcrm.com/cookies">Cookie Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
 
+    <!-- Partner Modal -->
+    <div class="modal fade" id="partnerModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title">Become a Getlead Partner</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="partnerForm">
+                        <div class="mb-3">
+                            <label for="pname" class="form-label">Your Name</label>
+                            <input type="text" class="form-control" id="pname" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="pemail" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="pemail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="pcompany" class="form-label">Company Name</label>
+                            <input type="text" class="form-control" id="pcompany" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="pprogram" class="form-label">Partnership Type</label>
+                            <select class="form-select" id="pprogram" required>
+                                <option value="">Select a program</option>
+                                <option value="channel">Channel Partner</option>
+                                <option value="affiliate">Affiliate Partner</option>
+                                <option value="both">Both</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="terms" required>
+                                <label class="form-check-label" for="terms">
+                                    I agree to the Partner Terms & Conditions
+                                </label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100">Submit Application</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <!-- WhatsApp Button (Fixed) -->
+    <a href="https://wa.me/918453555000?text=Hi%20Getlead%2C%20I%27m%20interested%20in%20your%20partner%20program!"
+       target="_blank"
+       rel="noopener noreferrer"
+       class="whatsapp-btn"
+       title="Chat with us on WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
-    <script src="{{ asset('landing/scripts/landing/js/jquery.min.js') }}"></script>
-	
-    <script src="{{ asset('landing/scripts/landing/js/lightgallery-all.min.js') }}"></script>
-    <script src="{{ asset('landing/scripts/landing/js/jquery.isotope.min.js') }}"></script>
-    <script src="{{ asset('landing/scripts/landing/js/owl.carousel.min.js') }}"></script>
-   <script src="{{ asset('landing/scripts/landing/js/easypiechart.min.js') }}"></script>
-    <script src="{{ asset('landing/scripts/landing/js/jquery.countdown.min.js') }}"></script>
-   <script src="{{ asset('landing/scripts/landing/js/scripts.js') }}"></script>
-   <script src="{{ asset('landing/scripts/landing/js/contact.js') }}"></script>
-    
-    <!-- <script src="js/royal_preloader.min.js"></script>
-    <script>
-        window.jQuery = window.$ = jQuery;
-        (function($) {
-            "use strict";
-            //Preloader
-            Royal_Preloader.config({
-                mode: 'logo',
-                logo: 'images/logo.svg',
-                logo_size: [160, 75],
-                showProgress: true,
-                showPercentage: true,
-                text_colour: '#000000',
-                background: '#ffffff'
-            });
-        })(jQuery);
-    </script>  -->
-
-
-
-	<script>
-		$(window).scroll(function () {
-    if ($(this).scrollTop() > 50) {
-        $('.site-header').addClass("fixed");
-    } else {
-        $('.site-header').removeClass("fixed");
-    }
-    if ($(this).scrollTop() < 49) {
-        $('.site-header').removeClass("fixed");
-    }
-});
-			
-		</script>
-
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{url('landing/new/script.js')}}"></script>
 </body>
-
 </html>
