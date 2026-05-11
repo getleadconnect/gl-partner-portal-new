@@ -66,7 +66,7 @@
 						
                         <div class="card-body">
 
-						
+						<div class="table-responsive">
 							<!--<table id="partner-table" class="table table-striped table-centered align-middle table-nowrap mb-0" style="width:100%;">-->
                                 <table id="partner-table" class="table table-striped table-hover table-nowrap mb-0" style="width:100% !important;">
                                     <thead>
@@ -87,6 +87,7 @@
                                    
                                     </tbody>
                                 </table>
+							</div>
                             </div>
                        </div>
                 </div>

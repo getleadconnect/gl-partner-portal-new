@@ -157,7 +157,7 @@ public function check(Request $request){
 			{
 			 	$lead=Lead::where('partner_id',$q->id)->latest()->first();
 					if(!empty($lead))
-						$q['lead_activity_at']=Carbon::parse($lead->created_at)->format('Y-m-d h:i A');
+						$q['lead_activity_at']=Carbon::parse($lead->created_at)->diffForHumans();
 					else
 						$q['lead_activity_at']="--";
 					return $q;
