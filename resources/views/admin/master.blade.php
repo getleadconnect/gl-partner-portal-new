@@ -223,7 +223,13 @@
                     </a>
                 </li>
                 
-
+                <li>
+                    <a href="{{ route('admin.partners-activities')}}">
+                        <i class="bx bx-notepad icon nav-icon"></i>
+                        <span class="menu-item" data-key="t-api">Partners Activities</span>
+                    </a>
+                </li>
+                
                 <li>
                     <a href="{{ route('admin.news')}}" >
                         <i class="bx bx-file icon nav-icon"></i>
@@ -265,6 +271,10 @@
                         <span class="menu-item" data-key="t-notifications">About Program</span>
                     </a>
                 </li>
+                
+                
+                
+                
 
 				<li>
                     <a href="{{ route('admin.settings')}}">

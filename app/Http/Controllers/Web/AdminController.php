@@ -16,6 +16,7 @@ use GlPackage\NotificationManager\Notifications\TelegramNotification;
 
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\partnerExport;
+use App\Exports\partnerActivityExport;
 use App\Exports\leadsExport;
 
 use DB; 
@@ -540,6 +541,117 @@ public function createPartner(Request $request)
 
     }
 		
+
+	// PARTNER ACTIVITIES REPORT ----------------------------------------------------------------
+
+	public function partnersActivities()
+    {
+	    $agents = Agent::pluck('name','id');
+        $partner_count = Partner::all()->count();
+		$countries = CountryState::getCountries();
+        return view('admin.partners_activities',compact('agents','partner_count','countries')); 
+    }
+	
+	
+	public function getPartnersActivities(Request $request)
+    {   
+        $agents = Agent::pluck('name','id');
+		
+		$status=$request->searchStatus;
+		
+		$data = Partner::select('partners.*')
+				->where('status',1)
+				->orderBy('id','DESC')->get()->map(function($q)
+				{
+					$lead=Lead::where('partner_id',$q->id)->latest()->first();
+					if(!empty($lead))
+					{
+						$q['lead_name']=$lead->name;
+						$q['lead_created_at']=Carbon::parse($lead->created_at)->format('Y-m-d h:i A');
+						$q['lead_company']=$lead->company_name;
+						$q['lead_status']=$lead->lead_status;
+					}
+					else
+					{
+						$q['lead_name']="--";
+						$q['lead_created_at']="--";
+						$q['lead_company']="--";
+						$q['lead_status']="--";
+					}
+					return $q;
+				})->sortByDesc('lead_created_at')
+    			->values();
+
+
+            return Datatables::of($data)
+                    ->addIndexColumn()
+
+					->addColumn('partnerId', function($row)
+					{
+						return $row->unique_id;
+                    })
+					->addColumn('name', function($row)
+					{
+						$name = '<a class="view-partner-details" href="javascript:;" id="'.$row->id.'">'.Str::upper($row->name).'</a>';
+
+						return $name;
+                    })
+					
+					->addColumn('mobile', function($row)
+					{
+						return ($row->country_code?'+'.$row->country_code:'').$row->mobile;
+                    })
+
+					->addColumn('commission_per', function($row)
+					{
+						return $row->commission_percentage.'/'.$row->renewal_comm_percentage;
+                    })
+
+					->editColumn('lead_status', function($row)
+					{
+						if($row->lead_status=="Got Business")
+							$st="<span class='partner-active'>".$row->lead_status."</span>";
+						else if($row->lead_status=="New")
+							$st="<span class='partner-new-status'>".$row->lead_status."</span>";
+						else
+							$st=$row->lead_status;
+						return $st;
+                    })
+					
+					->addColumn('status', function($row)
+					{
+						if($row->status==1)
+						return '<span class="partner-active">Active</span>';	
+                    })
+					
+					->addColumn('action', function($row)
+					{
+			
+						$action= '<div class="fs-5 ms-auto dropdown">
+					 		   <div class="dropdown-toggle cursor-pointer" data-bs-toggle="dropdown"><i class="fa fa-ellipsis-v"></i></div>
+								<ul class="dropdown-menu">
+								<li>
+								  <a class="dropdown-item dropdown-item-size edit-partner" href="javascript:;"  id="'.$row->id.'" data-bs-toggle="modal" data-bs-target="#edit-partner-modal">
+								  <i class="fa fa-edit"></i>&nbsp;Edit</a> </li>
+								  <li>
+								  <a class="dropdown-item dropdown-item-size set-commission" href="javascript:;"  id="'.$row->id.'" data-commission="'.$row->commission_percentage.'" data-renewal="'.$row->renewal_comm_percentage.'" data-bs-toggle="modal" data-bs-target="#set-commission-modal" >
+								  <i class="fa fa-money"></i>&nbsp;Set Commission(%)</a> </li>
+								  
+								  <li>
+								  <a class="dropdown-item dropdown-item-size confirm_deletion" href="javascript:;" id="'.$row->id.'">
+								  <i class="fa fa-trash"></i>&nbsp;Delete</a> </li>';
+								  
+								 '</div>';
+					return $action;
+					})
+
+                ->rawColumns(['name','agent_name','action','status','lead_status'])
+                ->make(true);
+    }
+	
+
+
+
 
     public function assignAgent(Request $request)
     {
@@ -2423,7 +2535,12 @@ public function exportPartnerList($status)
 	{
         return Excel::download(new partnerExport($status), 'partner_list'.'_'.date('Y-m-d').'.'.'xlsx');
     } 
-   
+
+public function exportPartnersActivity()
+	{
+        return Excel::download(new partnerActivityExport(), 'partners_activity_list'.'_'.date('Y-m-d').'.'.'xlsx');
+    } 
+
  public function exportLeadList($status,$partner,$pay_status)
 	{
         return Excel::download(new leadsExport($status,$partner,$pay_status), 'leads_list'.'_'.date('Y-m-d').'.'.'xlsx');

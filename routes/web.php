@@ -214,6 +214,13 @@ Route::prefix('admin')->name('admin.')->group(function(){
 			Route::get('got-business-partner-unpaid-leads/{id}', 'gotBusinessPartnerUnpaidLeads')->name('got-business-partner-unpaid-leads');
 			Route::get('view-partner-payment-history/{id}','viewPartnerPaymentHistory')->name('view-partner-payment-history');
 			
+
+            //partners activites report
+            Route::get('partners-activities','partnersActivities')->name('partners-activities');
+            Route::get('view-partners-activities','getPartnersActivities')->name('view-partners-activities');
+            Route::get('/export-partners-activity', 'exportPartnersActivity')->name('export-partners-activity');
+
+
 		});
 		
 		Route::controller(WhatsappController::class)->group(function()
