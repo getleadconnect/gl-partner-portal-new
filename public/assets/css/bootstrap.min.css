@@ -12925,7 +12925,7 @@ fieldset:disabled .btn {
 }
 :root [data-sidebar="dark"],
 [data-bs-theme="light"] [data-sidebar="dark"] {
-  --bs-sidebar-dark-bg: #192f4c; /* #120a1f;*/
+  --bs-sidebar-dark-bg: #11233b; /* #120a1f;*/
   --bs-sidebar-dark-menu-item-color: #d5d8df; /*#a8b0c5;*/
   --bs-sidebar-dark-menu-sub-item-color: #a8b0c5;
   --bs-sidebar-dark-menu-item-icon-color: #a8b0c5;
