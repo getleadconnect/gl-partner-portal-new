@@ -168,11 +168,17 @@
 				<div class="form-group">
 				<div class="row">
 				
-				<div class="col-lg-4 col-xl-4 col-xxl-4">
+				<div class="col-lg-3 col-xl-3 col-xxl-3">
 					<label for="pin_code" class="form-label">Commission.(%)<span class="required">*</span></label>
 					<input type="number" class="form-control" name="comm_percentage" id="comm_percentage" required>
 				</div>
-				<div class="col-lg-8 col-xl-8 col-xxl-8">
+
+				<div class="col-lg-3 col-xl-3 col-xxl-3">
+					<label for="pin_code" class="form-label">Renewal Com(%)<span class="required">*</span></label>
+					<input type="number" class="form-control" name="renewal_comm_percentage" id="reanewal_comm_percentage" required>
+				</div>
+				
+				<div class="col-lg-6 col-xl-6 col-xxl-6">
 					<label for="password" class="form-label"><b>Password<span class="required">*</span></b></label>
 					<input type="text" class="form-control" name="password" id="password" required>
 				</div>

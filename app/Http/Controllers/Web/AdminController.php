@@ -291,6 +291,7 @@ public function createPartner(Request $request)
 					'password'=>\Hash::make($request->password),
 					'photo'=>null,
 					'commission_percentage'=>$request->comm_percentage,
+					'renewal_comm_percentage'=>$request->renewal_comm_percentage,
 					'bank_name'=>$request->bank_name,
 					'ifsc'=>$request->ifsc_code,
 					'branch'=>$request->branch,
@@ -443,6 +444,7 @@ public function createPartner(Request $request)
         $partner->company_name = $request->company_name_edit;
         $partner->email = $request->email_edit;
 		$partner->commission_percentage = $request->comm_percentage_edit;
+		$partner->renewal_comm_percentage = $request->renewal_comm_percentage_edit;
         $partner->website = $request->website_edit;
         $partner->country = $request->country_edit;
 		$partner->country_name = $request->country_name_edit;

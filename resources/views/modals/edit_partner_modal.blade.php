@@ -15,16 +15,21 @@
 			<input type="email" class="form-control disabled" name="email_edit" id="email_edit" value="{{$part->email}}" required readonly>
 		</div>
 
-		<div class="form-group">
-		<div class="row">
-		<div class="col-lg-8 col-xl-8 col-xxl-8">
+		<div class="form-group mt-3">
 			<label for="mobile" class="form-label">Mobile<span class="required">*</span></label>
 			<input type="hidden" class="form-control" name="country_code_edit" id="country_code_edit" value="{{$part->country_code}}" required>
 			<input type="tel" class="form-control disabled" name="mobile_edit" id="mobile_edit" value="{{'+'.$part->country_code.$part->mobile }}" minlength=6 maxlength=15 required readonly>
 		</div>
-		<div class="col-lg-4 col-xl-4 col-xxl-4">
+
+		<div class="form-group">
+		<div class="row">
+		<div class="col-lg-6 col-xl-6 col-xxl-6">
 			<label for="comm_percentage" class="form-label">Commission.(%)</label>
 			<input type="number" class="form-control" name="comm_percentage_edit" id="comm_percentage_edit" value="{{$part->commission_percentage}}" required>
+		</div>
+		<div class="col-lg-6 col-xl-6 col-xxl-6">
+			<label for="renewal_comm_percentage" class="form-label">Renewal Comm.(%)</label>
+			<input type="number" class="form-control" name="renewal_comm_percentage_edit" id="renewal_comm_percentage_edit" value="{{$part->renewal_comm_percentage}}" required>
 		</div>
 		</div>
 		</div>
