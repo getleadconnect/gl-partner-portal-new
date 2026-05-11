@@ -152,7 +152,7 @@ public function check(Request $request){
 			->leftJoin('agents','agents.id','partners.agent_id')
 			->where(function($q)use($status)
             {
-        	  ($status!="") ? $dat->where('status',$status)->orWhere('status',null):'';
+        	  ($status!="") ? $q->where('status',$status)->orWhere('status',null):'';
 			})->latest()->get()->map(function($q)
 			{
 			 	$lead=Lead::where('partner_id',$q->id)->latest()->first();

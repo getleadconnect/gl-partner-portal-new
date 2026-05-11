@@ -5,7 +5,7 @@
 .partner-active { color:green;}
 .partner-inactive{ color:red;}
 
-.partner-new-status { color:blue;}
+.partner-new-status { color:#4444f8;}
 
 .form-select option{ color:black;}
 
@@ -66,28 +66,7 @@
 						
                         <div class="card-body">
 
-						<!--<div class="row row-cols-1 row-cols-lg-1 row-cols-xl-1 row-cols-xxl-1" style="margin-top:-20px !important;">
-							<div class="col">
-								<div class="card overflow-hidden radius-10">
-									<div class="card-body">
-									<div class="d-flex overflow-hidden">
-										<label style="width:100px;"> Filter By:</label>
-											<div class="d-flex">
-													<select id="filterBox" name="filter-box" class="filter-select-new">
-													<option value="">All</option>
-													<option value="1">Active</option>
-													<option value="0">Inactive</option>
-												</select>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div> -->
-
-
-                            <div class="table-responsive">
-
+						
 							<!--<table id="partner-table" class="table table-striped table-centered align-middle table-nowrap mb-0" style="width:100%;">-->
                                 <table id="partner-table" class="table table-striped table-hover table-nowrap mb-0" style="width:100% !important;">
                                     <thead>
@@ -109,8 +88,7 @@
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
-                    </div>
+                       </div>
                 </div>
             </div>
             
