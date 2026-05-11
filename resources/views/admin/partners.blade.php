@@ -99,6 +99,7 @@
 										<th>Agent</th>
 										<th>Commission(%)</th>
 										 <th>Status</th>
+										<th>Last Activity</th>
 										<th>Actions</th>
 									</tr>
 										
@@ -444,6 +445,7 @@ $("#btnDetailClose").click(function()
         var table = $('#partner-table').DataTable({
             processing: true,
             serverSide: true,
+			pageLength:50,
 			/*dom: 'lBfrtip',
 			buttons: [
 			'csv', 'excel'
@@ -473,6 +475,7 @@ $("#btnDetailClose").click(function()
             {data: 'agent_name', name: 'agent_name'},
 			{data: 'commission_per', name: 'commission_per',className:"txt-center"},
 			{data: 'status', name: 'status'},
+			{data: 'lead_activity_at', name: 'lead_activity_at'},
             {data: 'action', name: 'action',className:'text-center'},
             ]
         });

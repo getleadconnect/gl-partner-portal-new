@@ -138,19 +138,31 @@ public function check(Request $request){
         $agents = Agent::pluck('name','id');
 		
 		$status=$request->searchStatus;
-		
 				
-		$dat = Partner::latest('partners.created_at')
+		/*$dat = Partner::latest('partners.created_at')
 				->leftJoin('agents','agents.id','partners.agent_id')
 				->select('partners.*','agents.name as agent_name');
-				
 		if($status!="")
         {
 			$dat->where('status',$status)->orWhere('status',null)->get();
 		}
-		
-		$data=$dat->get();
-		
+		*/
+
+		$data = Partner::select('partners.*','agents.name as agent_name')
+			->leftJoin('agents','agents.id','partners.agent_id')
+			->where(function($q)use($status)
+            {
+        	  ($status!="") ? $dat->where('status',$status)->orWhere('status',null):'';
+			})->latest()->get()->map(function($q)
+			{
+			 	$lead=Lead::where('partner_id',$q->id)->latest()->first();
+					if(!empty($lead))
+						$q['lead_activity_at']=Carbon::parse($lead->created_at)->format('Y-m-d h:i A');
+					else
+						$q['lead_activity_at']="--";
+					return $q;
+			});
+
             return Datatables::of($data)
                     ->addIndexColumn()
 					->addColumn('name', function($row)
