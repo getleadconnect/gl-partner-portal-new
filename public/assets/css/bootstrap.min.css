@@ -12923,17 +12923,17 @@ fieldset:disabled .btn {
   --bs-footer-bg: #f2f2f5;
   --bs-footer-color: #74788d;
 }
-:root [data-sidebar="dark"],
-[data-bs-theme="light"] [data-sidebar="dark"] {
-  --bs-sidebar-dark-bg: #11233b; /* #120a1f;*/
-  --bs-sidebar-dark-menu-item-color: #d5d8df; /*#a8b0c5;*/
+:root [data-sidebar="dark"],[data-bs-theme="light"] [data-sidebar="dark"] {
+  --bs-sidebar-dark-bg: #11233b; 
+  --bs-sidebar-dark-menu-item-color: #d5d8df; 
   --bs-sidebar-dark-menu-sub-item-color: #a8b0c5;
   --bs-sidebar-dark-menu-item-icon-color: #a8b0c5;
-  --bs-sidebar-dark-menu-item-hover-color: #fff; /*#d6e0fb;*/
+  --bs-sidebar-dark-menu-item-hover-color: #fff; 
   --bs-sidebar-dark-menu-item-active-color: #fff;
   --bs-sidebar-dark-menu-item-active-bg-color: #9c27b0;
   --bs-sidebar-menu-item-active-bg-color: #9c27b0;
 }
+
 :root [data-topbar="dark"],
 [data-bs-theme="light"] [data-topbar="dark"] {
   --bs-header-dark-bg: #003032;
