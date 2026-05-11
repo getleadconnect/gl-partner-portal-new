@@ -12967,7 +12967,7 @@ fieldset:disabled .btn {
   --bs-sidebar-menu-sub-item-active-color: #383c40;
   --bs-sidebar-border-color: #e9ebef;
   --bs-sidebar-menu-item-active-bg-color: #9c27b0;
-  --bs-sidebar-dark-bg: #120a1f;
+  --bs-sidebar-dark-bg: #11233b; /*#120a1f;*/
   --bs-sidebar-dark-menu-item-color: #a8b0c5;
   --bs-sidebar-dark-menu-sub-item-color: #a8b0c5;
   --bs-sidebar-dark-menu-item-icon-color: #a8b0c5;
