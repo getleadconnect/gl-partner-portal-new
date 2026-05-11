@@ -750,7 +750,7 @@ body[data-layout=horizontal] .footer {
     text-transform: uppercase;
     color: var(--bs-sidebar-menu-item-icon-color);
     font-weight: 600;
-    opacity: .6
+    opacity: .9
 }
 
 @media (max-width:991.98px) {
@@ -1010,7 +1010,7 @@ body[data-sidebar=dark] #sidebar-menu ul li.mm-active {
 }
 
 body[data-sidebar=dark] #sidebar-menu ul li.mm-active>a {
-    background-color: var(--bs-sidebar-dark-menu-item-active-bg-color);
+    background-color: #506887; /*var(--bs-sidebar-dark-menu-item-active-bg-color);*/
     color: var(--bs-sidebar-dark-menu-item-active-color) !important
 }
 

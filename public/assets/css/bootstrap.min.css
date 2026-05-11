@@ -12899,7 +12899,7 @@ fieldset:disabled .btn {
   --bs-header-item-color: #fff;
   --bs-header-item-sub-color: var(--bs-secondary-color);
   --bs-sidebar-bg: #ffffff;
-  --bs-sidebar-menu-item-color: #7b8190;
+  --bs-sidebar-menu-item-color:#bbc0ce; /* #7b8190;*/
   --bs-sidebar-menu-sub-item-color: #7b8190;
   --bs-sidebar-menu-item-icon-color: #7b8190;
   --bs-sidebar-menu-item-hover-color: #383c40;
@@ -12925,11 +12925,11 @@ fieldset:disabled .btn {
 }
 :root [data-sidebar="dark"],
 [data-bs-theme="light"] [data-sidebar="dark"] {
-  --bs-sidebar-dark-bg: #120a1f;
-  --bs-sidebar-dark-menu-item-color: #a8b0c5;
+  --bs-sidebar-dark-bg: #192f4c; /* #120a1f;*/
+  --bs-sidebar-dark-menu-item-color: #d5d8df; /*#a8b0c5;*/
   --bs-sidebar-dark-menu-sub-item-color: #a8b0c5;
   --bs-sidebar-dark-menu-item-icon-color: #a8b0c5;
-  --bs-sidebar-dark-menu-item-hover-color: #d6e0fb;
+  --bs-sidebar-dark-menu-item-hover-color: #fff; /*#d6e0fb;*/
   --bs-sidebar-dark-menu-item-active-color: #fff;
   --bs-sidebar-dark-menu-item-active-bg-color: #9c27b0;
   --bs-sidebar-menu-item-active-bg-color: #9c27b0;
