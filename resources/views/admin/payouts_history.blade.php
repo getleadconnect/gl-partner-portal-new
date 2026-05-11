@@ -58,19 +58,29 @@ table tr
                         </div>
 						
                     <div class="card-body" style="padding-top:0px;">
-						
-					<div class="row mt-2">
-					  <label class="col-lg-1 col-xl-1 col-xxl-1 col-form-label text-right">Partner</label>
-					  <div class="col-lg-4">
-						<select id="filter_partner_id" name="filter_partner_id" class="form-control">
-							<option value="" selected disabled>Select Partner</option>
-							<option value="">All</option>
-							@foreach($partners as $key=>$value)
-							  <option value="{{$key}}">{{$value}}</option>
-							@endforeach
-						</select>
-					  </div>
-					</div>
+
+								<div class="row row-cols-1 row-cols-lg-1 row-cols-xl-1 row-cols-xxl-1" >
+									<div class="col">
+										<div class="card overflow-hidden radius-10">
+											<div class="card-body">
+											<div class="d-flex overflow-hidden">
+												<label style="width:100px;"> Filter By:</label>
+													<div class="d-flex">
+														<select id="filter_partner_id" name="filter_partner_id" class="form-control" style="width:300px;border-radius:5px !important;">
+														<option value="" selected disabled>Select Partner</option>
+														<option value="">All</option>
+														@foreach($partners as $key=>$value)
+														<option value="{{$key}}">{{$value}}</option>
+														@endforeach
+													</select>
+
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								
 						
 					<div class="row mt-2">
 						<div class="col-lg-6 col-xl-6 col-xxl-6 " style="border-right:1px solid #8c8b8f;">

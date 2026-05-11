@@ -194,10 +194,27 @@
 
                 <li>
                     <a href="{{ route('admin.payouts')}}">
-                        <i class="bx bx-wallet icon nav-icon"></i>
-                        <span class="menu-item" data-key="t-payouts">Payouts</span>
+                        <i class="bx bx-message-square-edit icon nav-icon"></i>
+                        <span class="menu-item" data-key="t-payouts">Prepare Payouts</span>
                     </a>
                 </li>
+
+                @if(strtoupper(Auth::guard('admin')->user()->name)=="SUPERADMIN")
+                 <li>
+                    <a href="{{ route('admin.verify-payouts')}}">
+                        <i class="bx bx-check-circle icon nav-icon"></i>
+                        <span class="menu-item" data-key="t-payouts">Verify Payouts</span>
+                    </a>
+                </li>
+                @endif
+
+                <li>
+                    <a href="{{ route('admin.pay-verified-payments')}}">
+                        <i class="bx bx-dollar-circle icon nav-icon"></i>
+                        <span class="menu-item" data-key="t-payouts">Set Payouts</span>
+                    </a>
+                </li>
+
 
 				<li>
                     <a href="{{ route('admin.payout-history')}}">

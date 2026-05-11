@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Models\LeadPurpose;
 use App\Models\Notification;
 use App\Models\PaymentDetail;
+use App\Models\LeadCommission;
 
 class DashboardController extends Controller
 {
@@ -23,17 +24,21 @@ class DashboardController extends Controller
    public function dashboard()
     {
 
-        $data['total_commission'] = PaymentDetail::totalCommission();
-        $data['total_commission_paid'] = PaymentDetail::totalCommissionPaid();
+        //$data['total_commission'] = PaymentDetail::totalCommission();
+        //$data['total_commission_paid'] = PaymentDetail::totalCommissionPaid();
+
+        $data['total_commission'] = LeadCommission::totalCommission();
+        $data['total_commission_paid'] = LeadCommission::totalCommissionPaid();
+
 
 		$data['lead_this_week']=Lead::thisWeekCount();
         $data['lead_this_month']=Lead::thisMonthCount();
 
-		$data['total_this_week']=PaymentDetail::totalThisWeek();
-        $data['total_this_month']=PaymentDetail::totalThisMonth();
+		$data['total_this_week']=LeadCommission::totalThisWeek();
+        $data['total_this_month']=LeadCommission::totalThisMonth();
 		
-		$data['payout_this_week']=PaymentDetail::payoutThisWeek();
-        $data['payout_this_month']=PaymentDetail::payoutThisMonth();
+		$data['payout_this_week']=LeadCommission::payoutThisWeek();
+        $data['payout_this_month']=LeadCommission::payoutThisMonth();
 		
 		$data['partner_this_week']=Partner::thisWeekCount();
         $data['partner_this_month']=Partner::thisMonthCount();

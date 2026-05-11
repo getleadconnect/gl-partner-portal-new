@@ -17,8 +17,16 @@
 	background:#fff; z-index:9999999;	
 }
 .prd-body{width:100%;	height:513px;	overflow-y:scroll;	scrollbar-width:thin; }
+.txt-center{
+	text-align:center;
+}
 
 .dropdown:hover{ cursor:pointer;}
+@media (min-width: 992px) {
+    .modal-lg, .modal-xl {
+        --bs-modal-width: 600px !important;
+    }
+}
 </style>
 
  <div class="page-content">
@@ -47,7 +55,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <h5 class="card-title mb-0">Manage Partners</h5>
                                 <div>
-								<button id="btnOffcanvas" class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Add Partner</button>
+								<button id="btnOffcanvas" class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#add-partner-modal">Add Partner</button>
                                     <a href="javascript:void(0);" class="btn btn-primary me-2" id="export_to_excel"><i class="fas fa-file-export"></i>&nbsp;Export</a>
                                 </div>
                             </div>
@@ -55,13 +63,27 @@
 						
 						
                         <div class="card-body">
-						
-                                <select id="filterBox" name="filter-box" class="filter-select">
-                                    <option value="">All</option>
-                                    <option value="1">Active</option>
-                                    <option value="0">Inactive</option>
-                                </select>
-    
+
+						<div class="row row-cols-1 row-cols-lg-1 row-cols-xl-1 row-cols-xxl-1" style="margin-top:-20px !important;">
+							<div class="col">
+								<div class="card overflow-hidden radius-10">
+									<div class="card-body">
+									<div class="d-flex overflow-hidden">
+										<label style="width:100px;"> Filter By:</label>
+											<div class="d-flex">
+													<select id="filterBox" name="filter-box" class="filter-select-new">
+													<option value="">All</option>
+													<option value="1">Active</option>
+													<option value="0">Inactive</option>
+												</select>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+
                             <div class="table-responsive">
 
 							<!--<table id="partner-table" class="table table-striped table-centered align-middle table-nowrap mb-0" style="width:100%;">-->
@@ -75,7 +97,7 @@
 										<th>Email</th>
 										<th>Mobile</th>
 										<th>Agent</th>
-										<th>Commi.(%)</th>
+										<th>Commission(%)</th>
 										 <th>Status</th>
 										<th>Actions</th>
 									</tr>
@@ -97,14 +119,16 @@
 
 
 
-<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
-	  <div class="offcanvas-header">
-		<h5 id="offcanvasRightLabel">Add Partner</h5>
-		<button type="button" class="button-close btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-	  </div>
-	  <div class="offcanvas-body">
-	  
-	  
+<div class="modal fade" id="add-partner-modal" tabindex="-1" aria-labelledby="addPartnerModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg " >
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="addPartnerModalLabel">Add Partner</h5>
+				<button type="button" class="button-close btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+
+
 	  <div class="loading-outer" style="display:none;">
 		  <span class="spinner-loading">
 		  <label style="font-size:48px;color:red;"> <i class="fa fa-spinner fa-spin"></i> </label>
@@ -121,22 +145,26 @@
 					  
 		  
 			<div class="form-group">
+				<div class="row">
+				<div class="col-lg-6 col-xl-6 col-xxl-6">
 					<label for="partner_name" class="form-label">Name<span class="required">*</span></label>
 					<input type="text" class="form-control" name="name" id="name" required>
 				</div>
-				
-			   <div class="form-group">
-					<label for="email" class="form-label">Email<span class="required">*</span></label>
-					<input type="email" class="form-control" name="email" id="email" required>
-				</div>
-				
-				<div class="form-group">
+				<div class="col-lg-6 col-xl-6 col-xxl-6">
 					<label for="mobile" class="form-label">Mobile<span class="required">*</span></label>
 					<input type="hidden" class="form-control" name="country_code" id="country_code" value="91"  required>
 					<br>
 					<input type="tel" class="form-control" name="mobile" id="mobile" minlength=6 maxlength=15 required>
+
 				</div>
-								
+				</div>
+			</div>
+
+			   <div class="form-group">
+					<label for="email" class="form-label">Email<span class="required">*</span></label>
+					<input type="email" class="form-control" name="email" id="email" required>
+				</div>
+
 				<div class="form-group">
 				<div class="row">
 				
@@ -162,6 +190,8 @@
 				</div>
 				
 				<div class="form-group">
+					<div class="row">
+					<div class="col-lg-6 col-xl-6 col-xxl-6">
 					<label for="country" class="form-label">Country<span class="required">*</span></label>
 					<select class="form-control" name="country" id="country" required  style="color:#000 !important;">
 					<option value="" selected disabled>select</option>
@@ -171,21 +201,25 @@
 					</select>
 				</div>
 								
-				<div class="form-group">
+				<div class="col-lg-6 col-xl-6 col-xxl-6">
 					<label for="state" class="form-label">State<span class="required">*</span></label>
 					<select class="form-control" name="state" id="state" style="color:#000 !important;" required>
 					<option value="" selected disabled>select</option>
 					
 					</select>
 				</div>
+				</div>
+				</div>
+
+
 				
 				<div class="form-group">
 				<div class="row">
-				<div class="col-lg-7 col-xl-7 col-xxl-6">
+				<div class="col-lg-6 col-xl-6 col-xxl-6">
 					<label for="city" class="form-label">City<span class="required">*</span></label>
 					<input type="text" class="form-control" name="city" id="city" required>
 				</div>
-				<div class="col-lg-5 col-xl-5 col-xxl-5">
+				<div class="col-lg-6 col-xl-6 col-xxl-6">
 					<label for="pin_code" class="form-label">Pin Code<span class="required">*</span></label>
 					<input type="number" class="form-control" name="pin_code" minlength=6 maxlength=6 id="pin_code" required>
 				</div>
@@ -195,11 +229,11 @@
 				
 				<div class="form-group">
 				<div class="row">
-				<div class="col-lg-7 col-xl-7 col-xxl-6">
+				<div class="col-lg-6 col-xl-6 col-xxl-6">
 					<label for="bank_name" class="form-label">Bank Name</label>
 					<input type="text" class="form-control" name="bank_name" id="bank_name">
 				</div>
-				<div class="col-lg-5 col-xl-5 col-xxl-5">
+				<div class="col-lg-6 col-xl-6 col-xxl-6">
 					<label for="ifsc_code" class="form-label">IFSC Code</label>
 					<input type="text" class="form-control" name="ifsc_code" id="ifsc_code">
 				</div>
@@ -208,11 +242,11 @@
 				
 				<div class="form-group">
 				<div class="row">
-				<div class="col-lg-7 col-xl-7 col-xxl-6">
+				<div class="col-lg-6 col-xl-6 col-xxl-6">
 					<label for="branch" class="form-label">Branch</label>
 					<input type="text" class="form-control" name="branch" id="branch">
 				</div>
-				<div class="col-lg-5 col-xl-5 col-xxl-5">
+				<div class="col-lg-6 col-xl-6 col-xxl-6">
 					<label for="account_number" class="form-label">Account Number</label>
 					<input type="text" class="form-control" name="account_number" id="account_number">
 				</div>
@@ -221,12 +255,12 @@
 			
 			<div class="form-group">
 			<div class="row">
-			<div class="col-lg-7 col-xl-7 col-xxl-7">
+			<div class="col-lg-6 col-xl-6 col-xxl-6">
 				<label for="upi_id" class="form-label">UPI ID</label>
 				<input type="text" class="form-control" name="upi_id" id="upi_id">
 			</div>
 
-			<div class="col-lg-5 col-xl-5 col-xxl-5">
+			<div class="col-lg-6 col-xl-6 col-xxl-6">
 				<label for="partner_status" class="form-label">Status</label>
 				<select class="form-select" name="partner_status" id="partner_status">
 					<option value="1">Active</option>
@@ -236,12 +270,14 @@
 			</div>
 			</div>
 			<div class="form-group mt-3 mb-3" style="text-align:right;">
-			<button type="button" class="button-close btn btn-danger" data-bs-dismiss="offcanvas" aria-label="Close">Close</button>
+			<button type="button" class="button-close btn btn-danger" data-bs-dismiss="modal" aria-label="Close">Close</button>
 			<button type="submit" id="partner_submit"  class="btn btn-primary">Submit</button>
 			</div>
 		</form>
-				
-	  </div>
+
+			</div>
+		</div>
+	</div>
 </div>
     
 
@@ -339,10 +375,17 @@
 					
 					<div class="form-group">
 						<label for="country" class="form-label">Commission(%)<span class="required">*</span></label>
-						<input type="number" class="form-control" name="commission" id="commission" required>
-						<label id="err-msg"></label>
+						<input type="number" class="form-control" name="commission" id="commission" min=0 required>
+						<!--<label id="err-msg"></label>-->
+					</div>
+					<div class="form-group">
+						<label for="country" class="form-label">Renewal Commission(%)<span class="required">*</span></label>
+						<input type="number" class="form-control" name="renewal_commission" id="renewal_commission" min=0 required>
+						<!--<label id="err-msg"></label>-->
 					</div>
 					
+					<label  style="width:100%;text-align:center;color:red;font-size:12px;" id="sc-err-msg"></label>
+
 					<div class="modal-footer">
 					<button type="button" class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close">Close</button>
 					<button type="submit" class="btn btn-primary" id="btnSetCommission" >Submit</button>
@@ -422,13 +465,12 @@ $("#btnDetailClose").click(function()
             {data: 'email', name: 'email'},
 			{data: 'mobile', name: 'mobile'},
             {data: 'agent_name', name: 'agent_name'},
-			{data: 'commission_percentage', name: 'commission_percentage'},
+			{data: 'commission_per', name: 'commission_per',className:"txt-center"},
 			{data: 'status', name: 'status'},
             {data: 'action', name: 'action',className:'text-center'},
             ]
         });
         
-$(".dataTables_filter").append(filterBox);
 
 $("#filterBox").change(function()
  {
@@ -604,15 +646,20 @@ $("#partner-table tbody").on('change','.partner_status',function()
 		$("#partner-table tbody").on( 'click', '.set-commission', function ()
 		  {
 			var id=$(this).attr('id');
+			var comm_per=$(this).data('commission');
+			var re_comm_per=$(this).data('renewal');
 			$("#partner_id").val(id);
+			$("#commission").val(comm_per);
+			$("#renewal_commission").val(re_comm_per);
+			$("#sc-err-msg").html('');
 		  });
-	
-	
+
+
 		$("#formSetCommission").submit(function(e)
         {
 		   e.preventDefault();
 		
-			var formData=new FormData(document.getElementById('formSetCommission'));
+		var formData=new FormData(document.getElementById('formSetCommission'));
 			
 		   $.ajax({
 				url: "{{ route('admin.set-partner-commission-percentage') }}",
@@ -627,15 +674,19 @@ $("#partner-table tbody").on('change','.partner_status',function()
 						$("#set-commission-modal").modal('hide');
 						table.ajax.reload();
 					}
-					
+					else
+					{
+						//toastr.error(result.msg);
+						$("#sc-err-msg").html(result.msg);
+						$("#set-commission-modal").modal('show');
+					}
 				},
 				cache: false,
 				contentType: false,
 				processData: false
 			});
-        })
-	
-	
+	  });
+	  
 		
 	 $("#country").on('change',function()
         {

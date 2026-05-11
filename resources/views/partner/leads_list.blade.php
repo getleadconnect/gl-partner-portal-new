@@ -16,6 +16,10 @@
 }
 .numericCol{ float:right;}
 
+.purple
+{
+	color:purple;
+}
 
 </style>
 
@@ -68,8 +72,7 @@
                                 </select>
                             </div>
                             <div class="table-responsive">
-							
-							
+														
 							<table id="my-leads-table" class="table table-striped table-centered align-middle table-nowrap mb-0" style="width:100% !important;">
                                     <thead>
                                       
@@ -82,7 +85,8 @@
 											<th>Lead Status</th>
 											<th align="right">Amount</th>
 											<th>Commission</th>
-											<th>Payment Status</th>
+											<th>Pay-Status</th>
+											<th>Pay-Date</th>
 											<th>Actions</th>
 										</tr>
 										
@@ -304,6 +308,7 @@ var phone_number = window.intlTelInput(document.querySelector("#mobile"), {
 				{data: 'amount_collected', name: 'amount_collected'},
 				{data: 'commission_amount', name: 'commission_amount'},
 				{data: 'p_status', name: 'p_status'},
+				{data: 'pay_date', name: 'pay_date'},
 				{data: 'action', name: 'action'},
             ]
         });

@@ -310,13 +310,14 @@ class PartnerController extends Controller
     public function getLeads(Request $request)
     {
 
-		$data = Lead::latest()->where(function($q)use($request)
-            {
-				$request->status!="" ? $q->where('lead_status',$request->status):'';
-                $request->paymentStatus!=0 ? $q->where('payment_status',$request->paymentStatus):'';
-            })->where('partner_id',Auth::guard('partner')->user()->id)->get();
+		$data = Lead::select('leads.*','lead_commissions.amount_collected','lead_commissions.commission_amount','lead_commissions.payment_date')
+				->leftJoin('lead_commissions','leads.id','=','lead_commissions.lead_id')
+				->latest()->where(function($q)use($request)
+            	{
+					$request->status!="" ? $q->where('leads.lead_status',$request->status):'';
+                	$request->paymentStatus!='' ? $q->where('leads.payment_status',$request->paymentStatus):'';
+            	})->where('leads.partner_id',Auth::guard('partner')->user()->id)->get();
 				
-		
             return Datatables::of($data)
                     ->addIndexColumn()
 
@@ -338,7 +339,14 @@ class PartnerController extends Controller
                         
                         return ($row->country_code?'+'.$row->country_code:'').' '.$row->mobile;
                     })
-					
+
+					->addColumn('pay_date', function($row){
+                        if($row->payment_date!='')
+							return Carbon::parse($row->payment_date)->format('d-m-Y h:i A');
+					 	return '';
+                        
+                    })
+
 					->addColumn('lead_status', function($row){
                         $lead_status = "";
                         if($row->lead_status == "Got Business")
@@ -365,6 +373,10 @@ class PartnerController extends Controller
 						else if($row->payment_status == 1)
                         {
                             $payment_status = '<span class="success">Paid</span>';
+                        }
+						else if($row->payment_status == 2)
+                        {
+                            $payment_status = '<span class="purple">Pending</span>';
                         }
 
                         return $payment_status;

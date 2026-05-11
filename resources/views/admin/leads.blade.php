@@ -32,6 +32,9 @@
 .form-select option{ color:black;}
 .t-amt{ font-size:14px;font-weight:600;}
 .pd-view p{ margin-bottom:.3rem;}
+.txt-center{
+	text-align:center;
+}
 </style>
 
  <div class="page-content">
@@ -60,22 +63,29 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <h5 class="card-title mb-0">Manage Leads</h5>
                                 <div>
-									<button id="btnOffcanvas" class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Add Lead</button>
+									<button id="btnOffcanvas" class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#add-lead-modal">Add Lead</button>
 									<a href="javascript:void(0);" class="btn btn-primary me-2" id="export_to_excel"><i class="fas fa-file-export"></i>&nbsp;Export</a>
                                 </div>
                             </div>
                         </div>
                         <div class="card-body" style="padding-top:0px;">
+
+			<div class="row row-cols-1 row-cols-lg-1 row-cols-xl-1 row-cols-xxl-1">
+              <div class="col">
+                <div class="card overflow-hidden radius-10">
+                    <div class="card-body">
+                     <div class="d-flex overflow-hidden">
+                      <label style="width:100px;"> Filter By:</label>
                             <div class="d-flex">
-								<select id="partner_filter" name="partner_filter" class="filter-select">
+									<select id="partner_filter" name="partner_filter" class="filter-select-new" >
                                     <option value="" selected disabled>Partners</option>
 									<option value="">All</option>
 									@foreach($partners as $key=>$value)
                                     <option value="{{$key}}">{{$value}}</option>
 									@endforeach
                                 </select>
-								
-								 <select id="filter_status" name="filter_status" class="filter-select">
+														
+								 <select id="filter_status" name="filter_status" class="filter-select-new">
                                     <option value="" selected disabled>Status</option>
 									<option value="">All</option>
 									@foreach($lead_status as $value)
@@ -84,7 +94,7 @@
 									
                                 </select>
 								
-								<select id="filter_payment_status" name="filter_payment_status" class="filter-select">
+								<select id="filter_payment_status" name="filter_payment_status" class="filter-select-new">
                                     <option value="" selected disabled>Payment</option>
 									<option value="">All</option>
 									<option value="0">Not Paid</option>
@@ -92,7 +102,14 @@
                                 </select>
 								
                             </div>
-							
+                    </div>
+                  </div>
+                </div>
+               </div>
+
+            </div>
+
+						
 							<div class="d-flex mb-2">
 							<label class="lbl-bold">Partner : <span id="partner"></span></label> 
 							<label class="lbl-bold" style="margin-left:50px;">Leads : <span id="leads"></span></label>
@@ -146,12 +163,14 @@
 				</div>	
 			</div>					
 		
-	<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
-	  <div class="offcanvas-header">
-		<h5 id="offcanvasRightLabel">Add Lead</h5>
-			<button type="button" class="button-close btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-	  </div>
-	  <div class="offcanvas-body">
+	<div class="modal fade" id="add-lead-modal" tabindex="-1" aria-labelledby="addLeadModalLabel" aria-hidden="true">
+	  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<h5 class="modal-title" id="addLeadModalLabel">Add Lead</h5>
+			<button type="button" class="button-close btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		  </div>
+		  <div class="modal-body">
 
 	  <div class="loading-outer" style="display:none;">
 		  <span class="spinner-loading">
@@ -160,42 +179,52 @@
 		  </span>
 	  </div>
 
-	  
 		<form id="lead-form">
 		  @csrf
 		  
 		  <input type="hidden" class="form-control" name="country_name" id="country_name" >
 					 
 			<div class="form-group">
+				<div class="row">
+					<div class="col-md-6 col-xl-6 col-xxl-6">
 					<label for="recipient-name" class="form-label">Customer Name<span style="color: red;">*</span></label>
                     <input type="text" class="form-control" placeholder=""
 					 name="name" id="name" required>
 				</div>
-				
-			    <div class="form-group">
-					<label for="recipient-name" class="form-label">Mobile Number<span style="color: red;">*</span></label>
+				<div class="col-md-6 col-xl-6 col-xxl-6">
+				<label for="recipient-name" class="form-label">Mobile Number<span style="color: red;">*</span></label>
 					<br>
                         <input type="number" class="form-control" placeholder="" name="mobile" id="mobile" minlength=6 maxlength=15  required>
 						<input type="hidden" class="form-control" placeholder="" name="country_code" id="country_code" value="91" required>
 					</div>
-				
-				<div class="form-group">
+					</div>
+				</div>
+
+			    <div class="form-group">
 					<label for="recipient-name" class="form-label">Company Name(Your firm)<span style="color: red;">*</span></label>
                         <input type="text" class="form-control" placeholder=""
                          name="company_name" id="company_name">
 				</div>
 				
 				<div class="form-group">
+					<div class="row">
+					<div class="col-md-6 col-xl-6 col-xxl-6">
+					 <label for="recipient-name" class="form-label">Email<span style="color: red;">*</span></label>
+                    <input type="email" class="form-control" placeholder="" name="email" id="email">
+					</div>
+									
+				<div class="col-md-6 col-xl-6 col-xxl-6">
 					<label for="recipient-name" class="form-label">Designation </label>
                         <input type="text" class="form-control" placeholder=""
                              name="designation" id="designation" >
 				</div>
-
+				</div>
+				</div>
+			
+	
 			<div class="form-group">
-					 <label for="recipient-name" class="form-label">Email<span style="color: red;">*</span></label>
-                        <input type="email" class="form-control" placeholder="" name="email" id="email">
-			</div>
-			<div class="form-group">
+				<div class="row">
+				<div class="col-md-6 col-xl-6 col-xxl-6">	
 					<label for="recipient-name" class="form-label">Select Partner<span style="color: red;">*</span></label>
 					<select id="partner_id" name="partner_id" class="form-control" style="color:#000 !important;" required>
                       <option value="0" selected disabled>select</option>
@@ -203,10 +232,8 @@
 						<option value="{{$key}}" >{{$value}}</option>
 					 @endforeach
                    </select>
-
 			</div>
-			
-			<div class="form-group">
+			<div class="col-md-6 col-xl-6 col-xxl-6">
 					<label for="recipient-name" class="form-control-label">Business Category<span style="color: red;">*</span></label>
 					   <select id="bussiness_category_id" name="bussiness_category_id" class="form-control" style="color:#000 !important;" required>
 						  <option value="0" selected disabled>select</option>
@@ -216,6 +243,8 @@
 						  
 					   </select>
 				</div>
+			</div>
+			</div>
 			
 			<!--<div class="form-group">
 				<label for="recipient-name" class="form-label">Lead Type<span style="color: red;">*</span></label>
@@ -234,6 +263,8 @@
 			</div> -->
 			
 			<div class="form-group">
+				<div class="row">
+				<div class="col-md-6 col-xl-6 col-xxl-6">
 				<label for="partnerPhone" class="form-label">Country</label>
 				<select class="form-control" name="country" id="country" style="color:#000;">
 				<option value="" selected disabled>select</option>
@@ -243,47 +274,54 @@
 				</select>
 			</div>
 
-			<div class="form-group">
+			<div class="col-md-6 col-xl-6 col-xxl-6">
 				<label for="recipient-name" class="form-label">State</label>
 				<select name="state" id="state" class="form-control" style="color:#000;">
 				<option value="" selected disabled>select</option>
 				</select>
 			</div>
+			</div>
+			</div>
 
 			<div class="form-group">
-			<div class="row">
-			<div class="col-lg-7 col-xl-7 col-xxl-6">
-			<label for="recipient-name" class="form-label">Area/Location</label>
-				<input type="text" class="form-control" placeholder=""  name="area" id="area" >
+				<div class="row">
+				<div class="col-lg-7 col-xl-7 col-xxl-6">
+					<label for="recipient-name" class="form-label">Area/Location</label>
+						<input type="text" class="form-control" placeholder=""  name="area" id="area" >
+				</div>
+				
+				<div class="col-lg-5 col-xl-5 col-xxl-5">
+					<label for="recipient-name" class="form-label">Pincode</label>
+					<input type="number" class="form-control" placeholder=""
+					name="pincode" id="pincode" minlength=6 maxlength=6>
+				</div>
+				</div>
 			</div>
 			
-			<div class="col-lg-5 col-xl-5 col-xxl-5">
-				<label for="recipient-name" class="form-label">Pincode</label>
-				<input type="number" class="form-control" placeholder=""
-				  name="pincode" id="pincode" minlength=6 maxlength=6>
-			</div>
-			</div>
-			</div>
-			
-			<div class="form-group">
+		<div class="form-group">
+		<div class="row">
+			<div class="col-lg-6 col-xl-6 col-xxl-6">
 				<label for="recipient-name" class="form-label">Address</label>
 				<textarea class="form-control" name="address" id="address" placeholder="">{{ old('address') }}</textarea>
 			</div>
-			<div class="form-group">
+			<div class="col-lg-6 col-xl-6 col-xxl-6">
 				<label for="recipient-name" class="form-label">Remarks</label>
 				<textarea class="form-control" name="remarks" id="remarks" placeholder="">{{ old('remarks') }}</textarea>
 			</div>
-			
+		</div>
+		</div>
 			
 		<div class="form-group mt-3 mb-3" style="text-align:right;">
-			<button type="button" class="button-close btn btn-danger" data-bs-dismiss="offcanvas" aria-label="Close">Close</button>
+			<button type="button" class="button-close btn btn-danger" data-bs-dismiss="modal" aria-label="Close">Close</button>
 			<button type="submit" id="lead_submit"  class="btn btn-primary">Submit</button>
 		</div>
-		
+
 	</form>
-				
+
+		  </div>
+		</div>
+	  </div>
 	</div>
-</div>
 
 	
  <div class="modal fade" id="set-commission-modal" tabindex="-1" aria-labelledby="addPartnerModalLabel" aria-hidden="true">
@@ -303,14 +341,13 @@
 			<input type="hidden" class="form-control" name="set_comm_lead_status" id="set_comm_lead_status">
 			<input type="hidden" class="form-control" name="renewal_status" id="renewal_status">
 						
-			<div class="form-group ">
+			<!--<div class="form-group ">
 				<input type="checkbox"  name="cbox_renewal" id="cbox_renewal" style="width:20px;height:20px;font-size:16px;vertical-align:middle;">&nbsp;&nbsp;Renewal Amount
-			</div>
-					
-			
-			<div class="form-group mt-2">
-				<label for="recipient-name" class="form-label">Commission (%)</label>
-				<input type="text" class="form-control" name="set_comm_percentage" id="set_comm_percentage" readonly>
+			</div>-->
+						
+			<div class="form-group mt-2 d-flex">
+				<label for="recipient-name" id="lbl_commission" class="form-label">Commission (%)</label>
+				<input type="text" class="form-control ml-2" name="set_comm_percentage" id="set_comm_percentage" style="width:70px;height:34px;" readonly>
 			</div>
 			
 		
@@ -353,7 +390,6 @@
 @push('scripts')
 
 <script type="text/javascript">
-
 
 var phone_number = window.intlTelInput(document.querySelector("#mobile"), {
 	  separateDialCode: true,
@@ -401,6 +437,11 @@ var phone_number = window.intlTelInput(document.querySelector("#mobile"), {
 					d.pay_status = $('#filter_payment_status').val();  
                 }
             },
+			columnDefs:
+			[
+				{ width:"170px",targets:[6]},
+				{ width:"110px",targets:[8]},
+			],
             columns: [
 				{data: 'DT_RowIndex', name: 'DT_RowIndex',orderable: false, searchable: false},
 				{data: 'partner', name: 'partner'},
@@ -428,10 +469,6 @@ var phone_number = window.intlTelInput(document.querySelector("#mobile"), {
         });
 
 //---------------------------------------------------------------
-        
-$(".dataTables_filter").append(partner_filter);
-$(".dataTables_filter").append(filter_status);
-$(".dataTables_filter").append(filter_payment_status);
 
 $("#filter_status").change(function()
 	{
@@ -521,10 +558,6 @@ $(".button-close").click(function()
 		addLeadValidator.resetForm();
 	});
 
-			
-		
-
-
         $("#country").on('change',function()
         {
 
@@ -607,8 +640,8 @@ $(".button-close").click(function()
 			}
 			
 		});
-				
-				
+
+		
 		$(document).on('change','#lead_status',function()
         {
 
@@ -633,7 +666,7 @@ $(".button-close").click(function()
 					$("#set_comm_lead_status").val(lstatus);
 					$("#set_comm_percentage").val(com_per);
 					$("#temp_comm_percentage").val(com_per);
-					
+					$("#lbl_commission").html("Commisssion(%)")
 					$("#set-commission-modal").modal('show');
 				}
 				else
@@ -676,6 +709,34 @@ $(".button-close").click(function()
 			}
         });
 		
+
+		$(document).on('click','.renewal_commission',function()
+        {
+
+			
+		    lead_id = $(this).data('leadid');
+			var lstatus=$(this).data('lstatus');
+			var com_per=$(this).data('recommission');
+		
+			if(com_per==0 && lstatus=="Got Business")
+			{
+				alert("Please set partner commission.!");
+			}
+			else if(lstatus=="Got Business")
+			{
+					$("#lbl_commission").html("Renewal Commisssion(%)")
+					$("#setLeadCommission")[0].reset();
+
+					$("#set_comm_lead_id").val(lead_id);
+					$("#set_comm_lead_status").val(lstatus);
+					$("#set_comm_percentage").val(com_per);
+					$("#temp_comm_percentage").val(com_per);
+					$("#renewal_status").val("renewal");
+					
+					$("#set-commission-modal").modal('show');
+			}
+        });
+
 		
 		var sValidator=$('#setLeadCommission').validate({ 
                 rules: {

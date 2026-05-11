@@ -36,7 +36,8 @@
 .fs-10
 {
 	font-size:10px;
-	color:blue;
+	color:red;
+	font-weight:600;
 }
 
 </style>
@@ -107,7 +108,7 @@
 					<!-- content here --->
                 </div>
 				<div class="col-1">
-                       <a href="{{url()->previous()}}" class="btn btn-primary me-2" style="padding:7px 10px;" ><i class="fas fa-arrow-left"></i>&nbsp;Back</a>
+                       <a href="{{route('admin.payouts')}}" class="btn btn-primary me-2" style="padding:7px 10px;" ><i class="fas fa-arrow-left"></i>&nbsp;Back</a>
                     </div>
                 </div>
 				
@@ -118,7 +119,7 @@
                     <div class="card">
                         <div class="card-header">
                             <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="card-title mb-0">Pay Commission</span></h5>
+                                <h5 class="card-title mb-0">Prepare Commission</span></h5>
                                 <div>
 								{{--<button id="btnOffcanvas" class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Add Lead</button>--}}
 								<button id="btnClear" class="btn btn-primary" type="button" > Clear </button>
@@ -128,7 +129,7 @@
 						
                         <div class="card-body pt-3" style="padding-top:0px;">
 
-						<form  id="paymentForm" enctype="multipart/form-data">
+						<form  id="paymentForm" method="POST" action="{{route('admin.prepare-payout')}}" enctype="multipart/forma-data">
 						@csrf
 
 						<input type="hidden" class="form-control" name="pay_partner_id" id="pay_partner_id" value="{{$partner->id}}">
@@ -140,42 +141,13 @@
 						<input type="hidden"  class="form-control" name="lead_commission_id" id="lead_commission_id">
 
 						<div class="form-group">
-						<div class="row">
-						<div class="col-lg-6 col-xl-6 col-xxl-6">
-							<label for="pay_balance" class="form-label">Payable Amount<span class="required">*</span></label>
-							  <input type="text" class="form-control disabled"  name="pay_balance" id="pay_balance"  value="{{old('pay_balance')??0}}" required readonly>
-						</div>
-						
-						<div class="col-lg-6 col-xl-6 col-xxl-6">
-							<label for="pay_amount" class="form-label">Amount<span class="required">*</span></label>
-							  <input type="number" class="form-control"  name="pay_amount" id="pay_amount"  value="{{old('pay_amount')}}??0" required >
-							  <label id="err_amt" style="color:red;font-size:12px;margin:0px;">{{Session::get('error')}}</label>
-						</div>
-						</div>
+							<label for="pay_amount" class="form-label">Payable Amount<span class="required">*</span></label>
+							  <input type="number" class="form-control disabled"  name="pay_amount" id="pay_amount"  value="{{old('pay_amount')??0}}" required readonly>
 						</div>
 
-						<div class="form-group">
-						<div class="row">
-						<div class="col-lg-6 col-xl-6 col-xxl-6">
-							<label for="payment_date" class="form-label">Payment Date<span class="required">*</span></label>
-							  <input type="date" class="form-control"  name="payment_date" id="payment_date"  value="{{old('payment_date')}}" required>
-						</div>
-												
-						<div class="col-lg-6 col-cl-6 col-xxl-6">
-							<label for="payment_id" class="form-label">Payment Id<span class="required">*</span></label>
-							  <input type="text" class="form-control"  name="payment_id" id="payment_id"  value="{{old('payment_id')}}" required>
-						</div>
-						</div>
-						</div>
-						
 						<div class="form-group mt-2">
-							<label for="description" class="form-label">Description<span class="required">*</span></label>
-							<textarea rows=3 class="form-control" name="description" id="description" required>{{old('description')}}</textarea>
-						</div>
-						
-						<div class="form-group mt-2">
-							<label for="payment_receipt" class="form-label">Upload Payment Receipt</label>
-							<input type="file" class="form-control" name="payment_receipt" id="payment_receipt" >
+						<label for="description" class="form-label">Description<span class="required">*</span></label>
+						<textarea rows=3 class="form-control" name="description" id="description" required>{{old('description')}}</textarea>
 						</div>
 
 						<div class="form-group mt-3 mb-3" style="text-align:right;">
@@ -183,7 +155,6 @@
 							<button type="submit" id="btn_payment"  class="btn btn-primary">Submit</button>
 						</div>
 						</form>
-						
 						
 					</div>
 					</div>
@@ -313,7 +284,6 @@
 
 
 
-
 @push('scripts')
 <script type="text/javascript">
     $(function () {
@@ -340,7 +310,7 @@
 
 <script type="text/javascript">
 
-$("#btn_payment").prop('disabled',true);
+//$("#btn_payment").prop('disabled',true);
 
 //---------datatable -------------------------------------
 
@@ -386,7 +356,6 @@ $("#unpaid_partner_filter").change(function()
 
 $("#btnClear").click(function()
 {
-	$("#pay_balance").val(0);
 	$("#pay_amount").val(0);
 	$('#unpaid_leads_table tbody input:checkbox').prop('checked', false);
 	$('#unpaid_leads_table tbody tr').removeClass('selected');
@@ -394,10 +363,12 @@ $("#btnClear").click(function()
 	$("#lead_ids").val('');
 });
 
-
 table.on('click', '.selbox', function()
 {
-	$("#pay_amount").val('');
+
+	
+
+
 	if($(this).is(':checked'))
 	{
 		$(this).closest('tr').addClass('selected');
@@ -420,17 +391,22 @@ table.on('click', '.selbox', function()
 			camt+=parseInt(data.commission_amount);
 			$("#commission_amount").val(camt);
 				
-		var amt=(parseInt($("#pay_balance").val()));
+		var amt=(parseInt($("#pay_amount").val()));
 			amt+=parseInt(data.balance);
-			$("#pay_balance").val(amt);
+			$("#pay_amount").val(amt);
+
+
 	}
 	else
 	{
+		
+
 		$(this).closest('tr').removeClass('selected');
 		var data=table.row($(this).closest('tr')).data();
 		
 		var lid=$("#lead_ids").val();
-			lid-=','+data.lead_id;
+			leid=','+data.lead_id;
+			lid=lid.replace(leid,'');
 			$("#lead_ids").val(lid);
 		
 		var lcid=$("#lead_commission_id").val();
@@ -446,14 +422,18 @@ table.on('click', '.selbox', function()
 			com_amt-=parseInt(data.commission_amount);
 			$("#commission_amount").val(com_amt);
 		
-		var amt=(parseInt($("#pay_balance").val()));
+		var amt=(parseInt($("#pay_amount").val()));
 			amt-=parseInt(data.balance);
-			$("#pay_balance").val(amt);
+			$("#pay_amount").val(amt);
 	}
+
+	if(parseInt($('#pay_amount').val())>0){
+		$('#pay_amount-error').html('');
+	    $("#pay_amount").removeClass('error');
+		}
 	
 });
  
-
 
 $("#payment-history-tab").click( function()
 {
@@ -501,10 +481,7 @@ $('#pay_history').dataTable().fnDestroy();
 });
 
 
-
-
-
-$("#pay_amount").keyup(function()
+$("#btn-submit").click(function()
 {
 	var bal=parseFloat($("#pay_balance").val());
 	var pamt=parseFloat($("#pay_amount").val());
@@ -512,12 +489,12 @@ $("#pay_amount").keyup(function()
 	var ids1=$("#lead_commission_id").val();
 	var ids=ids1.split(',');
 
-	if(pamt<=bal && ids.length<=2)
+	if(pamt!=0 && ids.length<=2)
 	{
 		$("#err_amt").html('');
 		$("#btn_payment").prop('disabled',false);
 	}
-	else if(pamt==bal && ids.length>2)
+	else if(pamt!=0 && ids.length>2)
 	{
 		$("#err_amt").html('');
 		$("#btn_payment").prop('disabled',false);
@@ -530,6 +507,7 @@ $("#pay_amount").keyup(function()
 	
 });
 
+
 /// SET PAYMENT DETAILS -------------same functions added into leads blade file-------------------------------------------------------
 
  
@@ -538,32 +516,30 @@ $("#pay_amount").keyup(function()
 			'set_comm_percentage':{required:true,},
 			'set_collected_amount':{required:true,},
 			'set_commission':{required:true,},
-			'description':{required:true,}
+			'description':{required:true,},
+			'pay_amount':{required:true,min:1,}
             },
-			
-            submitHandler: function(form) 
+
+	       submitHandler: function(form) 
             {
-				var formData=new FormData(document.getElementById('paymentForm'));
-					
-					if($("#payment_receipt")[0].files[0])
-					{
-					formData.append('payment_receipt', $('#payment_receipt')[0].files[0]);
-					}
-	
+
+				var formData=new FormData(form);
+		
                     $.ajax({
-                    url: "{{ route('admin.save-payout') }}",
-                    type: 'post',
+                    url: "{{route('admin.prepare-payout') }}",
+                    type: 'POST',
                     data: formData,
 					processData: false,  
 					contentType: false, 
-					processData: false,
                     success: function(result){
                         if(result.status == 1)
                         {
-							table.ajax.reload();
+							//table.ajax.reload();
                             toastr.success(result.msg);
 							$('#paymentForm')[0].reset();
-							paymentValidator.resetForm();
+							setTimeout(function() {
+							   location.reload();
+							}, 500);
                         }
 						else
 						{

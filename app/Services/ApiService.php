@@ -9,12 +9,11 @@ use Auth;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 
-
 trait ApiService
 {
 	
   public function sendLeadToCrm($data) 
-  {	
+  {
 
 	$endpoint = "https://app.getleadcrm.com/api/gl-website-contacts";
 	$client = new \GuzzleHttp\Client();
@@ -46,8 +45,6 @@ trait ApiService
 return $content;
 
 }
-
-
 
 public function sendPartnerDetailToCrm($data) 
   {	
@@ -102,6 +99,5 @@ return $content;
 	return true;
 }	
 */
-
 
 }

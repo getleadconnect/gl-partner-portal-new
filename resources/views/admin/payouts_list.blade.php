@@ -19,6 +19,12 @@
 }
 .pd-view p{ margin-bottom:.3rem !important;}
 
+.fs-10
+{
+	font-size:10px;
+	color:red;
+	font-weight:600;
+}
 .numericCol
 {
 	text-align:right;
@@ -27,6 +33,10 @@
 .cursor-pointer
 {
 	cursor:pointer
+}
+.text-center
+{
+	text-align:center;
 }
 </style>
 
@@ -83,13 +93,28 @@
 							  <div class="tab-pane fade show active" id="unpaid-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
 							  
 
-										<select id="unpaid_partner_filter" name="unpaid_partner_filter" class="filter-select">
-											<option value="" selected disabled>Partners</option>
-											<option value="">All</option>
-											@foreach($partners as $key=>$value)
-											  <option value="{{$key}}">{{$value}}</option>
-											@endforeach
-										</select>
+
+								<div class="row row-cols-1 row-cols-lg-1 row-cols-xl-1 row-cols-xxl-1" style="margin-top:-16px !important;">
+									<div class="col">
+										<div class="card overflow-hidden radius-10">
+											<div class="card-body">
+											<div class="d-flex overflow-hidden">
+												<label style="width:100px;"> Filter By:</label>
+													<div class="d-flex">
+															<select id="unpaid_partner_filter" name="unpaid_partner_filter" class="filter-select-new">
+																<option value="" selected disabled>Partners</option>
+																<option value="">All</option>
+																@foreach($partners as $key=>$value)
+																<option value="{{$key}}">{{$value}}</option>
+																@endforeach
+															</select>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
 
 									<div class="table-responsive">
 
@@ -124,16 +149,30 @@
 							
 							  <div class="tab-pane fade" id="paid-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
 							  
-									  <div class="d-flex">
-										<select id="paid_partner_filter" name="paid_partner_filter" class="filter-select">
-											<option value="" selected disabled>Partners</option>
-											<option value="">All</option>
-											@foreach($partners as $key=>$value)
-											<option value="{{$key}}">{{$value}}</option>
-											@endforeach
-										</select>
-										
-									 </div>
+
+								<div class="row row-cols-1 row-cols-lg-1 row-cols-xl-1 row-cols-xxl-1" style="margin-top:-16px !important;">
+									<div class="col">
+										<div class="card overflow-hidden radius-10">
+											<div class="card-body">
+											<div class="d-flex overflow-hidden">
+												<label style="width:100px;"> Filter By:</label>
+													<div class="d-flex">
+														<select id="paid_partner_filter" name="paid_partner_filter" class="filter-select-new">
+															<option value="" selected disabled>Partners</option>
+															<option value="">All</option>
+															@foreach($partners as $key=>$value)
+															<option value="{{$key}}">{{$value}}</option>
+															@endforeach
+														</select>
+														
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+									  
 
 
 									<div class="table-responsive">
@@ -205,14 +244,14 @@
 			</div>
 			<div class="modal-body">
 			
-			<input type="hidden" name="temp_comm_percentage" id="temp_comm_percentage">
+			<input type="text" name="temp_comm_percentage" id="temp_comm_percentage">
 			
 			<form id="setLeadCommission">
 			@csrf
 			
-			<input type="hidden" class="form-control" name="set_comm_lead_id" id="set_comm_lead_id">
-			<input type="hidden" class="form-control" name="set_comm_lead_status" id="set_comm_lead_status">
-			<input type="hidden" class="form-control" name="renewal_status" id="renewal_status" >
+			<input type="text" class="form-control" name="set_comm_lead_id" id="set_comm_lead_id">
+			<input type="text" class="form-control" name="set_comm_lead_status" id="set_comm_lead_status">
+			<input type="text" class="form-control" name="renewal_status" id="renewal_status" >
 			
 			<div class="form-group ">
 				<input type="checkbox"  name="cbox_renewal" id="cbox_renewal" style="width:20px;height:20px;font-size:16px;vertical-align:middle;">&nbsp;&nbsp;Renewal Amount
@@ -319,7 +358,6 @@
         });
 
 	
-$("#unpaid_leads_table_filter").append(unpaid_partner_filter);
 
 $("#unpaid_partner_filter").change(function()
  {
@@ -362,7 +400,6 @@ var table2 = $('#paid_leads_table').DataTable({
         });
 
 
-$("#paid_leads_table_filter").append(paid_partner_filter);
 
 $("#paid_partner_filter").change(function()
 	{
@@ -425,12 +462,13 @@ $("#paid-tab").click(function()
 	});
 
 
-
 	$("#unpaid_leads_table tbody").on( 'click', '.set-commission', function()
 	{
 		var lead_id = $(this).attr('data-leadid')
 		var com_per=$(this).attr('data-percentage');
 		var lead_status=$(this).attr('data-leadstatus');
+		var com_type=$(this).attr('data-comtype');
+		var com_per=$(this).attr('data-comper');
 				
 			$("#setLeadCommission")[0].reset();
 			var id=$(this).attr('id');
@@ -439,6 +477,7 @@ $("#paid-tab").click(function()
 			$("#temp_comm_percentage").val(com_per);
 			
 			$("#set_comm_lead_status").val(lead_status);
+			$("#renewal_status").val(com_type);
 			$("#set-commission-modal").modal('show');
 	});
 		

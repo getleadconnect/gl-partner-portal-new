@@ -138,7 +138,20 @@ Route::prefix('admin')->name('admin.')->group(function(){
 			Route::get('payouts','payouts')->name('payouts');
 			Route::get('payout-history','payoutHistory')->name('payout-history');
 			Route::post('save-payout','savePayout')->name('save-payout');
-			//Route::get('get-lead-payment-details','getLeadPaymentDetails')->name('get-lead-payment-details');
+            Route::post('prepare-payout','preparePayout')->name('prepare-payout');
+
+            Route::get('verify-payouts','verifyPayouts')->name('verify-payouts');
+            Route::get('/view-payments-for-verify', 'verifyPayments')->name('view-payments-for-verify');
+            Route::get('/update-payment-verify_status/{id}', 'updatePaymentVerifyStatus')->name('update-payment-verify_status');
+
+			Route::get('pay-verified-payments','payVerifiedPayments')->name('pay-verified-payments');
+            Route::get('/view-verified-payments-list', 'viewVerifiedPaymentsList')->name('view-verified-payments-list');
+            Route::get('/get-payment-details/{id}', 'getPaymentDetails')->name('get-payment-details');
+            Route::post('/set-payment', 'setPayment')->name('set-payment');
+            Route::get('/get-payment-leads-list/{id}', 'getPaymentsLeadsList')->name('get-payment-leads-list');
+
+            
+            //Route::get('get-lead-payment-details','getLeadPaymentDetails')->name('get-lead-payment-details');
 
 			Route::get('view-payment-details','viewPaymentDetails')->name('view-payment-details');
 			Route::get('view-all-payment-history','viewAllPaymentHistory')->name('view-all-payment-history');
