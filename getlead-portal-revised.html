@@ -1,0 +1,2575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Getlead Partner Portal — Revised Admin UI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F6F7F9;
+    --surface: #FFFFFF;
+    --surface-2: #FAFAFB;
+    --border: #E7E9EE;
+    --border-soft: #F0F2F5;
+
+    --text: #0F172A;
+    --text-soft: #475569;
+    --text-muted: #94A3B8;
+
+    --sidebar-bg: #0E1B2E;
+    --sidebar-bg-2: #142339;
+    --sidebar-text: #94A3B8;
+    --sidebar-text-strong: #E2E8F0;
+    --sidebar-active-bg: #1B2B47;
+    --sidebar-divider: #1F2E47;
+
+    --brand-red: #E5384C;
+    --accent: #1E3A5F;
+    --accent-2: #2C5282;
+    --accent-soft: #EEF2F8;
+
+    --success: #059669;
+    --success-soft: #ECFDF5;
+    --warning: #D97706;
+    --warning-soft: #FEF3C7;
+    --danger: #DC2626;
+    --danger-soft: #FEE2E2;
+    --info: #0369A1;
+    --info-soft: #E0F2FE;
+
+    --gold: #B68B3C;
+    --gold-soft: #FBF5E5;
+
+    --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+    --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.03);
+    --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04);
+
+    --radius-sm: 6px;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+
+  .mono { font-family: 'Geist Mono', monospace; font-variant-numeric: tabular-nums; }
+
+  /* ============ LAYOUT ============ */
+  .app {
+    display: grid;
+    grid-template-columns: 248px 1fr;
+    min-height: 100vh;
+  }
+
+  /* ============ SIDEBAR ============ */
+  aside {
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    border-right: 1px solid rgba(255,255,255,0.03);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 20px 18px;
+    border-bottom: 1px solid var(--sidebar-divider);
+  }
+
+  .brand-mark {
+    width: 32px; height: 32px;
+    background: var(--brand-red);
+    border-radius: 7px;
+    display: grid; place-items: center;
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(229, 56, 76, 0.25);
+  }
+
+  .brand-mark svg { width: 16px; height: 16px; }
+
+  .brand-text { line-height: 1.1; }
+  .brand-text .name {
+    color: #fff;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: -0.01em;
+  }
+  .brand-text .tag {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-top: 2px;
+  }
+
+  .nav-wrap {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 12px 24px;
+  }
+
+  .nav-wrap::-webkit-scrollbar { width: 4px; }
+  .nav-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 4px; }
+
+  .nav-section { margin-bottom: 18px; }
+
+  .nav-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #5B6B82;
+    padding: 0 12px 8px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 8px 12px;
+    font-size: 13.5px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    margin-bottom: 1px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+    font-family: inherit;
+  }
+
+  .nav-item:hover {
+    background: var(--sidebar-bg-2);
+    color: var(--sidebar-text-strong);
+  }
+
+  .nav-item.active {
+    background: var(--sidebar-active-bg);
+    color: #fff;
+    font-weight: 500;
+  }
+
+  .nav-item svg {
+    width: 16px; height: 16px;
+    stroke-width: 1.75;
+    opacity: 0.75;
+  }
+
+  .nav-item.active svg { opacity: 1; }
+
+  .nav-item .badge-num {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 600;
+    background: var(--brand-red);
+    color: #fff;
+    padding: 1px 6px;
+    border-radius: 99px;
+    font-family: 'Geist Mono', monospace;
+  }
+
+  .sidebar-footer {
+    padding: 14px 20px;
+    border-top: 1px solid var(--sidebar-divider);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #C9A961, #B68B3C);
+    color: #fff;
+    display: grid; place-items: center;
+    font-weight: 600;
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+
+  .sidebar-footer .meta {
+    flex: 1; min-width: 0;
+  }
+  .sidebar-footer .meta .who {
+    color: #fff;
+    font-size: 12.5px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+  .sidebar-footer .meta .role {
+    color: var(--text-muted);
+    font-size: 10.5px;
+    margin-top: 2px;
+  }
+
+  .sidebar-footer .icon-btn {
+    width: 28px; height: 28px;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    cursor: pointer;
+    display: grid; place-items: center;
+  }
+  .sidebar-footer .icon-btn:hover { background: var(--sidebar-bg-2); color: #fff; }
+  .sidebar-footer .icon-btn svg { width: 14px; height: 14px; }
+
+  /* ============ MAIN ============ */
+  main { display: flex; flex-direction: column; min-width: 0; }
+
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 10;
+  }
+
+  .breadcrumb {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .breadcrumb .current {
+    color: var(--text);
+    font-weight: 500;
+  }
+  .breadcrumb .sep { color: var(--border); }
+
+  .topbar-right {
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .search-box {
+    position: relative;
+    width: 280px;
+  }
+  .search-box input {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 7px 12px 7px 32px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .search-box input:focus {
+    border-color: var(--accent);
+    background: #fff;
+  }
+  .search-box svg {
+    position: absolute; left: 10px; top: 50%;
+    transform: translateY(-50%);
+    width: 14px; height: 14px;
+    color: var(--text-muted);
+  }
+  .search-box kbd {
+    position: absolute; right: 8px; top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Geist Mono', monospace;
+    font-size: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1px 5px;
+    border-radius: 4px;
+    color: var(--text-muted);
+  }
+
+  .top-icon-btn {
+    position: relative;
+    width: 34px; height: 34px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: grid; place-items: center;
+    color: var(--text-soft);
+  }
+  .top-icon-btn:hover { background: #fff; color: var(--text); }
+  .top-icon-btn svg { width: 15px; height: 15px; }
+  .top-icon-btn .dot {
+    position: absolute; top: 6px; right: 6px;
+    width: 6px; height: 6px;
+    background: var(--brand-red);
+    border-radius: 50%;
+    border: 2px solid var(--surface-2);
+  }
+
+  /* ============ PAGE ============ */
+  .page { display: none; padding: 28px 32px 64px; }
+  .page.active { display: block; }
+
+  .page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+
+  .page-title {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .page-subtitle {
+    font-size: 13px;
+    color: var(--text-soft);
+    margin-top: 4px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  .btn:hover { background: var(--surface-2); border-color: #D5D9E0; }
+  .btn svg { width: 14px; height: 14px; }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .btn-primary:hover { background: var(--accent-2); border-color: var(--accent-2); }
+
+  .btn-ghost { border-color: transparent; background: transparent; }
+  .btn-ghost:hover { background: var(--surface-2); }
+
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+  .btn-group { display: flex; gap: 8px; }
+
+  /* ============ CARDS ============ */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-xs);
+  }
+
+  .card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-soft);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .card-header .title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .card-header .subtitle {
+    font-size: 12px;
+    color: var(--text-soft);
+    margin-top: 2px;
+  }
+  .card-body { padding: 20px; }
+  .card-body.flush { padding: 0; }
+
+  /* ============ DASHBOARD - HERO ============ */
+  .hero-target {
+    background: linear-gradient(135deg, #0E1B2E 0%, #1E3A5F 60%, #2C5282 100%);
+    border-radius: var(--radius-lg);
+    padding: 28px 32px;
+    color: #fff;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-target::before {
+    content: '';
+    position: absolute;
+    top: -40%; right: -10%;
+    width: 360px; height: 360px;
+    background: radial-gradient(circle, rgba(182, 139, 60, 0.18), transparent 65%);
+    pointer-events: none;
+  }
+  .hero-target::after {
+    content: '';
+    position: absolute;
+    bottom: -50%; right: 20%;
+    width: 240px; height: 240px;
+    background: radial-gradient(circle, rgba(255,255,255,0.04), transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 32px;
+    align-items: center;
+    position: relative;
+  }
+
+  .hero-target .eyebrow {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 8px;
+  }
+  .hero-target h2 {
+    font-size: 18px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 16px;
+  }
+  .hero-target .target-value {
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1;
+    margin-bottom: 4px;
+    font-family: 'Geist Mono', monospace;
+  }
+  .hero-target .target-value .currency { font-size: 22px; color: rgba(255,255,255,0.6); margin-right: 4px; }
+  .hero-target .target-meta {
+    font-size: 13px;
+    color: rgba(255,255,255,0.65);
+    margin-bottom: 24px;
+  }
+  .hero-target .target-meta .of-target { color: var(--gold); font-weight: 500; }
+
+  .progress {
+    height: 8px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 99px;
+    overflow: hidden;
+    position: relative;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #C9A961, #E0BE73);
+    border-radius: 99px;
+    transition: width 0.4s ease;
+  }
+  .progress-marker {
+    position: absolute;
+    top: -3px; bottom: -3px;
+    width: 2px;
+    background: rgba(255,255,255,0.4);
+  }
+  .progress-marker::after {
+    content: attr(data-label);
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px;
+    color: rgba(255,255,255,0.55);
+    white-space: nowrap;
+    font-family: 'Geist Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  .hero-status {
+    display: flex; gap: 24px;
+    margin-top: 16px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.55);
+  }
+  .hero-status strong { color: #fff; font-weight: 600; font-family: 'Geist Mono', monospace; }
+
+  .hero-side {
+    display: flex; flex-direction: column; gap: 14px;
+  }
+
+  .hero-pace {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    backdrop-filter: blur(8px);
+  }
+  .hero-pace .pace-label {
+    font-size: 10px;
+    color: rgba(255,255,255,0.55);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .hero-pace .pace-dot {
+    width: 6px; height: 6px; border-radius: 50%; background: #F59E0B;
+    box-shadow: 0 0 8px #F59E0B;
+  }
+  .hero-pace.behind .pace-dot { background: var(--brand-red); box-shadow: 0 0 8px var(--brand-red); }
+  .hero-pace .pace-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    font-family: 'Geist Mono', monospace;
+  }
+  .hero-pace .pace-desc {
+    font-size: 11.5px;
+    color: rgba(255,255,255,0.65);
+    margin-top: 2px;
+    line-height: 1.4;
+  }
+
+  /* ============ KPI GRID ============ */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .kpi {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    box-shadow: var(--shadow-xs);
+    position: relative;
+  }
+
+  .kpi-head {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 14px;
+  }
+  .kpi-icon {
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    display: grid; place-items: center;
+    background: var(--accent-soft);
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .kpi-icon svg { width: 14px; height: 14px; }
+  .kpi-icon.warn { background: var(--warning-soft); color: var(--warning); }
+  .kpi-icon.success { background: var(--success-soft); color: var(--success); }
+  .kpi-icon.danger { background: var(--danger-soft); color: var(--danger); }
+
+  .kpi-label {
+    font-size: 12px;
+    color: var(--text-soft);
+    font-weight: 500;
+  }
+
+  .kpi-value {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    line-height: 1.1;
+    font-family: 'Geist Mono', monospace;
+  }
+  .kpi-value .unit { font-size: 14px; color: var(--text-muted); font-weight: 500; }
+  .kpi-value .denom { font-size: 14px; color: var(--text-muted); font-weight: 500; margin-left: 2px; }
+
+  .kpi-foot {
+    display: flex; align-items: center; gap: 6px;
+    margin-top: 8px;
+    font-size: 11.5px;
+    color: var(--text-soft);
+  }
+  .kpi-delta {
+    display: inline-flex; align-items: center; gap: 2px;
+    padding: 1px 6px;
+    border-radius: 99px;
+    font-weight: 500;
+    font-size: 11px;
+    background: var(--success-soft);
+    color: var(--success);
+  }
+  .kpi-delta.down { background: var(--danger-soft); color: var(--danger); }
+  .kpi-delta.flat { background: var(--surface-2); color: var(--text-muted); }
+  .kpi-delta svg { width: 10px; height: 10px; }
+
+  .kpi-bar {
+    margin-top: 10px;
+    height: 4px;
+    background: var(--surface-2);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .kpi-bar-fill {
+    height: 100%;
+    background: var(--success);
+    border-radius: 99px;
+  }
+  .kpi-bar-fill.warn { background: var(--warning); }
+
+  /* ============ DASHBOARD - SECONDARY GRID ============ */
+  .dash-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  /* Funnel */
+  .funnel {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .funnel-row {
+    display: grid;
+    grid-template-columns: 110px 1fr 60px;
+    align-items: center;
+    gap: 14px;
+    font-size: 12.5px;
+  }
+  .funnel-row .stage-name { color: var(--text); font-weight: 500; }
+  .funnel-row .stage-sub { color: var(--text-muted); font-size: 11px; margin-top: 1px; }
+  .funnel-bar {
+    height: 22px;
+    background: var(--accent-soft);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+  }
+  .funnel-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 4px;
+    display: flex; align-items: center;
+    padding-left: 8px;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 500;
+    transition: width 0.4s;
+  }
+  .funnel-bar-fill.s-new { background: #475569; }
+  .funnel-bar-fill.s-contacted { background: #64748B; }
+  .funnel-bar-fill.s-interested { background: #D97706; }
+  .funnel-bar-fill.s-proposal { background: var(--warning); }
+  .funnel-bar-fill.s-won { background: var(--success); }
+  .funnel-count {
+    text-align: right;
+    font-family: 'Geist Mono', monospace;
+    font-weight: 500;
+    color: var(--text);
+    font-size: 13px;
+  }
+  .funnel-count .pct {
+    display: block;
+    font-size: 10px;
+    color: var(--text-muted);
+    font-weight: 400;
+    margin-top: 1px;
+  }
+
+  /* Top Partners */
+  .partner-rank {
+    display: flex; flex-direction: column;
+  }
+  .partner-row {
+    display: grid;
+    grid-template-columns: 22px 1fr auto auto;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .partner-row:last-child { border-bottom: 0; }
+  .partner-row .rank {
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+  .partner-row .rank.r1 { color: var(--gold); font-weight: 600; }
+  .partner-row .name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .partner-row .name-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 1px;
+  }
+  .partner-row .deals {
+    font-size: 11.5px;
+    color: var(--text-soft);
+    font-family: 'Geist Mono', monospace;
+  }
+  .partner-row .gmv {
+    font-family: 'Geist Mono', monospace;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .empty-state {
+    padding: 28px 20px;
+    text-align: center;
+  }
+  .empty-state .icon {
+    width: 40px; height: 40px;
+    margin: 0 auto 10px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    display: grid; place-items: center;
+    color: var(--text-muted);
+  }
+  .empty-state .empty-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .empty-state .empty-desc {
+    font-size: 12px;
+    color: var(--text-soft);
+  }
+
+  /* Stale leads alert */
+  .alert-card {
+    background: linear-gradient(180deg, #FFF8EC 0%, #FFFEFA 100%);
+    border: 1px solid #F5D9A1;
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .alert-card .alert-icon {
+    width: 32px; height: 32px;
+    background: var(--warning);
+    border-radius: 8px;
+    display: grid; place-items: center;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .alert-card .alert-icon svg { width: 16px; height: 16px; }
+  .alert-card .alert-body { flex: 1; }
+  .alert-card .alert-title {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #92400E;
+    margin-bottom: 2px;
+  }
+  .alert-card .alert-desc {
+    font-size: 12.5px;
+    color: #78350F;
+    line-height: 1.5;
+  }
+  .alert-card .alert-desc strong { font-weight: 600; }
+
+  /* ============ TABLE ============ */
+  .table-toolbar {
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    border-bottom: 1px solid var(--border-soft);
+    flex-wrap: wrap;
+  }
+  .filter-group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .filter-label {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-right: 4px;
+  }
+  .filter-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-soft);
+    cursor: pointer;
+  }
+  .filter-pill:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .filter-pill.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .filter-pill svg { width: 11px; height: 11px; }
+
+  .filter-select {
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    font-size: 12.5px;
+    color: var(--text);
+    font-family: inherit;
+    cursor: pointer;
+    outline: none;
+  }
+  .filter-select:focus { border-color: var(--accent); }
+
+  .table-stats {
+    display: flex; gap: 18px;
+    font-size: 12px;
+    color: var(--text-soft);
+  }
+  .table-stats .stat strong {
+    color: var(--text);
+    font-weight: 600;
+    margin-left: 4px;
+    font-family: 'Geist Mono', monospace;
+  }
+  .table-stats .sep { color: var(--border); }
+
+  table.data {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  table.data thead tr { background: var(--surface-2); }
+  table.data th {
+    padding: 10px 16px;
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-soft);
+    white-space: nowrap;
+  }
+  table.data td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-soft);
+    color: var(--text-soft);
+    vertical-align: middle;
+  }
+  table.data tr:last-child td { border-bottom: 0; }
+  table.data tr:hover td { background: #FAFBFC; }
+
+  table.data td.id { font-family: 'Geist Mono', monospace; color: var(--text-muted); font-size: 12px; }
+  table.data td.strong { color: var(--text); font-weight: 500; }
+  table.data td.num { font-family: 'Geist Mono', monospace; text-align: right; }
+  table.data th.num { text-align: right; }
+
+  .row-avatar {
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .row-avatar .av {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .row-avatar .av.c1 { background: #1E3A5F; }
+  .row-avatar .av.c2 { background: #059669; }
+  .row-avatar .av.c3 { background: #B68B3C; }
+  .row-avatar .av.c4 { background: #DC2626; }
+  .row-avatar .av.c5 { background: #475569; }
+  .row-avatar .av.c6 { background: #2C5282; }
+  .row-avatar .nm { line-height: 1.2; }
+  .row-avatar .nm .name {
+    color: var(--text);
+    font-weight: 500;
+    font-size: 13px;
+  }
+  .row-avatar .nm .sub {
+    color: var(--text-muted);
+    font-size: 11px;
+    margin-top: 1px;
+    font-family: 'Geist Mono', monospace;
+  }
+
+  /* Tier badges */
+  .tier {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .tier::before {
+    content: '';
+    width: 5px; height: 5px;
+    border-radius: 50%;
+  }
+  .tier.a { background: var(--gold-soft); color: var(--gold); }
+  .tier.a::before { background: var(--gold); }
+  .tier.b { background: var(--accent-soft); color: var(--accent); }
+  .tier.b::before { background: var(--accent); }
+  .tier.c { background: #F1F5F9; color: #475569; }
+  .tier.c::before { background: #64748B; }
+  .tier.x { background: var(--danger-soft); color: var(--danger); }
+  .tier.x::before { background: var(--danger); }
+
+  /* Status pills */
+  .pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px;
+    border-radius: 4px;
+    font-size: 11.5px;
+    font-weight: 500;
+  }
+  .pill::before {
+    content: ''; width: 5px; height: 5px; border-radius: 50%;
+  }
+  .pill.new { background: #F1F5F9; color: #475569; }
+  .pill.new::before { background: #64748B; }
+  .pill.contacted { background: var(--info-soft); color: var(--info); }
+  .pill.contacted::before { background: var(--info); }
+  .pill.interested { background: var(--warning-soft); color: var(--warning); }
+  .pill.interested::before { background: var(--warning); }
+  .pill.proposal { background: #FFF1E0; color: #B45309; }
+  .pill.proposal::before { background: #D97706; }
+  .pill.won { background: var(--success-soft); color: var(--success); }
+  .pill.won::before { background: var(--success); }
+  .pill.lost { background: var(--danger-soft); color: var(--danger); }
+  .pill.lost::before { background: var(--danger); }
+  .pill.paid { background: var(--success-soft); color: var(--success); }
+  .pill.paid::before { background: var(--success); }
+  .pill.unpaid { background: var(--danger-soft); color: var(--danger); }
+  .pill.unpaid::before { background: var(--danger); }
+
+  /* Days in stage */
+  .days {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: 'Geist Mono', monospace;
+    font-size: 12px;
+    color: var(--text-soft);
+  }
+  .days.fresh { color: var(--text-muted); }
+  .days.stale { color: var(--warning); font-weight: 500; }
+  .days.cold { color: var(--danger); font-weight: 600; }
+  .days .dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: currentColor;
+  }
+
+  /* Type marker (R/I) */
+  .type-mark {
+    display: inline-block;
+    width: 18px; height: 18px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    text-align: center;
+    line-height: 18px;
+    font-family: 'Geist Mono', monospace;
+  }
+  .type-mark.r { background: var(--accent-soft); color: var(--accent); }
+  .type-mark.i { background: var(--gold-soft); color: var(--gold); }
+
+  /* Commission split column */
+  .comm-split {
+    display: flex; flex-direction: column;
+    font-family: 'Geist Mono', monospace;
+    font-size: 12px;
+  }
+  .comm-split .set { color: var(--text); font-weight: 500; }
+  .comm-split .paid { color: var(--text-muted); font-size: 10.5px; margin-top: 1px; }
+
+  /* Row action */
+  .row-action {
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .row-action button {
+    width: 26px; height: 26px;
+    border: none;
+    background: transparent;
+    border-radius: 5px;
+    cursor: pointer;
+    display: grid; place-items: center;
+    color: var(--text-muted);
+  }
+  .row-action button:hover { background: var(--surface-2); color: var(--text); }
+  .row-action button svg { width: 13px; height: 13px; }
+
+  /* Table footer */
+  .table-foot {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 20px;
+    border-top: 1px solid var(--border-soft);
+    font-size: 12px;
+    color: var(--text-soft);
+  }
+  .pagination { display: flex; gap: 4px; align-items: center; }
+  .pagination button {
+    min-width: 28px; height: 28px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: 5px;
+    font-size: 12px;
+    color: var(--text-soft);
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0 8px;
+  }
+  .pagination button:hover { background: var(--surface-2); }
+  .pagination button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Legend strip */
+  .legend {
+    display: flex; gap: 16px; align-items: center;
+    padding: 10px 20px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border-soft);
+    font-size: 11.5px;
+    color: var(--text-soft);
+  }
+  .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+
+  /* ============ AGENTS PAGE ============ */
+  .agents-grid {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 20px;
+  }
+
+  .form-card { padding: 22px 24px; }
+  .form-card h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 18px;
+    color: var(--text);
+  }
+  .form-card .field { margin-bottom: 14px; }
+  .form-card label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-soft);
+    margin-bottom: 6px;
+  }
+  .form-card label .req { color: var(--brand-red); }
+  .form-card input, .form-card select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-family: inherit;
+    background: var(--surface);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-card input:focus, .form-card select:focus { border-color: var(--accent); }
+  .form-card .hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 5px;
+  }
+
+  .form-card .form-actions {
+    display: flex; gap: 8px;
+    margin-top: 8px;
+  }
+
+  /* ============ PAYOUTS PAGE - SUMMARY ============ */
+  .payout-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .payout-summary .kpi { padding: 16px 18px; }
+
+  .tabs {
+    display: flex; gap: 2px;
+    background: var(--surface-2);
+    padding: 3px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    align-self: flex-start;
+  }
+  .tabs button {
+    padding: 5px 14px;
+    background: transparent;
+    border: none;
+    border-radius: 5px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-soft);
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .tabs button.active {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: var(--shadow-xs);
+  }
+
+  /* Selected total bar */
+  .bulk-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 20px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    font-size: 12.5px;
+  }
+  .bulk-bar .meta { display: flex; gap: 16px; align-items: center; }
+  .bulk-bar .meta strong { font-family: 'Geist Mono', monospace; }
+  .bulk-bar .btn { background: rgba(255,255,255,0.15); color: #fff; border-color: rgba(255,255,255,0.2); }
+  .bulk-bar .btn:hover { background: rgba(255,255,255,0.25); }
+
+  input[type="checkbox"] {
+    width: 14px; height: 14px;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+
+  /* ============ DEMO BANNER ============ */
+  .demo-banner {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 32px;
+    font-size: 11.5px;
+    color: var(--text-soft);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .demo-banner .dot { width: 6px; height: 6px; background: var(--success); border-radius: 50%; }
+  .demo-banner strong { color: var(--text); font-weight: 600; }
+
+  /* mobile fallback */
+  @media (max-width: 1024px) {
+    .app { grid-template-columns: 1fr; }
+    aside { display: none; }
+    .kpi-grid, .payout-summary { grid-template-columns: repeat(2, 1fr); }
+    .dash-grid-2 { grid-template-columns: 1fr; }
+    .agents-grid { grid-template-columns: 1fr; }
+    .hero-grid { grid-template-columns: 1fr; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside>
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="brand-text">
+        <div class="name">Getlead</div>
+        <div class="tag">Partner Console</div>
+      </div>
+    </div>
+
+    <nav class="nav-wrap">
+      <div class="nav-section">
+        <div class="nav-label">Overview</div>
+        <button class="nav-item active" data-page="dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+          Dashboard
+        </button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Network</div>
+        <button class="nav-item" data-page="partners">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Partners
+          <span class="badge-num">92</span>
+        </button>
+        <button class="nav-item" data-page="leads">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Leads
+          <span class="badge-num">103</span>
+        </button>
+        <button class="nav-item" data-page="agents">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+          Agents
+        </button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Payouts</div>
+        <button class="nav-item" data-page="payouts">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          Prepare Payouts
+          <span class="badge-num">6</span>
+        </button>
+        <button class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Set Payouts
+        </button>
+        <button class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Payout History
+        </button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">System</div>
+        <button class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Activities
+        </button>
+        <button class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          News
+        </button>
+        <button class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </button>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="avatar">AB</div>
+      <div class="meta">
+        <div class="who">Abhinav B.</div>
+        <div class="role">Partner Manager</div>
+      </div>
+      <button class="icon-btn" title="Sign out">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main>
+
+    <div class="topbar">
+      <div class="breadcrumb">
+        <span>Administration</span>
+        <span class="sep">/</span>
+        <span class="current" id="crumbCurrent">Dashboard</span>
+      </div>
+      <div class="topbar-right">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search partners, leads, deals…">
+          <kbd>⌘K</kbd>
+        </div>
+        <button class="top-icon-btn" title="Notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="dot"></span>
+        </button>
+        <button class="top-icon-btn" title="Help">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="demo-banner">
+      <span class="dot"></span>
+      <span><strong>Revised Admin UI Prototype</strong> — Click left-sidebar items to switch pages. Mock data only.</span>
+    </div>
+
+    <!-- ============ DASHBOARD ============ -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Welcome back, Abhinav</div>
+          <div class="page-subtitle">May 2026 · Day 11 of 31 · Partner-sourced GMV is the only metric that matters this quarter.</div>
+        </div>
+        <div class="btn-group">
+          <button class="btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export
+          </button>
+          <button class="btn btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Quick Action
+          </button>
+        </div>
+      </div>
+
+      <!-- HERO TARGET -->
+      <div class="hero-target">
+        <div class="hero-grid">
+          <div>
+            <div class="eyebrow">Monthly Target · ₹5,00,000 GMV</div>
+            <h2>You're tracking behind pace for May.</h2>
+            <div class="target-value"><span class="currency">₹</span>87,400</div>
+            <div class="target-meta">
+              <span class="of-target">17.5%</span> of ₹5,00,000 target · 6 deals closed · 20 days remaining
+            </div>
+            <div class="progress" style="margin-top: 8px;">
+              <div class="progress-fill" style="width: 17.5%;"></div>
+              <div class="progress-marker" style="left: 35.5%;" data-label="EXPECTED PACE"></div>
+            </div>
+            <div class="hero-status">
+              <div>Daily pace needed · <strong>₹20,630</strong></div>
+              <div>Avg daily so far · <strong>₹7,945</strong></div>
+              <div>Gap to close · <strong>₹4,12,600</strong></div>
+            </div>
+          </div>
+          <div class="hero-side">
+            <div class="hero-pace behind">
+              <div class="pace-label"><span class="pace-dot"></span>Status</div>
+              <div class="pace-value">Behind pace</div>
+              <div class="pace-desc">At current run-rate you'll hit ₹2.46L by month-end — <strong>49% of target</strong>.</div>
+            </div>
+            <div class="hero-pace">
+              <div class="pace-label"><span class="pace-dot"></span>What moves the needle</div>
+              <div class="pace-value">8 partners</div>
+              <div class="pace-desc">Tier A partners with leads in "Interested" or "Proposal" — push these first.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI ROW -->
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-head">
+            <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            <div class="kpi-label">GMV This Month</div>
+          </div>
+          <div class="kpi-value">₹87,400</div>
+          <div class="kpi-foot">
+            <span class="kpi-delta down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>42%</span>
+            <span>vs same point last month</span>
+          </div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-head">
+            <div class="kpi-icon success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <div class="kpi-label">Lead → Close Rate</div>
+          </div>
+          <div class="kpi-value">29.1%<span class="unit"> </span></div>
+          <div class="kpi-foot">
+            <span class="kpi-delta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>3.4 pts</span>
+            <span>30 of 103 leads closed all-time</span>
+          </div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-head">
+            <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg></div>
+            <div class="kpi-label">Active Partners</div>
+          </div>
+          <div class="kpi-value">63<span class="denom">/92</span></div>
+          <div class="kpi-bar"><div class="kpi-bar-fill" style="width: 68%;"></div></div>
+          <div class="kpi-foot" style="margin-top: 6px;">
+            <span>68% active · +11 this month</span>
+          </div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-head">
+            <div class="kpi-icon warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div class="kpi-label">Stale Leads (>7 days)</div>
+          </div>
+          <div class="kpi-value">41<span class="denom">/103</span></div>
+          <div class="kpi-bar"><div class="kpi-bar-fill warn" style="width: 39.8%;"></div></div>
+          <div class="kpi-foot" style="margin-top: 6px;">
+            <span style="color: var(--warning); font-weight: 500;">40% of pipeline aging — needs action</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALERT -->
+      <div class="alert-card">
+        <div class="alert-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div class="alert-body">
+          <div class="alert-title">Pipeline backlog · 68 leads sitting in "New"</div>
+          <div class="alert-desc">66% of all leads haven't been contacted yet. Assigning agents to the oldest 20 by end of day could unlock <strong>₹1.4L</strong> in pipeline value based on this quarter's close rate.</div>
+        </div>
+        <button class="btn">View stale leads →</button>
+      </div>
+
+      <!-- TWO COL -->
+      <div class="dash-grid-2">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="title">Pipeline Funnel</div>
+              <div class="subtitle">This month · All partners</div>
+            </div>
+            <button class="btn btn-sm btn-ghost">View leads →</button>
+          </div>
+          <div class="card-body">
+            <div class="funnel">
+              <div class="funnel-row">
+                <div>
+                  <div class="stage-name">New</div>
+                  <div class="stage-sub">Open pipeline</div>
+                </div>
+                <div class="funnel-bar"><div class="funnel-bar-fill s-new" style="width: 100%;">66%</div></div>
+                <div class="funnel-count">68<span class="pct">100% in</span></div>
+              </div>
+              <div class="funnel-row">
+                <div>
+                  <div class="stage-name">Contacted</div>
+                  <div class="stage-sub">Initial outreach</div>
+                </div>
+                <div class="funnel-bar"><div class="funnel-bar-fill s-contacted" style="width: 32%;">22</div></div>
+                <div class="funnel-count">22<span class="pct">32% pass</span></div>
+              </div>
+              <div class="funnel-row">
+                <div>
+                  <div class="stage-name">Interested</div>
+                  <div class="stage-sub">Demo done</div>
+                </div>
+                <div class="funnel-bar"><div class="funnel-bar-fill s-interested" style="width: 16%;">11</div></div>
+                <div class="funnel-count">11<span class="pct">50% pass</span></div>
+              </div>
+              <div class="funnel-row">
+                <div>
+                  <div class="stage-name">Proposal</div>
+                  <div class="stage-sub">Quote sent</div>
+                </div>
+                <div class="funnel-bar"><div class="funnel-bar-fill s-proposal" style="width: 12%;">8</div></div>
+                <div class="funnel-count">8<span class="pct">73% pass</span></div>
+              </div>
+              <div class="funnel-row">
+                <div>
+                  <div class="stage-name">Got Business</div>
+                  <div class="stage-sub">Closed-won</div>
+                </div>
+                <div class="funnel-bar"><div class="funnel-bar-fill s-won" style="width: 9%;">6</div></div>
+                <div class="funnel-count">6<span class="pct">75% pass</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="title">Top Partners · This Month</div>
+              <div class="subtitle">Ranked by closed-deal commission</div>
+            </div>
+            <button class="btn btn-sm btn-ghost">All partners →</button>
+          </div>
+          <div class="card-body">
+            <div class="partner-rank">
+              <div class="partner-row">
+                <div class="rank r1">01</div>
+                <div>
+                  <div class="name">Usama Shihabudeen</div>
+                  <div class="name-sub">Tier A · 4 deals</div>
+                </div>
+                <div class="deals">₹57,504</div>
+                <div class="gmv">₹17,251</div>
+              </div>
+              <div class="partner-row">
+                <div class="rank">02</div>
+                <div>
+                  <div class="name">Amarnad SG</div>
+                  <div class="name-sub">Tier A · 1 deal</div>
+                </div>
+                <div class="deals">₹14,376</div>
+                <div class="gmv">₹4,313</div>
+              </div>
+              <div class="partner-row">
+                <div class="rank">03</div>
+                <div>
+                  <div class="name">Hari Prakash AK</div>
+                  <div class="name-sub">Tier B · 1 deal</div>
+                </div>
+                <div class="deals">₹8,520</div>
+                <div class="gmv">₹1,704</div>
+              </div>
+              <div class="partner-row">
+                <div class="rank">04</div>
+                <div>
+                  <div class="name">Brandloom Club</div>
+                  <div class="name-sub">Tier B · 1 deal</div>
+                </div>
+                <div class="deals">₹4,200</div>
+                <div class="gmv">₹1,260</div>
+              </div>
+              <div class="partner-row">
+                <div class="rank">05</div>
+                <div>
+                  <div class="name">Namsheed</div>
+                  <div class="name-sub">Tier B · 1 deal</div>
+                </div>
+                <div class="deals">₹2,800</div>
+                <div class="gmv">₹840</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ PARTNERS ============ -->
+    <div class="page" id="page-partners">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Partners</div>
+          <div class="page-subtitle">92 total · 63 active · Filter, segment, and act on the network.</div>
+        </div>
+        <div class="btn-group">
+          <button class="btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export CSV
+          </button>
+          <button class="btn btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Partner
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="table-toolbar">
+          <div class="filter-group">
+            <span class="filter-label">Tier</span>
+            <button class="filter-pill active">All <span class="mono">92</span></button>
+            <button class="filter-pill"><span class="tier a" style="padding: 0; background: none;"></span>A <span class="mono">15</span></button>
+            <button class="filter-pill"><span class="tier b" style="padding: 0; background: none;"></span>B <span class="mono">37</span></button>
+            <button class="filter-pill"><span class="tier c" style="padding: 0; background: none;"></span>C <span class="mono">29</span></button>
+            <button class="filter-pill"><span class="tier x" style="padding: 0; background: none;"></span>Inactive <span class="mono">11</span></button>
+            <span style="width: 1px; height: 18px; background: var(--border); margin: 0 4px;"></span>
+            <select class="filter-select">
+              <option>All agents</option>
+              <option>Akhilkrishna</option>
+              <option>Haris</option>
+              <option>Abhinav</option>
+            </select>
+            <select class="filter-select">
+              <option>Last activity: Any</option>
+              <option>Last 7 days</option>
+              <option>Last 30 days</option>
+              <option>No activity 30+ days</option>
+            </select>
+          </div>
+          <div class="table-stats">
+            <div class="stat">Showing<strong>10</strong></div>
+            <div class="sep">·</div>
+            <div class="stat">of<strong>92</strong></div>
+          </div>
+        </div>
+
+        <table class="data">
+          <thead>
+            <tr>
+              <th style="width: 36px;"><input type="checkbox"></th>
+              <th>Partner</th>
+              <th>Tier</th>
+              <th class="num">Leads · Month</th>
+              <th class="num">GMV · Lifetime</th>
+              <th>Commission</th>
+              <th>Agent</th>
+              <th>Last Activity</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="row-avatar">
+                  <div class="av c1">US</div>
+                  <div class="nm">
+                    <div class="name">Usama Shihabudeen</div>
+                    <div class="sub">GLP00128 · usama@axentro.in</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="tier a">Tier A</span></td>
+              <td class="num strong">7</td>
+              <td class="num strong">₹64,902</td>
+              <td><div class="comm-split"><span class="set">25% set</span><span class="paid">₹0 paid YTD</span></div></td>
+              <td>Haris</td>
+              <td>2 hours ago</td>
+              <td><div class="row-action">
+                <button title="Message"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></button>
+                <button title="More"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="row-avatar">
+                  <div class="av c2">AS</div>
+                  <div class="nm">
+                    <div class="name">Amarnad SG</div>
+                    <div class="sub">GLP00134 · amarandsg@gmail.com</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="tier a">Tier A</span></td>
+              <td class="num strong">4</td>
+              <td class="num strong">₹28,752</td>
+              <td><div class="comm-split"><span class="set">20% set</span><span class="paid">₹0 paid YTD</span></div></td>
+              <td>Akhilkrishna</td>
+              <td>May 5, 11:02 AM</td>
+              <td><div class="row-action">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></button>
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="row-avatar">
+                  <div class="av c3">BC</div>
+                  <div class="nm">
+                    <div class="name">Brandloom Club</div>
+                    <div class="sub">GLP00139 · digital@brandloomclub.com</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="tier b">Tier B</span></td>
+              <td class="num strong">2</td>
+              <td class="num strong">₹14,000</td>
+              <td><div class="comm-split"><span class="set">30% set</span><span class="paid">₹0 paid YTD</span></div></td>
+              <td>Haris</td>
+              <td>Apr 22, 11:20 AM</td>
+              <td><div class="row-action">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></button>
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="row-avatar">
+                  <div class="av c6">HP</div>
+                  <div class="nm">
+                    <div class="name">Hari Prakash AK</div>
+                    <div class="sub">GLP00131 · haripk@graywolf.com</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="tier b">Tier B</span></td>
+              <td class="num strong">1</td>
+              <td class="num strong">₹8,520</td>
+              <td><div class="comm-split"><span class="set">20% set</span><span class="paid">₹0 paid YTD</span></div></td>
+              <td>Akhilkrishna</td>
+              <td>May 8, 4:14 PM</td>
+              <td><div class="row-action">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></button>
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="row-avatar">
+                  <div class="av c5">EM</div>
+                  <div class="nm">
+                    <div class="name">Eyas Muhammed</div>
+                    <div class="sub">GLP00137 · eyasaroor@gmail.com</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="tier b">Tier B</span></td>
+              <td class="num strong">1</td>
+              <td class="num strong">₹0</td>
+              <td><div class="comm-split"><span class="set">— not set</span><span class="paid">Use default 20%</span></div></td>
+              <td>Haris</td>
+              <td>Apr 13, 1:03 PM</td>
+              <td><div class="row-action">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></button>
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="row-avatar">
+                  <div class="av c1">AB</div>
+                  <div class="nm">
+                    <div class="name">Abhinesh</div>
+                    <div class="sub">GLP00141 · abhinesh.k@gmail.com</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="tier c">Tier C</span></td>
+              <td class="num strong">0</td>
+              <td class="num strong">₹0</td>
+              <td><div class="comm-split"><span class="set">18% set</span><span class="paid">₹0 paid YTD</span></div></td>
+              <td>—</td>
+              <td>No activity yet</td>
+              <td><div class="row-action">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></button>
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="row-avatar">
+                  <div class="av c4">NR</div>
+                  <div class="nm">
+                    <div class="name">Naman Rajput</div>
+                    <div class="sub">GLP00136 · namanrajput680@gmail.com</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="tier x">Inactive</span></td>
+              <td class="num strong">0</td>
+              <td class="num strong">₹0</td>
+              <td><div class="comm-split"><span class="set">— not set</span><span class="paid">—</span></div></td>
+              <td>—</td>
+              <td>62 days ago</td>
+              <td><div class="row-action">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></button>
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="row-avatar">
+                  <div class="av c2">JF</div>
+                  <div class="nm">
+                    <div class="name">John Febin</div>
+                    <div class="sub">GLP00135 · johnfebin2021@gmail.com</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="tier c">Tier C</span></td>
+              <td class="num strong">0</td>
+              <td class="num strong">₹0</td>
+              <td><div class="comm-split"><span class="set">— not set</span><span class="paid">—</span></div></td>
+              <td>—</td>
+              <td>—</td>
+              <td><div class="row-action">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></button>
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="row-avatar">
+                  <div class="av c6">PM</div>
+                  <div class="nm">
+                    <div class="name">Planova Management LLC</div>
+                    <div class="sub">GLP00142 · info@planovazone.com</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="tier c">Tier C</span></td>
+              <td class="num strong">0</td>
+              <td class="num strong">₹0</td>
+              <td><div class="comm-split"><span class="set">— not set</span><span class="paid">—</span></div></td>
+              <td>—</td>
+              <td>—</td>
+              <td><div class="row-action">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></button>
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="row-avatar">
+                  <div class="av c5">SJ</div>
+                  <div class="nm">
+                    <div class="name">Sara Jones</div>
+                    <div class="sub">GLP00143 · affiliate@comparebestai.com</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="tier c">Tier C</span></td>
+              <td class="num strong">0</td>
+              <td class="num strong">₹0</td>
+              <td><div class="comm-split"><span class="set">— not set</span><span class="paid">—</span></div></td>
+              <td>—</td>
+              <td>Just signed up</td>
+              <td><div class="row-action">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></button>
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="table-foot">
+          <span>1–10 of 92 partners</span>
+          <div class="pagination">
+            <button disabled>‹ Prev</button>
+            <button class="active">1</button>
+            <button>2</button>
+            <button>3</button>
+            <button>…</button>
+            <button>10</button>
+            <button>Next ›</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ LEADS ============ -->
+    <div class="page" id="page-leads">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Leads</div>
+          <div class="page-subtitle">103 total · 41 stale · Move leads through the pipeline.</div>
+        </div>
+        <div class="btn-group">
+          <button class="btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export
+          </button>
+          <button class="btn btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Lead
+          </button>
+        </div>
+      </div>
+
+      <!-- LEADS KPI ROW -->
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-head">
+            <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+            <div class="kpi-label">Total Leads</div>
+          </div>
+          <div class="kpi-value">103</div>
+          <div class="kpi-foot"><span>+7 this week</span></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-head">
+            <div class="kpi-icon warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div class="kpi-label">Stale (>7d in stage)</div>
+          </div>
+          <div class="kpi-value">41</div>
+          <div class="kpi-foot"><span style="color: var(--warning); font-weight: 500;">→ Filter below to act</span></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-head">
+            <div class="kpi-icon success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="kpi-label">Closed-won</div>
+          </div>
+          <div class="kpi-value">30</div>
+          <div class="kpi-foot"><span>29.1% close rate</span></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-head">
+            <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            <div class="kpi-label">Pipeline Value</div>
+          </div>
+          <div class="kpi-value">₹4.2L</div>
+          <div class="kpi-foot"><span>Open + Proposal stages</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="table-toolbar">
+          <div class="filter-group">
+            <span class="filter-label">Status</span>
+            <button class="filter-pill active">All <span class="mono">103</span></button>
+            <button class="filter-pill">New <span class="mono">68</span></button>
+            <button class="filter-pill">Contacted <span class="mono">22</span></button>
+            <button class="filter-pill">Interested <span class="mono">3</span></button>
+            <button class="filter-pill">Proposal <span class="mono">2</span></button>
+            <button class="filter-pill">Won <span class="mono">30</span></button>
+            <span style="width: 1px; height: 18px; background: var(--border); margin: 0 4px;"></span>
+            <select class="filter-select">
+              <option>All partners</option>
+              <option>Usama Shihabudeen</option>
+              <option>Amarnad SG</option>
+              <option>Hari Prakash AK</option>
+            </select>
+            <select class="filter-select">
+              <option>Payment: Any</option>
+              <option>Paid</option>
+              <option>Not Paid</option>
+            </select>
+            <select class="filter-select">
+              <option>Age: Any</option>
+              <option>Stale (>7 days)</option>
+              <option>Cold (>14 days)</option>
+            </select>
+          </div>
+        </div>
+
+        <table class="data">
+          <thead>
+            <tr>
+              <th style="width: 36px;"><input type="checkbox"></th>
+              <th>Lead</th>
+              <th>Partner</th>
+              <th>Status</th>
+              <th>Days in Stage</th>
+              <th class="num">Deal Value</th>
+              <th>Payment</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="row-avatar">
+                  <div class="av c1">ZE</div>
+                  <div class="nm">
+                    <div class="name">Zeramax</div>
+                    <div class="sub">Zeramax@gmail.com · +91 7558048690</div>
+                  </div>
+                </div>
+              </td>
+              <td>Amarnad SG</td>
+              <td><span class="pill new">New</span></td>
+              <td><span class="days cold"><span class="dot"></span>23 days</span></td>
+              <td class="num">—</td>
+              <td><span class="pill unpaid">Not Paid</span></td>
+              <td><div class="row-action">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="row-avatar">
+                  <div class="av c2">PS</div>
+                  <div class="nm">
+                    <div class="name">Pooja S S</div>
+                    <div class="sub">Speaknashen Lang. Institute · +91 7558048691</div>
+                  </div>
+                </div>
+              </td>
+              <td>Amarnad SG</td>
+              <td><span class="pill won">Got Business</span></td>
+              <td><span class="days fresh"><span class="dot"></span>2 days</span></td>
+              <td class="num strong">₹14,376</td>
+              <td><span class="pill paid">Paid</span></td>
+              <td><div class="row-action">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="row-avatar">
+                  <div class="av c1">ZE</div>
+                  <div class="nm">
+                    <div class="name">Zeramax (Digital)</div>
+                    <div class="sub">Zeramaxdigital@gmail.com · +91 9072489200</div>
+                  </div>
+                </div>
+              </td>
+              <td>Amarnad SG</td>
+              <td><span class="pill won">Got Business</span></td>
+              <td><span class="days fresh"><span class="dot"></span>5 days</span></td>
+              <td class="num strong">₹14,376</td>
+              <td><span class="pill paid">Paid</span></td>
+              <td><div class="row-action">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="row-avatar">
+                  <div class="av c6">GV</div>
+                  <div class="nm">
+                    <div class="name">Graywolf Ventures LLP</div>
+                    <div class="sub">graywolfventuresllp@gmail.com · +91 8157886622</div>
+                  </div>
+                </div>
+              </td>
+              <td>Hari Prakash AK</td>
+              <td><span class="pill won">Got Business</span></td>
+              <td><span class="days fresh"><span class="dot"></span>3 days</span></td>
+              <td class="num strong">₹8,520</td>
+              <td><span class="pill paid">Paid</span></td>
+              <td><div class="row-action">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="row-avatar">
+                  <div class="av c3">NM</div>
+                  <div class="nm">
+                    <div class="name">Nisam — My Home Oachira</div>
+                    <div class="sub">myhomeoachira@gmail.com · +91 9048105558</div>
+                  </div>
+                </div>
+              </td>
+              <td>Brandloom Club</td>
+              <td><span class="pill won">Got Business</span></td>
+              <td><span class="days fresh"><span class="dot"></span>4 days</span></td>
+              <td class="num strong">₹4,200</td>
+              <td><span class="pill paid">Paid</span></td>
+              <td><div class="row-action">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="row-avatar">
+                  <div class="av c4">MV</div>
+                  <div class="nm">
+                    <div class="name">Mervin — Osprey International</div>
+                    <div class="sub">mervinkp123@gmail.com · +91 8921382844</div>
+                  </div>
+                </div>
+              </td>
+              <td>Jithin K</td>
+              <td><span class="pill interested">Interested</span></td>
+              <td><span class="days stale"><span class="dot"></span>9 days</span></td>
+              <td class="num">~₹15,000</td>
+              <td><span class="pill unpaid">Not Paid</span></td>
+              <td><div class="row-action">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="row-avatar">
+                  <div class="av c5">GT</div>
+                  <div class="nm">
+                    <div class="name">Gtech Medical College</div>
+                    <div class="sub">contact@gtech.edu · +91 9048799066</div>
+                  </div>
+                </div>
+              </td>
+              <td>Eyas Muhammed</td>
+              <td><span class="pill new">New</span></td>
+              <td><span class="days stale"><span class="dot"></span>11 days</span></td>
+              <td class="num">—</td>
+              <td><span class="pill unpaid">Not Paid</span></td>
+              <td><div class="row-action">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="row-avatar">
+                  <div class="av c2">MA</div>
+                  <div class="nm">
+                    <div class="name">Muhammed Aripra — Green Earth</div>
+                    <div class="sub">contact@greenearth.in · +91 8590195207</div>
+                  </div>
+                </div>
+              </td>
+              <td>Haris KP</td>
+              <td><span class="pill proposal">Proposal Sent</span></td>
+              <td><span class="days fresh"><span class="dot"></span>3 days</span></td>
+              <td class="num">~₹22,000</td>
+              <td><span class="pill unpaid">Not Paid</span></td>
+              <td><div class="row-action">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="row-avatar">
+                  <div class="av c1">RI</div>
+                  <div class="nm">
+                    <div class="name">Rimja — Abba Global</div>
+                    <div class="sub">marketing@medtarg.com · +91 8139888199</div>
+                  </div>
+                </div>
+              </td>
+              <td>Namsheed</td>
+              <td><span class="pill won">Got Business</span></td>
+              <td><span class="days fresh"><span class="dot"></span>1 day</span></td>
+              <td class="num strong">₹2,800</td>
+              <td><span class="pill paid">Paid</span></td>
+              <td><div class="row-action">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>
+                <div class="row-avatar">
+                  <div class="av c6">SY</div>
+                  <div class="nm">
+                    <div class="name">Sayanth — Guidbay Study Abroad</div>
+                    <div class="sub">sayanth@guidbay.com · +91 9746888558</div>
+                  </div>
+                </div>
+              </td>
+              <td>Haris KP</td>
+              <td><span class="pill new">New</span></td>
+              <td><span class="days cold"><span class="dot"></span>17 days</span></td>
+              <td class="num">—</td>
+              <td><span class="pill unpaid">Not Paid</span></td>
+              <td><div class="row-action">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="table-foot">
+          <span>1–10 of 103 leads</span>
+          <div class="pagination">
+            <button disabled>‹ Prev</button>
+            <button class="active">1</button>
+            <button>2</button>
+            <button>3</button>
+            <button>…</button>
+            <button>11</button>
+            <button>Next ›</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ AGENTS ============ -->
+    <div class="page" id="page-agents">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Agents</div>
+          <div class="page-subtitle">Internal team members who close partner-sourced deals.</div>
+        </div>
+      </div>
+
+      <div class="agents-grid">
+        <div class="card form-card">
+          <h3>Add new agent</h3>
+          <div class="field">
+            <label>Full Name <span class="req">*</span></label>
+            <input type="text" placeholder="e.g. Akhil Krishna">
+          </div>
+          <div class="field">
+            <label>Email <span class="req">*</span></label>
+            <input type="email" placeholder="agent@getlead.co.uk">
+            <div class="hint">Used for login. Use a getlead.co.uk address where possible.</div>
+          </div>
+          <div class="field">
+            <label>Mobile <span class="req">*</span></label>
+            <input type="tel" placeholder="+91 …">
+          </div>
+          <div class="field">
+            <label>Role <span class="req">*</span></label>
+            <select>
+              <option>Agent — Closer</option>
+              <option>Agent — Onboarder</option>
+              <option>Partner Manager</option>
+              <option>Admin (full access)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Initial password</label>
+            <input type="password" placeholder="Auto-generated if blank">
+            <div class="hint">Agent will be prompted to reset on first login.</div>
+          </div>
+          <div class="form-actions">
+            <button class="btn">Cancel</button>
+            <button class="btn btn-primary">Send invite</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="title">Active agents</div>
+              <div class="subtitle">3 internal · 1 test account flagged for cleanup</div>
+            </div>
+            <button class="btn btn-sm">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              Clean test data
+            </button>
+          </div>
+          <table class="data">
+            <thead>
+              <tr>
+                <th>Agent</th>
+                <th>Role</th>
+                <th class="num">Partners</th>
+                <th class="num">Leads · Open</th>
+                <th>Last Login</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="row-avatar">
+                    <div class="av c1">AK</div>
+                    <div class="nm">
+                      <div class="name">Akhilkrishna</div>
+                      <div class="sub">akhil@getlead.co.uk</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="pill contacted">Closer</span></td>
+                <td class="num strong">38</td>
+                <td class="num strong">24</td>
+                <td>2 hours ago</td>
+                <td><div class="row-action">
+                  <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>
+                  <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                </div></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="row-avatar">
+                    <div class="av c2">HA</div>
+                    <div class="nm">
+                      <div class="name">Haris</div>
+                      <div class="sub">haris@getlead.co.uk</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="pill contacted">Closer</span></td>
+                <td class="num strong">31</td>
+                <td class="num strong">19</td>
+                <td>Yesterday, 6:14 PM</td>
+                <td><div class="row-action">
+                  <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>
+                  <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                </div></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="row-avatar">
+                    <div class="av c3">AB</div>
+                    <div class="nm">
+                      <div class="name">Abhinav B.</div>
+                      <div class="sub">abhinav@getlead.co.uk</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="pill won">Partner Manager</span></td>
+                <td class="num strong">23</td>
+                <td class="num strong">—</td>
+                <td>Active now</td>
+                <td><div class="row-action">
+                  <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>
+                  <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                </div></td>
+              </tr>
+              <tr style="background: #FFFBF5;">
+                <td>
+                  <div class="row-avatar">
+                    <div class="av c4">TU</div>
+                    <div class="nm">
+                      <div class="name">Test User <span style="font-size: 10px; color: var(--warning); margin-left: 4px; padding: 1px 6px; background: var(--warning-soft); border-radius: 3px; font-weight: 600;">TEST DATA</span></div>
+                      <div class="sub">getleadbackup@gmail.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td>—</td>
+                <td class="num">0</td>
+                <td class="num">0</td>
+                <td>Never</td>
+                <td><div class="row-action">
+                  <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                </div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ PAYOUTS ============ -->
+    <div class="page" id="page-payouts">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Prepare Payouts</div>
+          <div class="page-subtitle">Commission due for closed-won leads · Released after customer payment clears.</div>
+        </div>
+        <div class="btn-group">
+          <button class="btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Payout History
+          </button>
+          <button class="btn btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Run Batch Payout
+          </button>
+        </div>
+      </div>
+
+      <!-- SUMMARY KPIs -->
+      <div class="payout-summary">
+        <div class="kpi">
+          <div class="kpi-head">
+            <div class="kpi-icon warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            <div class="kpi-label">Pending Payout</div>
+          </div>
+          <div class="kpi-value">₹5,213</div>
+          <div class="kpi-foot"><span>Across 6 deals</span></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-head">
+            <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+            <div class="kpi-label">Partners Owed</div>
+          </div>
+          <div class="kpi-value">3</div>
+          <div class="kpi-foot"><span>Usama, Amarnad +1 more</span></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-head">
+            <div class="kpi-icon danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+            <div class="kpi-label">Aged (>14 days)</div>
+          </div>
+          <div class="kpi-value">₹4,994</div>
+          <div class="kpi-foot"><span style="color: var(--danger); font-weight: 500;">5 deals overdue</span></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-head">
+            <div class="kpi-icon success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="kpi-label">Paid This Month</div>
+          </div>
+          <div class="kpi-value">₹0</div>
+          <div class="kpi-foot"><span>No payouts processed yet</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="table-toolbar">
+          <div class="tabs">
+            <button class="active">Un-Paid <span class="mono" style="opacity: 0.7;">6</span></button>
+            <button>Paid <span class="mono" style="opacity: 0.7;">0</span></button>
+          </div>
+          <div class="filter-group">
+            <select class="filter-select">
+              <option>All partners</option>
+              <option>Usama Shihabudeen</option>
+              <option>Amarnad SG</option>
+            </select>
+            <select class="filter-select">
+              <option>All types</option>
+              <option>Referral only</option>
+              <option>Implementation only</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="legend">
+          <span class="legend-item"><span class="type-mark r">R</span> Referral · 20% commission</span>
+          <span class="legend-item"><span class="type-mark i">I</span> Implementation · 30% commission</span>
+          <span style="color: var(--text-muted); margin-left: auto;">Commission paid after customer payment clears</span>
+        </div>
+
+        <div class="bulk-bar" style="display: none;" id="bulkBar">
+          <div class="meta">
+            <span><strong>2</strong> deals selected</span>
+            <span>Total payout: <strong>₹899</strong></span>
+          </div>
+          <button class="btn">Pay selected</button>
+        </div>
+
+        <table class="data">
+          <thead>
+            <tr>
+              <th style="width: 36px;"><input type="checkbox"></th>
+              <th>Partner</th>
+              <th>Lead</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th class="num">Deal Amount</th>
+              <th class="num">Commission Due</th>
+              <th class="num">Paid</th>
+              <th class="num">Balance</th>
+              <th>Aged</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="checkbox" onchange="document.getElementById('bulkBar').style.display='flex'"></td>
+              <td><div class="row-avatar"><div class="av c2">AS</div><div class="nm"><div class="name">Amarnad SG</div><div class="sub">Tier A</div></div></div></td>
+              <td>Zeramax</td>
+              <td><span class="type-mark r" title="Referral">R</span></td>
+              <td><span class="pill won">Got Business</span></td>
+              <td class="num">₹899</td>
+              <td class="num strong">₹180</td>
+              <td class="num" style="color: var(--text-muted);">₹0</td>
+              <td class="num strong" style="color: var(--warning);">₹180</td>
+              <td><span class="days fresh"><span class="dot"></span>2d</span></td>
+              <td><div class="row-action">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td><div class="row-avatar"><div class="av c1">US</div><div class="nm"><div class="name">Usama Shihabudeen</div><div class="sub">Tier A</div></div></div></td>
+              <td>Sachin (Level100)</td>
+              <td><span class="type-mark r">R</span></td>
+              <td><span class="pill won">Got Business</span></td>
+              <td class="num">₹14,376</td>
+              <td class="num strong">₹2,875</td>
+              <td class="num" style="color: var(--text-muted);">₹0</td>
+              <td class="num strong" style="color: var(--warning);">₹719</td>
+              <td><span class="days cold"><span class="dot"></span>22d</span></td>
+              <td><div class="row-action">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td><div class="row-avatar"><div class="av c1">US</div><div class="nm"><div class="name">Usama Shihabudeen</div><div class="sub">Tier A</div></div></div></td>
+              <td>Rajesh Mehta</td>
+              <td><span class="type-mark r">R</span></td>
+              <td><span class="pill won">Got Business</span></td>
+              <td class="num">₹14,376</td>
+              <td class="num strong">₹2,875</td>
+              <td class="num" style="color: var(--text-muted);">₹0</td>
+              <td class="num strong" style="color: var(--warning);">₹719</td>
+              <td><span class="days cold"><span class="dot"></span>19d</span></td>
+              <td><div class="row-action">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td><div class="row-avatar"><div class="av c1">US</div><div class="nm"><div class="name">Usama Shihabudeen</div><div class="sub">Tier A</div></div></div></td>
+              <td>Sachin (Level100)</td>
+              <td><span class="type-mark i">I</span></td>
+              <td><span class="pill won">Got Business</span></td>
+              <td class="num">₹7,188</td>
+              <td class="num strong">₹2,156</td>
+              <td class="num" style="color: var(--text-muted);">₹0</td>
+              <td class="num strong" style="color: var(--warning);">₹2,156</td>
+              <td><span class="days cold"><span class="dot"></span>18d</span></td>
+              <td><div class="row-action">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td><div class="row-avatar"><div class="av c1">US</div><div class="nm"><div class="name">Usama Shihabudeen</div><div class="sub">Tier A</div></div></div></td>
+              <td>Creatabar</td>
+              <td><span class="type-mark r">R</span></td>
+              <td><span class="pill won">Got Business</span></td>
+              <td class="num">₹14,376</td>
+              <td class="num strong">₹2,875</td>
+              <td class="num" style="color: var(--text-muted);">₹0</td>
+              <td class="num strong" style="color: var(--warning);">₹719</td>
+              <td><span class="days cold"><span class="dot"></span>16d</span></td>
+              <td><div class="row-action">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td><div class="row-avatar"><div class="av c1">US</div><div class="nm"><div class="name">Usama Shihabudeen</div><div class="sub">Tier A</div></div></div></td>
+              <td>Aslam — Axentro</td>
+              <td><span class="type-mark r">R</span></td>
+              <td><span class="pill won">Got Business</span></td>
+              <td class="num">₹14,376</td>
+              <td class="num strong">₹2,875</td>
+              <td class="num" style="color: var(--text-muted);">₹0</td>
+              <td class="num strong" style="color: var(--warning);">₹719</td>
+              <td><span class="days cold"><span class="dot"></span>15d</span></td>
+              <td><div class="row-action">
+                <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </div></td>
+            </tr>
+            <tr style="background: var(--surface-2); font-weight: 600;">
+              <td></td>
+              <td colspan="5" style="color: var(--text);">Total · 6 deals</td>
+              <td class="num" style="color: var(--text);">₹65,591</td>
+              <td class="num" style="color: var(--text);">₹13,836</td>
+              <td class="num" style="color: var(--text-muted);">₹0</td>
+              <td class="num" style="color: var(--warning);">₹5,213</td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="table-foot">
+          <span>1–6 of 6 unpaid deals</span>
+          <div class="pagination">
+            <button disabled>‹ Prev</button>
+            <button class="active">1</button>
+            <button disabled>Next ›</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const navItems = document.querySelectorAll('.nav-item[data-page]');
+  const pages = document.querySelectorAll('.page');
+  const crumb = document.getElementById('crumbCurrent');
+
+  const titles = {
+    dashboard: 'Dashboard',
+    partners: 'Partners',
+    leads: 'Leads',
+    agents: 'Agents',
+    payouts: 'Prepare Payouts'
+  };
+
+  navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const target = item.dataset.page;
+      navItems.forEach(n => n.classList.remove('active'));
+      item.classList.add('active');
+      pages.forEach(p => p.classList.remove('active'));
+      document.getElementById('page-' + target).classList.add('active');
+      if (crumb) crumb.textContent = titles[target] || '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -11,9 +11,24 @@
 		</div>
 		
 	   <div class="form-group">
-			<label for="email" class="form-label">Email<span class="required">*</span></label>
-			<input type="email" class="form-control disabled" name="email_edit" id="email_edit" value="{{$part->email}}" required readonly>
+			<div class="row">
+				<div class="col-lg-6 col-xl-6 col-xxl-6">
+					<label for="email" class="form-label">Email<span class="required">*</span></label>
+					<input type="email" class="form-control disabled" name="email_edit" id="email_edit" value="{{$part->email}}" required readonly>
+				</div>
+
+				<div class="col-lg-6 col-xl-6 col-xxl-6">
+					<label for="email" class="form-label">Partner Tier<span class="required">*</span></label>
+					<select class="form-control" name="partner_tier_edit" id="partner_tier_edit" required  style="color:#000 !important;">
+					<option value="" selected disabled>select</option>
+					@foreach($ptiers as $row)
+					<option value="{{$row->id}}" @if($row->id==$part->partner_tier_id) selected @endif>{{$row->partner_tier}}</option>
+					@endforeach
+					</select>
+				</div>
+			</div>
 		</div>
+
 
 		<div class="form-group mt-3">
 			<label for="mobile" class="form-label">Mobile<span class="required">*</span></label>

@@ -28,6 +28,24 @@
 	{
 		text-align:left;
 	}
+	.sidebar-badge {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 26px;
+		height: 18px;
+		padding: 0 7px;
+		margin-left: auto;
+		background: #E5384C;
+		color: #fff;
+		border-radius: 999px;
+		font-size: 11px;
+		font-weight: 600;
+		line-height: 1;
+		font-family: monospace;
+	}
+	#side-menu li a { display: flex; align-items: center; }
+	#side-menu li a .menu-item { flex: 1; }
 	</style>
 </head>
 <body data-layout="vertical" data-sidebar="dark" data-sidebar-size="lg">
@@ -169,6 +187,9 @@
                     <a href="{{ route('partner.leads')}}" >
                         <i class="bx bx-user-circle icon nav-icon"></i>
                         <span class="menu-item" data-key="t-partners">My Leads</span>
+                        @if(!empty($sidebar_my_leads_count))
+                            <span class="sidebar-badge">{{ $sidebar_my_leads_count }}</span>
+                        @endif
                     </a>
                 </li>
 				

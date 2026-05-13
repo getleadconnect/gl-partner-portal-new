@@ -652,7 +652,7 @@ body[data-layout=horizontal] .footer {
     transition: all .4s;
     margin: 0 10px;
     border-radius: 3px;
-    font-size: 14.4px;
+    font-size: 14px;
     font-family: "Be Vietnam", sans-serif;
     -webkit-box-align: center;
     -ms-flex-align: center;

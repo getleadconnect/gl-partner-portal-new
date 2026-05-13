@@ -86,6 +86,52 @@ class DashboardController extends Controller
 		$data['month_label']= Carbon::now()->format('F Y');
 		$data['day_of_month']= (int) Carbon::now()->format('d');
 		$data['days_in_month']= (int) Carbon::now()->format('t');
+		$data['days_remaining']= max(1, $data['days_in_month'] - $data['day_of_month']);
+
+		// Stale leads: still "New" and older than 7 days
+		$data['stale_leads']=Lead::whereRaw('UPPER(lead_status)=?',['NEW'])
+			->where('created_at', '<', Carbon::now()->subDays(7))
+			->count();
+
+		$data['stale_pct']= $data['total_leads'] > 0
+			? round(($data['stale_leads'] / $data['total_leads']) * 100, 1)
+			: 0;
+
+		// Pipeline funnel — counts of each stage this month
+		$stages=[
+			['name'=>'New',           'sub'=>'Open pipeline',  'status'=>'New',           'class'=>'s-new'],
+			['name'=>'Interested',    'sub'=>'Engaged',        'status'=>'Interested',    'class'=>'s-interested'],
+			['name'=>'Proposal Sent', 'sub'=>'Quote sent',     'status'=>'Proposal Sent', 'class'=>'s-proposal'],
+			['name'=>'Got Business',  'sub'=>'Closed-won',     'status'=>'Got Business',  'class'=>'s-won'],
+		];
+		$funnel=[];
+		$max=0;
+		foreach($stages as $s){
+			$cnt=Lead::whereRaw('UPPER(lead_status)=?',[strtoupper($s['status'])])
+				->whereMonth('created_at', date('m'))
+				->whereYear('created_at', date('Y'))
+				->count();
+			$s['count']=$cnt;
+			$funnel[]=$s;
+			if($cnt > $max) $max=$cnt;
+		}
+		foreach($funnel as $i=>$s){
+			$funnel[$i]['width']= $max > 0 ? round(($s['count']/$max)*100) : 0;
+		}
+		$data['funnel']=$funnel;
+
+		// Hero target / pace metrics — target value is editable
+		$data['monthly_target']     = 500000; // ₹5,00,000 — adjust as needed
+		$data['target_pct']         = $data['monthly_target'] > 0
+			? round(($data['monthly_volume'] / $data['monthly_target']) * 100, 1) : 0;
+		$data['expected_pace_pct']  = round(($data['day_of_month'] / $data['days_in_month']) * 100, 1);
+		$data['gap_to_close']       = max(0, $data['monthly_target'] - $data['monthly_volume']);
+		$data['daily_pace_needed']  = (int) round($data['gap_to_close'] / $data['days_remaining']);
+		$data['avg_daily_so_far']   = $data['day_of_month'] > 0
+			? (int) round($data['monthly_volume'] / $data['day_of_month']) : 0;
+		$data['projected_eom']      = (int) round($data['avg_daily_so_far'] * $data['days_in_month']);
+		$data['projected_eom_pct']  = $data['monthly_target'] > 0
+			? round(($data['projected_eom'] / $data['monthly_target']) * 100) : 0;
 
 		$recent_noti=Notification::latest()->take(10)->get();
         					

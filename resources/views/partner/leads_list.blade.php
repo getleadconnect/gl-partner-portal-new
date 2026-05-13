@@ -1,109 +1,199 @@
 @extends('partner.master')
 @section('content')
 <style>
-.error
-{
-	color:red !important;
-	font-size:12px !important;
-}
+.error { color:red !important; font-size:12px !important; }
 
-.filter-select
-{
-	width:110px;
-	height:34px;
-	margin:8px 0px 8px 8px;
-	border-color:#aaa !important;
+/* ============ MY LEADS — PAGE HEADER ============ */
+.gl-page-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 16px; padding: 8px 4px 20px; flex-wrap: wrap;
+    font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
 }
-.numericCol{ float:right;}
-
-.purple
-{
-	color:purple;
+.gl-page-title { font-size: 24px; font-weight: 700; color: #0F172A; letter-spacing: -0.01em; margin: 0 0 4px 0; line-height: 1.2; }
+.gl-page-subtitle { font-size: 13px; color: #475569; }
+.gl-page-header__actions { display: inline-flex; align-items: center; gap: 10px; }
+.gl-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 8px;
+    font-size: 13px; font-weight: 500; line-height: 1.2;
+    font-family: inherit; text-decoration: none; cursor: pointer;
+    border: 1px solid transparent; white-space: nowrap;
+    transition: background .15s ease, border-color .15s ease, color .15s ease;
 }
+.gl-btn i { font-size: 15px; line-height: 1; }
+.gl-btn-outline { background: #FFFFFF; border-color: #E7E9EE; color: #0F172A; }
+.gl-btn-outline:hover { background: #FAFAFB; border-color: #CBD5E1; }
+.gl-btn-primary { background: #1E3A5F; color: #fff; border-color: #1E3A5F; box-shadow: 0 1px 2px rgba(15,23,42,0.08); }
+.gl-btn-primary:hover { background: #15294A; border-color: #15294A; color: #fff; }
 
+/* ============ TOOLBAR ============ */
+.gl-leads-toolbar {
+    padding: 12px 16px;
+    display: flex; align-items: center; justify-content: flex-start;
+    gap: 14px; border-bottom: 1px solid #F0F2F5;
+    flex-wrap: wrap; background: #FAFAFB;
+}
+.gl-leads-toolbar .filter-label {
+    font-size: 11.5px; color: #94A3B8; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.04em;
+}
+.gl-leads-toolbar .filter-group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.gl-leads-toolbar .filter-select-gl {
+    padding: 6px 10px; border: 1px solid #E7E9EE; border-radius: 6px;
+    background: #FFFFFF; font-size: 12.5px; color: #0F172A;
+    font-family: inherit; cursor: pointer; outline: none;
+}
+.gl-leads-toolbar .filter-select-gl:focus { border-color: #1E3A5F; }
+
+/* ============ TABLE ============ */
+.gl-leads {
+    --gl-surface: #FFFFFF; --gl-surface-2: #FAFAFB;
+    --gl-border: #E7E9EE; --gl-border-soft: #F0F2F5;
+    --gl-text: #0F172A; --gl-text-soft: #475569; --gl-text-muted: #94A3B8;
+    font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding:10px;
+}
+.gl-leads table.data { width: 100%; border-collapse: collapse; font-size: 13px; }
+.gl-leads table.data thead tr { background: var(--gl-surface-2); }
+.gl-leads table.data thead th {
+    padding: 10px 16px; text-align: left;
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--gl-text-muted); font-weight: 600;
+    border-bottom: 1px solid var(--gl-border-soft); white-space: nowrap;
+}
+.gl-leads table.data thead th.num { text-align: right; }
+.gl-leads table.data tbody td {
+    padding: 12px 16px; border-bottom: 1px solid var(--gl-border-soft);
+    color: var(--gl-text-soft); vertical-align: middle; background: var(--gl-surface);
+}
+.gl-leads table.data tbody tr:hover td { background: #FAFBFC; }
+.gl-leads table.data td.num { font-family: 'Geist Mono', monospace; text-align: right; font-variant-numeric: tabular-nums; }
+.gl-leads table.data td .num.strong { color: var(--gl-text); font-weight: 600; font-family: 'Geist Mono', monospace; }
+.gl-leads table.data td .num.muted  { color: var(--gl-text-muted); font-family: 'Geist Mono', monospace; }
+
+/* Lead avatar cell */
+.gl-leads .row-avatar { display: inline-flex; align-items: center; gap: 10px; }
+.gl-leads .row-avatar .av {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: grid; place-items: center; font-size: 11px; font-weight: 600;
+    color: #fff; flex-shrink: 0; letter-spacing: 0.02em;
+}
+.gl-leads .row-avatar .av.c1 { background: #1E3A5F; }
+.gl-leads .row-avatar .av.c2 { background: #059669; }
+.gl-leads .row-avatar .av.c3 { background: #B68B3C; }
+.gl-leads .row-avatar .av.c4 { background: #DC2626; }
+.gl-leads .row-avatar .av.c5 { background: #475569; }
+.gl-leads .row-avatar .av.c6 { background: #2C5282; }
+.gl-leads .row-avatar .nm { line-height: 1.25; }
+.gl-leads .row-avatar .nm .name { color: var(--gl-text); font-weight: 500; font-size: 13px; }
+.gl-leads .row-avatar .nm .sub { color: var(--gl-text-muted); font-size: 11px; margin-top: 2px; font-family: 'Geist Mono', monospace; }
+
+/* Pills (status + payment) */
+.gl-leads .pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px; border-radius: 999px;
+    font-size: 11.5px; font-weight: 500;
+    background: #F1F5F9; color: #475569;
+}
+.gl-leads .pill::before { content:''; width:5px; height:5px; border-radius:50%; background: currentColor; }
+.gl-leads .pill.paid    { background: #ECFDF5; color: #059669; }
+.gl-leads .pill.unpaid  { background: #FEE2E2; color: #DC2626; }
+.gl-leads .pill.pending { background: #FEF3C7; color: #B45309; }
+.gl-leads .pill.won     { background: #ECFDF5; color: #059669; }
+.gl-leads .pill.qual    { background: #EEF2F8; color: #1E3A5F; }
+.gl-leads .pill.demo    { background: #FEF3C7; color: #D97706; }
+.gl-leads .pill.cold    { background: #FEE2E2; color: #DC2626; }
+
+/* Days in stage */
+.gl-leads .days {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--gl-text-soft);
+}
+.gl-leads .days.fresh { color: var(--gl-text-muted); }
+.gl-leads .days.stale { color: #D97706; font-weight: 500; }
+.gl-leads .days.cold  { color: #DC2626; font-weight: 600; }
+.gl-leads .days .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+/* Row action buttons */
+.gl-leads .row-action { display: inline-flex; gap: 6px; }
+.gl-leads .row-action-btn {
+    width: 32px; height: 32px;
+    border: 1px solid var(--gl-border); background: var(--gl-surface);
+    border-radius: 6px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--gl-text-soft); cursor: pointer; padding: 0;
+    transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+.gl-leads .row-action-btn i { font-size: 15px; line-height: 1; }
+.gl-leads .row-action-btn:hover { background: #EEF2F8; border-color: #1E3A5F; color: #1E3A5F; }
+.gl-leads .row-action-btn.danger:hover { background: #FEE2E2; border-color: #DC2626; color: #DC2626; }
 </style>
 
- <div class="page-content">
-	<div class="container-fluid">
-            <!-- Start page title -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="page-title-box d-flex align-items-center justify-content-between">
-                        <h4 class="mb-0">My-leads</h4>
-                        <div class="page-title-right">
-                            <ol class="breadcrumb m-0">
-                                <li class="breadcrumb-item"><a href="{{route('partner.dashboard')}}">Home</a></li>
-                                <li class="breadcrumb-item active">Leads</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- End page title -->
+<div class="page-content">
+    <div class="container-fluid">
 
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="card-title mb-0">Manage Leads</h5>
-                                <div>
-								
-								<button id="btnOffcanvas" class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Add Leads</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-body">
-						
-                            <div class="d-flex">
-							    <select id="filter_status" class="filter-select">
-									<option value="" selected disabled>Status</option>
-                                    <option value="">All</option>
-									@foreach($lead_status as $value)
-										<option value="{{$value}}">{{$value}}</option>
+        <div class="gl-page-header">
+            <div class="gl-page-header__text">
+                <h1 class="gl-page-title">My Leads</h1>
+                <div class="gl-page-subtitle">Track and manage the leads you've submitted.</div>
+            </div>
+            <div class="gl-page-header__actions">
+                <button id="btnOffcanvas" type="button" class="gl-btn gl-btn-primary" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight">
+                    <i class="bx bx-plus"></i> Add Lead
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body" style="padding:0;">
+
+                        <div class="gl-leads-toolbar">
+                            <span class="filter-label">Filter</span>
+                            <div class="filter-group">
+                                <select id="filter_status" class="filter-select-gl">
+                                    <option value="">Status: Any</option>
+                                    @foreach($lead_status as $value)
+                                        <option value="{{ $value }}">{{ $value }}</option>
                                     @endforeach
                                 </select>
-							
-                                <select id="filter_payment_status" class="filter-select">
-								   <option value="" selected disabled>Payment</option>
-                                    <option value="">All</option>
+                                <select id="filter_payment_status" class="filter-select-gl">
+                                    <option value="">Payment: Any</option>
                                     <option value="1">Paid</option>
                                     <option value="0">Not Paid</option>
+                                    <option value="2">Pending</option>
                                 </select>
                             </div>
-                            <div class="table-responsive">
-														
-							<table id="my-leads-table" class="table table-striped table-centered align-middle table-nowrap mb-0" style="width:100% !important;">
-                                    <thead>
-                                      
-										<tr >
-											<th>No</th>
-											<th>Lead</th>
-											<th>Email</th>
-											<th>Mobile</th>
-											<th>Area</th>
-											<th>Lead Status</th>
-											<th align="right">Amount</th>
-											<th>Commission</th>
-											<th>Pay-Status</th>
-											<th>Pay-Date</th>
-											<th>Actions</th>
-										</tr>
-										
-                                    </thead>
-                                    <tbody>
-                                   
-                                    </tbody>
-                                </table>
-                            </div>
                         </div>
+
+                        <div class="table-responsive gl-leads">
+                            <table id="my-leads-table" class="data" style="width:100% !important;">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Lead</th>
+                                        <th>Area</th>
+                                        <th>Lead Status</th>
+                                        <!--<th>Days in Stage</th>-->
+                                        <th class="num">Deal Value</th>
+                                        <th class="num">Commission</th>
+                                        <th>Payment</th>
+                                        <th>Pay Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+
                     </div>
                 </div>
             </div>
+        </div>
 
-         
-        </div> <!-- container-fluid -->
     </div>
+</div>
 
 	
 <div class="modal" id="edit-lead-modal" tabindex="-1">
@@ -299,22 +389,18 @@ var phone_number = window.intlTelInput(document.querySelector("#mobile"), {
             },
 			
             columns: [
-				{data: 'DT_RowIndex', name: 'DT_RowIndex',orderable: false, searchable: false},
-				{data: 'name', name: 'name'},
-				{data: 'email', name: 'email'},
-				{data: 'mobile', name: 'mobile'},
-				{data: 'area', name: 'area'},
-				{data: 'lead_status', name: 'lead_status'},
-				{data: 'amount_collected', name: 'amount_collected'},
-				{data: 'commission_amount', name: 'commission_amount'},
-				{data: 'p_status', name: 'p_status'},
-				{data: 'pay_date', name: 'pay_date'},
-				{data: 'action', name: 'action'},
+                { data: 'DT_RowIndex',    name: 'DT_RowIndex', orderable: false, searchable: false },
+                { data: 'lead',           name: 'lead',          orderable: false, searchable: false },
+                { data: 'area',           name: 'area' },
+                { data: 'lead_status',    name: 'lead_status',   orderable: false },
+               // { data: 'days_in_stage',  name: 'days_in_stage', orderable: false, searchable: false },
+                { data: 'deal_value',     name: 'deal_value',    orderable: false, searchable: false, className: 'num' },
+                { data: 'commission_amount', name: 'commission_amount', className: 'num' },
+                { data: 'p_status',       name: 'p_status',      orderable: false },
+                { data: 'pay_date',       name: 'pay_date',      orderable: false },
+                { data: 'action',         name: 'action',        orderable: false, searchable: false, className: 'text-center' },
             ]
         });
-
-$(".dataTables_filter").append(filter_status);
-$(".dataTables_filter").append(filter_payment_status);
 
  
  $('#filter_payment_status').change(function()
@@ -465,21 +551,37 @@ $("#btnOffcanvas").click(function()
         })
 		
 		
-		$(document).on('click','.confirm_deletion',function()
+		$("#my-leads-table tbody").on('click','.confirm_deletion',function()
         {
-			$.ajax({
-				url: "{{ route('partner.delete-lead') }}",
-				method: 'post',
-				data: {'_token': '{{ csrf_token() }}','lead_id':$(this).data('id')},
-				success: function(result)
-				{
-					if(result.status)
-					{
-						toastr.success("Lead successfully removed!");
-						table.ajax.reload();
+			var leadId = $(this).data('id');
+			Swal.fire({
+				title: 'Delete this lead?',
+				text:  'This action cannot be undone.',
+				icon:  'warning',
+				showCancelButton:  true,
+				confirmButtonText: 'Yes, delete',
+				cancelButtonText:  'Cancel',
+				confirmButtonColor: '#DC2626',
+				cancelButtonColor:  '#94A3B8',
+				reverseButtons:     true,
+			}).then(function (result) {
+				if (!result.isConfirmed) return;
+				$.ajax({
+					url: "{{ route('partner.delete-lead') }}",
+					method: 'post',
+					data: {'_token':'{{ csrf_token() }}', 'lead_id': leadId},
+					success: function (result) {
+						if (result.status) {
+							toastr.success("Lead successfully removed!");
+							table.ajax.reload();
+						} else {
+							toastr.error(result.msg || 'Could not delete the lead.');
+						}
+					},
+					error: function () {
+						toastr.error('Could not delete the lead, please try again.');
 					}
-					
-				}
+				});
 			});
 		});
 

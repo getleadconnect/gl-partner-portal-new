@@ -41,6 +41,10 @@ use Carbon\Carbon;
 
 use App\Traits\LeadNotificationTrait;
 
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\payoutDetailsExport;
+use App\Exports\paymentHistoryExport;
+
 class PartnerController extends Controller
 {
     use LeadNotificationTrait, ApiService;
@@ -118,14 +122,22 @@ class PartnerController extends Controller
 			$update_message.=" <a href='".url('partner/settings')."' class='btn btn-primary' style='margin-left:20px;'>Update Now</a>";
 		}
 				
-		$prid=Auth::guard('partner')->user()->id;
-		
-		$data['leads_count'] = Lead::where('partner_id',$prid)->count();
-		$data['leads_business'] = Lead::where('lead_status','Got Business')->where('partner_id',$prid)->count();
-		
-		$data['total_commission'] = PaymentDetail::where('partner_id',$prid)->sum('commission');
-		$data['paid_commission'] = PaymentDetail::where('partner_id',$prid)->sum('amount');
-		
+		$prid = Auth::guard('partner')->user()->id;
+
+		$data['leads_count']      = Lead::where('partner_id', $prid)->count();
+		$data['leads_business']   = Lead::where('lead_status', 'Got Business')->where('partner_id', $prid)->count();
+		$data['leads_this_month'] = Lead::where('partner_id', $prid)
+			->whereMonth('created_at', date('m'))
+			->whereYear('created_at',  date('Y'))
+			->count();
+
+		$data['total_commission'] = PaymentHistory::where('partner_id', $prid)->sum('commission');
+		$data['paid_commission']  = PaymentHistory::where('partner_id', $prid)->sum('paid_amount');
+		$data['balance']  = LeadCommission::where('partner_id', $prid)->where('payment_status','!=',1)->sum('commission_amount');
+		$data['conversion_rate']  = $data['leads_count'] > 0
+			? round(($data['leads_business'] / $data['leads_count']) * 100, 1)
+			: 0;
+
         return view('partner.dashboard',compact('data','update_message'));
     }
 
@@ -318,139 +330,156 @@ class PartnerController extends Controller
                 	$request->paymentStatus!='' ? $q->where('leads.payment_status',$request->paymentStatus):'';
             	})->where('leads.partner_id',Auth::guard('partner')->user()->id)->get();
 				
+            $now = Carbon::now();
+
             return Datatables::of($data)
                     ->addIndexColumn()
 
+                    ->addColumn('lead', function($row){
+                        $name     = (string) ($row->name ?? '');
+                        $words    = preg_split('/\s+/', trim($name));
+                        $initials = strtoupper(substr($words[0] ?? '', 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+                        if ($initials === '') $initials = 'L';
+                        $colors = ['c1','c2','c3','c4','c5','c6'];
+                        $c = $colors[$row->id % count($colors)];
+                        $flags = ENT_QUOTES | ENT_SUBSTITUTE;
+
+                        $bits = array_filter([
+                            $row->email,
+                            ($row->country_code ? '+'.$row->country_code.' ' : '').$row->mobile,
+                        ]);
+                        $sub = htmlspecialchars(implode(' · ', $bits), $flags, 'UTF-8');
+
+                        return '<div class="row-avatar">'
+                                .'<div class="av '.$c.'">'.$initials.'</div>'
+                                .'<div class="nm">'
+                                    .'<div class="name">'.htmlspecialchars($name, $flags, 'UTF-8').'</div>'
+                                    .'<div class="sub">'.$sub.'</div>'
+                                .'</div>'
+                            .'</div>';
+                    })
+
+                    ->addColumn('days_in_stage', function($row) use ($now) {
+                        if (!$row->created_at) return '<span class="days fresh"><span class="dot"></span>—</span>';
+                        $days = $now->diffInDays(Carbon::parse($row->created_at));
+                        $cls  = 'fresh';
+                        if ($days > 14)    $cls = 'cold';
+                        elseif ($days > 7) $cls = 'stale';
+                        return '<span class="days '.$cls.'"><span class="dot"></span>'.$days.' day'.($days==1?'':'s').'</span>';
+                    })
+
+                    ->addColumn('deal_value', function($row){
+                        if ($row->amount_collected) {
+                            return '<span class="num strong">&#8377;'.number_format($row->amount_collected, 0, '.', ',').'</span>';
+                        }
+                        return '<span class="num muted">—</span>';
+                    })
+
                     ->addColumn('commission_amount', function($row){
-                        if($row->commission_amount)
-                        {
-                            return "₹ ".number_format($row->commission_amount,2,'.','');
+                        if ($row->commission_amount) {
+                            return '<span class="num strong">&#8377;'.number_format($row->commission_amount, 0, '.', ',').'</span>';
                         }
-                        return "0.00";
-                    })
-                    ->addColumn('amount_collected', function($row){
-                        if($row->amount_collected)
-                        {
-                            return "₹ ".number_format($row->amount_collected,2,'.','');
-                        }
-                        return "0.00";
-                    })
-					->addColumn('mobile', function($row){
-                        
-                        return ($row->country_code?'+'.$row->country_code:'').' '.$row->mobile;
+                        return '<span class="num muted">—</span>';
                     })
 
-					->addColumn('pay_date', function($row){
-                        if($row->payment_date!='')
-							return Carbon::parse($row->payment_date)->format('d-m-Y h:i A');
-					 	return '';
-                        
+                    ->addColumn('pay_date', function($row){
+                        if (!empty($row->payment_date))
+                            return Carbon::parse($row->payment_date)->format('d-m-Y');
+                        return '<span style="color:#94A3B8;">—</span>';
                     })
 
-					->addColumn('lead_status', function($row){
-                        $lead_status = "";
-                        if($row->lead_status == "Got Business")
-                        {
-                            $lead_status =  '<span class="success">'.$row->lead_status.'</span>';
-                        }
-						else if($row->lead_status == "New")
-                        {
-                            $lead_status = "<span class='text-warning'>".$row->lead_status."</span>";
-                        }
-						else
-                        {
-                            $lead_status = "<span class='text-semi-blue'>".$row->lead_status."</span>";
-                        }
-
-                        return $lead_status;
+                    ->addColumn('lead_status', function($row){
+                        $s = strtoupper((string) $row->lead_status);
+                        if ($s === 'GOT BUSINESS')  return '<span class="pill won">'.$row->lead_status.'</span>';
+                        if ($s === 'NEW')           return '<span class="pill qual">'.$row->lead_status.'</span>';
+                        if (str_starts_with($s, 'LOST')) return '<span class="pill cold">'.$row->lead_status.'</span>';
+                        if (str_contains($s,'DEMO') || str_contains($s,'PROPOSAL') || $s === 'INTERESTED')
+                            return '<span class="pill demo">'.$row->lead_status.'</span>';
+                        return '<span class="pill">'.$row->lead_status.'</span>';
                     })
+
                     ->addColumn('p_status', function($row){
-                        $payment_status = "";
-                        if($row->payment_status == 0)
-                        {
-                            $payment_status = '<span class="danger">Not Paid</span>';
-                        }
-						else if($row->payment_status == 1)
-                        {
-                            $payment_status = '<span class="success">Paid</span>';
-                        }
-						else if($row->payment_status == 2)
-                        {
-                            $payment_status = '<span class="purple">Pending</span>';
-                        }
-
-                        return $payment_status;
+                        if ($row->payment_status == 1) return '<span class="pill paid">Paid</span>';
+                        if ($row->payment_status == 2) return '<span class="pill pending">Pending</span>';
+                        return '<span class="pill unpaid">Not Paid</span>';
                     })
+
                     ->addColumn('action', function($row){
-     
-						$btn="";
-						if($row->lead_status=="New")
-						{
-						
-						 $btn = '<div class="btn-group">
-								<button type="button" class="btn btn-outline edit_lead" id="'.$row->id.'" data-bs-toggle="modal" data-bs-target="#edit-lead-modal" ><i class="fa fa-pencil"></i></button>
-								<button type="button" class="btn btn-outline dropdown-toggle"
-								data-bs-toggle="dropdown">
-								<i class="fa fa-trash"></i>
-							</button>
-					
-							<ul class="dropdown-menu pull-right" role="menu">
-								<li class="text-center mb-2"><a href="#">Confirm Deletion</a></li>
-								<li class="divider"></li>
-								<li style="display: flex;align-items:center;justify-content:center;" class="confirm_buttons">
-								<button type="button" class="btn btn-outline btn-success ok_btn confirm_deletion" data-id="'.$row->id.'"><i class="fa fa-check"></i></button>&nbsp;
-								<button type="button" class="btn btn-outline btn-danger no_btn"><i class="fa fa-times"></i></button>
-								</li>
-							</ul>
-						</div>';
-						
-						}
-						else if($row->lead_status!="Got Business")
-						{
-							$btn = '<div class="btn-group">
-								<button type="button" class="btn btn-outline edit_lead" id="'.$row->id.'" data-bs-toggle="modal" data-bs-target="#edit-lead-modal"><i class="fa fa-pencil"></i></button>';
-						}
-
-                        return $btn;
+                        if ($row->lead_status == 'New') {
+                            return '<div class="row-action">'
+                                    .'<button type="button" class="row-action-btn edit_lead" id="'.$row->id.'" data-bs-toggle="modal" data-bs-target="#edit-lead-modal" title="Edit lead">'
+                                        .'<i class="bx bx-pencil"></i>'
+                                    .'</button>'
+                                    .'<button type="button" class="row-action-btn danger confirm_deletion" data-id="'.$row->id.'" title="Delete lead">'
+                                        .'<i class="bx bx-trash"></i>'
+                                    .'</button>'
+                                .'</div>';
+                        }
+                        if ($row->lead_status != 'Got Business') {
+                            return '<div class="row-action">'
+                                    .'<button type="button" class="row-action-btn edit_lead" id="'.$row->id.'" data-bs-toggle="modal" data-bs-target="#edit-lead-modal" title="Edit lead">'
+                                        .'<i class="bx bx-pencil"></i>'
+                                    .'</button>'
+                                .'</div>';
+                        }
+                        return '<span style="color:#94A3B8;">—</span>';
                     })
-                    ->rawColumns(['action','lead_status','p_status'])
+
+                    ->rawColumns(['lead','days_in_stage','deal_value','commission_amount','pay_date','action','lead_status','p_status'])
                     ->make(true);
     }
 
 
 public function getBusinessLeads(Request $request)  //dashboard
     {
-        
-		$prid=Auth::guard('partner')->user()->id;
-		$data = Lead::latest()->where('lead_status','New')->where('partner_id',$prid)->take(10);
-		
+		$prid = Auth::guard('partner')->user()->id;
+		$data = Lead::latest()->where('partner_id', $prid)->take(10);
+
             return Datatables::of($data)
                     ->addIndexColumn()
-					->addColumn('commission_amount', function($row){
-                        if($row->commission_amount)
-                        {
-                            return "₹ ".number_format($row->commission_amount,2,'.','');
-                        }
-                        return "--";
+
+					->addColumn('lead', function($row){
+                        $name     = (string) ($row->name ?? '');
+                        $words    = preg_split('/\s+/', trim($name));
+                        $initials = strtoupper(substr($words[0] ?? '', 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+                        if ($initials === '') $initials = 'L';
+                        $colors = ['c1','c2','c3','c4','c5','c6'];
+                        $c = $colors[$row->id % count($colors)];
+                        $flags = ENT_QUOTES | ENT_SUBSTITUTE;
+                        $bits = array_filter([
+                            $row->email,
+                            ($row->country_code ? '+'.$row->country_code.' ' : '').$row->mobile,
+                        ]);
+                        $sub = htmlspecialchars(implode(' · ', $bits), $flags, 'UTF-8');
+
+                        return '<div class="row-avatar">'
+                                .'<div class="av '.$c.'">'.htmlspecialchars($initials, $flags, 'UTF-8').'</div>'
+                                .'<div class="nm">'
+                                    .'<div class="name">'.htmlspecialchars($name, $flags, 'UTF-8').'</div>'
+                                    .'<div class="sub">'.$sub.'</div>'
+                                .'</div>'
+                            .'</div>';
                     })
-					
+
+					->addColumn('commission_amount', function($row){
+                        if ($row->commission_amount) {
+                            return '<span class="num strong">&#8377;'.number_format($row->commission_amount, 0, '.', ',').'</span>';
+                        }
+                        return '<span class="num muted">—</span>';
+                    })
+
 					->addColumn('mobile', function($row){
-                        
                         return ($row->country_code?'+'.$row->country_code:'').' '.$row->mobile;
                     })
-					
-					->addColumn('lead_status', function($row){
-                        $lead_status = "";
-                        if($row->lead_status == "New")
-                        {
-                            $lead_status =  '<span class="text-warning">'.$row->lead_status.'</span>';
-                        }
-						else 
-                        {
-                            $lead_status = "<span>".$row->lead_status."</span>";
-                        }
 
-                        return $lead_status;
+					->addColumn('lead_status', function($row){
+                        $s = strtoupper((string) $row->lead_status);
+                        if ($s === 'GOT BUSINESS')  return '<span class="pill won">'.$row->lead_status.'</span>';
+                        if ($s === 'NEW')           return '<span class="pill qual">'.$row->lead_status.'</span>';
+                        if (str_starts_with($s, 'LOST')) return '<span class="pill cold">'.$row->lead_status.'</span>';
+                        if (str_contains($s,'DEMO') || str_contains($s,'PROPOSAL') || $s === 'INTERESTED')
+                            return '<span class="pill demo">'.$row->lead_status.'</span>';
+                        return '<span class="pill">'.$row->lead_status.'</span>';
                     })
 					
                     ->addColumn('p_status', function($row){
@@ -472,7 +501,7 @@ public function getBusinessLeads(Request $request)  //dashboard
 						$btn = '<button type="button" class="btn btn-outline edit_lead" data-id="'.$row->id.'" data-bs-toggle="modal" data-bs-target="#edit-lead-modal"><i class="fa fa-pencil"></i></button>';
 						return $btn;
                     })
-                    ->rawColumns(['action','lead_status','p_status'])
+                    ->rawColumns(['action','lead_status','p_status','lead','commission_amount'])
                     ->make(true);
     }
 
@@ -1282,77 +1311,100 @@ public function updateUserPassword(Request $request)
 
 public function payoutHistory(Request $request)
     {
-		return view('partner.payouts_history');
+		$pid = Auth::user()->id;
+
+		$payout_counts = [
+			'all'    => LeadCommission::where('partner_id', $pid)->count(),
+			'paid'   => LeadCommission::where('partner_id', $pid)->where('payment_status', 1)->count(),
+			'unpaid' => LeadCommission::where('partner_id', $pid)->where('payment_status', '!=', 1)->count(),
+		];
+
+		return view('partner.payouts_history', compact('payout_counts'));
     }
 
 public function viewPaymentDetails(Request $request)  //payment history page
     {
-
-		$pid=Auth::user()->id;
+		$pid          = Auth::user()->id;
+		$statusFilter = $request->status_filter;
+		$dateFrom     = $request->date_from;
+		$dateTo       = $request->date_to;
 
 		$data = LeadCommission::select('lead_commissions.*','leads.name','leads.mobile')
 		->leftJoin('leads','lead_commissions.lead_id','=','leads.id')
-		->where(function($q)use($pid)
-		{
-			$pid!="" ? $q->where('lead_commissions.partner_id',$pid):'';
-		})->get();
-				
+		->where('lead_commissions.partner_id', $pid)
+		->when($statusFilter === 'paid', function ($q) {
+			$q->where('lead_commissions.payment_status', 1);
+		})
+		->when($statusFilter === 'unpaid', function ($q) {
+			$q->where('lead_commissions.payment_status', '!=', 1);
+		})
+		->when(!empty($dateFrom), function ($q) use ($dateFrom) {
+			$q->whereDate('lead_commissions.updated_at', '>=', $dateFrom);
+		})
+		->when(!empty($dateTo), function ($q) use ($dateTo) {
+			$q->whereDate('lead_commissions.updated_at', '<=', $dateTo);
+		})
+		->get();
 
 		return Datatables::of($data)
 				->addIndexColumn()
 				->addColumn('name', function($row){
-				   
-					return $row->name;
+					$name     = (string) ($row->name ?? '');
+					$words    = preg_split('/\s+/', trim($name));
+					$initials = strtoupper(substr($words[0] ?? '', 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+					if ($initials === '') $initials = 'L';
+					$colors = ['c1','c2','c3','c4','c5','c6'];
+					$c = $colors[((int) ($row->lead_id ?? $row->id ?? 0)) % count($colors)];
+					$flags = ENT_QUOTES | ENT_SUBSTITUTE;
+
+					return '<div class="row-avatar">'
+							.'<div class="av '.$c.'">'.htmlspecialchars($initials, $flags, 'UTF-8').'</div>'
+							.'<div class="nm">'
+								.'<div class="name">'.htmlspecialchars($name, $flags, 'UTF-8').'</div>'
+								.(($row->mobile ?? '') !== '' ? '<div class="sub">'.htmlspecialchars((string)$row->mobile, $flags, 'UTF-8').'</div>' : '')
+							.'</div>'
+						.'</div>';
 				})
 				->addColumn('collected_amount', function($row){
-					$col_amount="₹ ".number_format($row->amount_collected,'2','.','');
-					return $col_amount;
+					return '&#8377;'.number_format($row->amount_collected, 0, '.', ',');
 				})
 				->addColumn('commission', function($row){
-					$com_amount="₹ ". number_format($row->commission_amount,'2','.','');
-					return $com_amount;
+					return '<span class="num strong">&#8377;'.number_format($row->commission_amount, 0, '.', ',').'</span>';
 				})
-				
 				->addColumn('amount', function($row){
-					$paid_amt="₹ ". number_format($row->paid_amount,'2','.','');
-					return $paid_amt;
+					return '<span class="num strong" style="color:#059669;">&#8377;'.number_format($row->paid_amount, 0, '.', ',').'</span>';
 				})
-				
 				->addColumn('balance', function($row){
-
-					$bal_amount="₹ ". number_format($row->balance,'2','.','');
-							return $bal_amount;
+					$bal = (int) $row->balance;
+					if ($bal === 0) return '<span class="num muted">&#8377;0</span>';
+					return '<span class="num strong" style="color:#D97706;">&#8377;'.number_format($bal, 0, '.', ',').'</span>';
 				})
-				
 				->addColumn('status', function($row){
-
-					if($row->balance==0)
-					{
-						$stat="<span class='success'>Paid</span>";
-					}
-					else
-					{
-						$stat="<span class='danger'>Not Paid</span>";
-					}
-					return $stat;
+					if ((int)$row->balance === 0) return '<span class="pill paid">Paid</span>';
+					return '<span class="pill unpaid">Not Paid</span>';
 				})
-				
-		->rawColumns(['status'])
+
+		->rawColumns(['name','status','collected_amount','commission','amount','balance'])
 		->make(true);
     }
 
 
 public function viewPaymentHistory(Request $request)
     {
-
-		$pid=Auth::user()->id;
+		$pid      = Auth::user()->id;
+		$dateFrom = $request->date_from;
+		$dateTo   = $request->date_to;
 
 		$data = PaymentHistory::select('payment_histories.*','leads.name','leads.mobile')
 		->leftJoin('leads','payment_histories.lead_id','=','leads.id')
-		->where(function($q)use($pid)
-		{
-			$pid!=0 ? $q->where('payment_histories.partner_id',$pid):'';
-		})->get()->map(function($q)
+		->where('payment_histories.partner_id', $pid)
+		->when(!empty($dateFrom), function ($q) use ($dateFrom) {
+			$q->whereDate('payment_histories.payment_date', '>=', $dateFrom);
+		})
+		->when(!empty($dateTo), function ($q) use ($dateTo) {
+			$q->whereDate('payment_histories.payment_date', '<=', $dateTo);
+		})
+		->get()->map(function($q)
 		{
 			if($q->multiple_leads!=null)
 			{
@@ -1367,39 +1419,59 @@ public function viewPaymentHistory(Request $request)
 		return Datatables::of($data)
 				->addIndexColumn()
 				->addColumn('name', function($row){
-					if($row->multiple_leads!=null)
-						return $row->multiple_lead_name;
-					else
-						return $row->name;
+					$flags = ENT_QUOTES | ENT_SUBSTITUTE;
+					if ($row->multiple_leads != null) {
+						$label = (string) ($row->multiple_lead_name ?? '');
+						return '<div class="lead-cell">'
+								.'<div class="name">'.htmlspecialchars($label, $flags, 'UTF-8').'</div>'
+								.'<div class="sub">Multiple leads</div>'
+							.'</div>';
+					}
+					return htmlspecialchars((string) ($row->name ?? ''), $flags, 'UTF-8');
 				})
 				->addColumn('amount', function($row){
-					$amount="₹ ".number_format($row->paid_amount,'2','.','');
-					return $amount;
+					return '<span class="num strong" style="color:#059669;">&#8377;'.number_format($row->paid_amount, 0, '.', ',').'</span>';
 				})
 				->addColumn('payment_date', function($row){
-					
-					$date=Carbon::createFromFormat('Y-m-d',$row->payment_date)->format('d-m-Y');
-					return $date;
+					if (!empty($row->payment_date))
+						return Carbon::createFromFormat('Y-m-d', $row->payment_date)->format('d-m-Y');
+					return '';
 				})
 				->addColumn('receipt', function($row){
-					
-					if($row->receipt!="")
-					{
-						$url='<a href="'.url('/uploads/receipts')."/".$row->receipt.'" target="_blank">view</a>';
+					if ($row->receipt != '') {
+						$href = url('/uploads/receipts').'/'.$row->receipt;
+						return '<a href="'.$href.'" target="_blank" class="gl-btn gl-btn-outline gl-btn-sm" title="View receipt">'
+								.'<i class="bx bx-receipt"></i> Receipt'
+							.'</a>';
 					}
-					else
-					{
-						$url='--';
-					}
-					return $url;
+					return '<span class="num muted">—</span>';
 				})
-		->rawColumns(['receipt'])
+		->rawColumns(['name','receipt','amount'])
 		->make(true);
     }
 
+public function exportPayoutDetails(Request $request)
+    {
+        $filters = [
+            'partner_id'    => Auth::user()->id,
+            'status_filter' => $request->query('status_filter', ''),
+            'date_from'     => $request->query('date_from', ''),
+            'date_to'       => $request->query('date_to', ''),
+        ];
+        return Excel::download(new payoutDetailsExport($filters), 'payout_details_'.date('Y-m-d').'.xlsx');
+    }
+
+public function exportPaymentHistory(Request $request)
+    {
+        $filters = [
+            'partner_id' => Auth::user()->id,
+            'date_from'  => $request->query('date_from', ''),
+            'date_to'    => $request->query('date_to', ''),
+        ];
+        return Excel::download(new paymentHistoryExport($filters), 'payment_history_'.date('Y-m-d').'.xlsx');
+    }
 
 
-  
   //lead status update api -------------------------------------------------
   //example: http://127.0.0.1:8000/update-lead-status?status=cool&mobile=9037164586
     

@@ -18,6 +18,8 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\partnerExport;
 use App\Exports\partnerActivityExport;
 use App\Exports\leadsExport;
+use App\Exports\payoutDetailsExport;
+use App\Exports\paymentHistoryExport;
 
 use DB; 
 use DataTables;
@@ -26,6 +28,7 @@ use App\Models\Lead;
 use App\Models\Agent;
 use App\Models\Admin;
 use App\Models\Partner;
+use App\Models\PartnerTier;
 use App\Models\Invite;
 use App\Models\User;
 use App\Models\LeadPurpose;
@@ -127,41 +130,129 @@ public function check(Request $request){
     public function channelPartners()
     {
 	    $agents = Agent::pluck('name','id');
-        $partner_count = Partner::all()->count();
 		$countries = CountryState::getCountries();
-        return view('admin.partners',compact('agents','partner_count','countries')); 
+		$ptiers = PartnerTier::orderBy('id')->get();
+
+		// Per-tier counts driven directly by partner_tier_id
+		$tierIdCounts = Partner::selectRaw('partner_tier_id, COUNT(*) as cnt')
+			->groupBy('partner_tier_id')
+			->pluck('cnt','partner_tier_id');
+
+		$tier_counts = [
+			'all'      => Partner::count(),
+			'active'   => Partner::where('status',1)->count(),
+			'inactive' => Partner::where('status',0)->count(),
+			'by_tier'  => [],
+		];
+		foreach ($ptiers as $t) {
+			$tier_counts['by_tier'][$t->id] = (int) ($tierIdCounts[$t->id] ?? 0);
+		}
+
+		$partner_count = $tier_counts['all'];
+        return view('admin.partners',compact('ptiers','agents','partner_count','countries','tier_counts'));
     }
+
+	/**
+	 * Convert a hex color (#RGB or #RRGGBB) into an rgba() string with the given alpha.
+	 * Used to derive a soft tint background from the tier's primary color.
+	 */
+	private function hexToRgba($hex, $alpha = 0.12)
+	{
+		$hex = ltrim((string) $hex, '#');
+		if (strlen($hex) === 3) {
+			$hex = $hex[0].$hex[0].$hex[1].$hex[1].$hex[2].$hex[2];
+		}
+		if (!preg_match('/^[0-9a-fA-F]{6}$/', $hex)) {
+			return null;
+		}
+		$r = hexdec(substr($hex, 0, 2));
+		$g = hexdec(substr($hex, 2, 2));
+		$b = hexdec(substr($hex, 4, 2));
+		return "rgba($r,$g,$b,$alpha)";
+	}
 	
 	
 	public function getPartners(Request $request)
-    {   
+    {
         $agents = Agent::pluck('name','id');
-		
-		$status=$request->searchStatus;
-				
-		/*$dat = Partner::latest('partners.created_at')
-				->leftJoin('agents','agents.id','partners.agent_id')
-				->select('partners.*','agents.name as agent_name');
-		if($status!="")
-        {
-			$dat->where('status',$status)->orWhere('status',null)->get();
-		}
-		*/
 
-		$data = Partner::select('partners.*','agents.name as agent_name')
+		$status         = $request->searchStatus;
+		$tierFilter     = $request->tier;
+		$agentFilter    = $request->agent_id_filter;
+		$activityFilter = $request->activity_filter;
+
+	
+		$leadsMonthByPartner = Lead::whereMonth('created_at', date('m'))
+			->whereYear('created_at', date('Y'))
+			->selectRaw('partner_id, COUNT(*) as cnt')
+			->groupBy('partner_id')
+			->pluck('cnt','partner_id');
+
+		$gmvByPartner = LeadCommission::whereRaw('UPPER(lead_status)=?',['GOT BUSINESS'])
+			->selectRaw('partner_id, SUM(amount_collected) as gmv')
+			->groupBy('partner_id')
+			->pluck('gmv','partner_id');
+
+		$closedDealsByPartner = LeadCommission::whereRaw('UPPER(lead_status)=?',['GOT BUSINESS'])
+			->selectRaw('partner_id, COUNT(*) as cnt')
+			->groupBy('partner_id')
+			->pluck('cnt','partner_id');
+
+		$paidYtdByPartner = LeadCommission::whereYear('payment_date', date('Y'))
+			->selectRaw('partner_id, SUM(paid_amount) as paid')
+			->groupBy('partner_id')
+			->pluck('paid','partner_id');
+
+		$lastLeadByPartner = Lead::selectRaw('partner_id, MAX(created_at) as last_at')
+			->groupBy('partner_id')
+			->pluck('last_at','partner_id');
+
+		$query = Partner::select('partners.*','agents.name as agent_name','partner_tiers.partner_tier as tier_label_db','partner_tiers.tier_color as tier_color_db')
 			->leftJoin('agents','agents.id','partners.agent_id')
+			->leftJoin('partner_tiers','partner_tiers.id','partners.partner_tier_id')
 			->where(function($q)use($status)
             {
-        	  ($status!="") ? $q->where('status',$status)->orWhere('status',null):'';
-			})->latest()->get()->map(function($q)
-			{
-			 	$lead=Lead::where('partner_id',$q->id)->latest()->first();
-					if(!empty($lead))
-						$q['lead_activity_at']=Carbon::parse($lead->created_at)->diffForHumans();
-					else
-						$q['lead_activity_at']="--";
-					return $q;
+        	  ($status!="") ? $q->where('partners.status',$status)->orWhere('partners.status',null):'';
 			});
+
+		if ($agentFilter !== null && $agentFilter !== '') {
+			$query->where('partners.agent_id', $agentFilter);
+		}
+
+		// Tier filter: numeric → partner_tier_id; 'active'/'inactive' → status
+		if ($tierFilter !== null && $tierFilter !== '') {
+			if ($tierFilter === 'active')        $query->where('partners.status', 1);
+			elseif ($tierFilter === 'inactive')  $query->where('partners.status', 0);
+			elseif (is_numeric($tierFilter))     $query->where('partners.partner_tier_id', (int) $tierFilter);
+		}
+
+		$data = $query->latest('partners.created_at')->get()->map(function($q) use($leadsMonthByPartner,$gmvByPartner,$paidYtdByPartner,$lastLeadByPartner,$closedDealsByPartner)
+			{
+				$lastAt = $lastLeadByPartner[$q->id] ?? null;
+				$q['lead_activity_at_raw'] = $lastAt;
+				$q['lead_activity_at']     = $lastAt ? Carbon::parse($lastAt)->diffForHumans() : '--';
+				$q['leads_month']   = (int) ($leadsMonthByPartner[$q->id] ?? 0);
+				$q['gmv_lifetime']  = (int) ($gmvByPartner[$q->id] ?? 0);
+				$q['paid_ytd']      = (int) ($paidYtdByPartner[$q->id] ?? 0);
+				$q['closed_deals']  = (int) ($closedDealsByPartner[$q->id] ?? 0);
+
+				$q['tier_label'] = $q->tier_label_db ?: '—';
+				$q['tier_color'] = $q->tier_color_db ?: null;
+
+				return $q;
+			});
+
+		if ($activityFilter !== null && $activityFilter !== '') {
+			$now = Carbon::now();
+			$data = $data->filter(function($q) use ($activityFilter, $now) {
+				$lastAt = $q['lead_activity_at_raw'] ?? null;
+				$last   = $lastAt ? Carbon::parse($lastAt) : null;
+				if ($activityFilter === '7d')      return $last && $last->gte($now->copy()->subDays(7));
+				if ($activityFilter === '30d')    return $last && $last->gte($now->copy()->subDays(30));
+				if ($activityFilter === 'stale30') return !$last || $last->lt($now->copy()->subDays(30));
+				return true;
+			})->values();
+		}
 
             return Datatables::of($data)
                     ->addIndexColumn()
@@ -171,11 +262,69 @@ public function check(Request $request){
 
 						return $name;
                     })
-					
+
+					->addColumn('partner', function($row)
+					{
+						$words = preg_split('/\s+/', trim($row->name ?? ''));
+						$initials = strtoupper(substr($words[0] ?? '', 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+						if ($initials === '') $initials = 'P';
+						$colors = ['c1','c2','c3','c4','c5','c6'];
+						$c = $colors[$row->id % count($colors)];
+
+						$bits = array_filter([
+							$row->unique_id,
+							($row->country_code ? '+'.$row->country_code : '').$row->mobile,
+							$row->email,
+						]);
+						$sub = htmlspecialchars(implode(' · ', $bits), ENT_QUOTES);
+
+						return '<div class="row-avatar">
+							<div class="av '.$c.'">'.$initials.'</div>
+							<div class="nm">
+								<div class="name"><a href="javascript:;" class="view-partner-details" id="'.$row->id.'">'.htmlspecialchars(Str::upper($row->name ?? ''), ENT_QUOTES).'</a></div>
+								<div class="sub">'.$sub.'</div>
+							</div>
+						</div>';
+					})
+
 					->addColumn('mobile', function($row)
 					{
 						return ($row->country_code?'+'.$row->country_code:'').$row->mobile;
                     })
+
+					->addColumn('tier', function($row)
+					{
+						$label = $row->tier_label ?: '—';
+						$color = $row->tier_color ?: null;
+						if ($label === '—' || !$color) {
+							return '<span class="tier tier-none">— not set</span>';
+						}
+						$bg = $this->hexToRgba($color, 0.12);
+						$style = 'color:'.$color.';background:'.($bg ?: '#0351a0').';';
+						$dotStyle = 'background:'.$color.';';
+						return '<span class="tier" style="'.$style.'"><span class="tier-prefix-dot" style="'.$dotStyle.'"></span>'.htmlspecialchars($label, ENT_QUOTES).'</span>';
+					})
+
+					->addColumn('leads_month', function($row)
+					{
+						return (int)($row->leads_month ?? 0);
+					})
+
+					->addColumn('gmv_lifetime', function($row)
+					{
+						return '&#8377;'.number_format($row->gmv_lifetime ?? 0, 0, '.', ',');
+					})
+
+					->addColumn('commission_split', function($row)
+					{
+						$pct = $row->commission_percentage ?? 0;
+						$set = ($pct > 0) ? $pct.'% set' : '— not set';
+						if (($row->renewal_comm_percentage ?? 0) > 0) {
+							$set .= ' · '.$row->renewal_comm_percentage.'% rnw';
+						}
+						$paid = '&#8377;'.number_format($row->paid_ytd ?? 0, 0, '.', ',').' paid YTD';
+						return '<div class="comm-split"><span class="set">'.$set.'</span><span class="paid">'.$paid.'</span></div>';
+					})
 
 					->addColumn('commission_per', function($row)
 					{
@@ -187,22 +336,31 @@ public function check(Request $request){
 					{
 						if($row->agent_name!="")
 						{
-						  $agent_name='<a href="#" class="assign_agent" data-id="'.$row->agent_id.'"data-bs-toggle="modal" data-bs-target="#assign-agent-modal" id="'.$row->id.'" title="Re-Assign Agent">'.$row->agent_name.'</a>';
+							$words    = preg_split('/\s+/', trim($row->agent_name));
+							$initials = strtoupper(substr($words[0] ?? '', 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+							if ($initials === '') $initials = 'A';
+
+							return '<a href="javascript:;" class="agent-chip assign_agent" data-id="'.$row->agent_id.'" data-bs-toggle="modal" data-bs-target="#assign-agent-modal" id="'.$row->id.'" title="Re-assign agent">'
+									.'<span class="agent-chip-avatar">'.htmlspecialchars($initials, ENT_QUOTES).'</span>'
+									.'<span class="agent-chip-name">'.htmlspecialchars($row->agent_name, ENT_QUOTES).'</span>'
+									.'<i class="bx bx-pencil agent-chip-edit"></i>'
+									.'</a>';
 						}
-						else
-						{	
-						  $agent_name = '<button type="button" class="btn btn-outline btn-circle assign_agent" data-bs-toggle="modal" data-bs-target="#assign-agent-modal" id="'.$row->id.'" title="Assign agent"><i class="fa fa-user-plus"></i></button>';
-						}
-						return $agent_name;
+
+						return '<button type="button" class="btn-assign-agent assign_agent" data-id="0" data-bs-toggle="modal" data-bs-target="#assign-agent-modal" id="'.$row->id.'" title="Assign agent">'
+								.'<i class="bx bx-user-plus"></i>'
+								.'<span>Assign</span>'
+								.'</button>';
                     })
 										
 					->addColumn('status', function($row)
 					{
-						$select = '<select name="partner_status" class="form-select partner_status '. ($row->status == 1?' partner-active':'partner-inactive').'"  data-id='.$row->id.'>';
-						$select .= '<option  value="1"' . ($row->status == 1 ? ' selected' : '') . '>Active</option>';
-						$select .= '<option  value="0"' . ($row->status == 0 ? ' selected' : '') . '>Inactive</option>';
-						$select .= '</select>';
-						return $select;
+						$on    = ((int)$row->status === 1);
+						$cls   = $on ? 'on' : 'off';
+						$label = $on ? 'Active' : 'Inactive';
+						$next  = $on ? 0 : 1;
+
+						return '<span class="status-pill '.$cls.'" data-id="'.$row->id.'" data-current="'.($on?1:0).'" data-next="'.$next.'" title="Click to '.($on?'deactivate':'activate').'">'.$label.'</span>';
                     })
 					
 					->addColumn('action', function($row)
@@ -226,7 +384,7 @@ public function check(Request $request){
 					return $action;
 					})
 
-                ->rawColumns(['name','agent_name','action','status'])
+                ->rawColumns(['name','partner','tier','commission_split','gmv_lifetime','agent_name','action','status'])
                 ->make(true);
     }
 	
@@ -294,6 +452,7 @@ public function createPartner(Request $request)
 					'company_name'=>$request->company_name,
 					'company_logo'=>$request->company_logo,
 					'email'=>$request->email,
+					'partner_tier_id'=>$request->partner_tier,
 					'website'=>$request->website,
 					'team_size'=>0,
 					'country'=>$request->country??NULL,
@@ -435,12 +594,13 @@ public function createPartner(Request $request)
 		$part=Partner::whereId($id)->first();
 		$lead = Lead::where('id',$id)->first();
         $countries = CountryState::getCountries();
+		$ptiers=PartnerTier::all();
 		if($part->country!="")
 			$states = CountryState::getStates($part->country);
 		else
 			$states=[];
 		
-		return view('modals.edit_partner_modal',compact('part','countries','states'));     
+		return view('modals.edit_partner_modal',compact('ptiers','part','countries','states'));     
 	}
 	
 	
@@ -456,6 +616,7 @@ public function createPartner(Request $request)
         $partner->mobile = $request->mobile_edit;
         $partner->company_name = $request->company_name_edit;
         $partner->email = $request->email_edit;
+		$partner->partner_tier_id = $request->partner_tier_edit;
 		$partner->commission_percentage = $request->comm_percentage_edit;
 		$partner->renewal_comm_percentage = $request->renewal_comm_percentage_edit;
         $partner->website = $request->website_edit;
@@ -561,21 +722,33 @@ public function createPartner(Request $request)
 	    $agents = Agent::pluck('name','id');
         $partner_count = Partner::all()->count();
 		$countries = CountryState::getCountries();
-        return view('admin.partners_activities',compact('agents','partner_count','countries')); 
+		$partners=Partner::whereIn('id', Lead::pluck('partner_id')->toArray())->pluck('name','id')->toArray();
+        return view('admin.partners_activities',compact('partners','agents','partner_count','countries')); 
     }
 	
 	
 	public function getPartnersActivities(Request $request)
-    {   
+    {
         $agents = Agent::pluck('name','id');
-		
-		$status=$request->searchStatus;
-		
+
+		$status   = $request->searchStatus;
+		$dateFrom = $request->date_from;
+		$dateTo   = $request->date_to;
+
 		$data = Partner::select('partners.*')
-				->where('status',1)
-				->orderBy('id','DESC')->get()->map(function($q)
+			->where(function($q) use($request)
+			{
+				$request->partner_id !="" ? $q->where('partners.id',$request->partner_id):'';
+			})
+			->where('status',1)
+			->orderBy('id','DESC')->get()->map(function($q) use ($dateFrom, $dateTo)
 				{
-					$lead=Lead::where('partner_id',$q->id)->latest()->first();
+					$leadQuery = Lead::where('partner_id', $q->id);
+					if (!empty($dateFrom)) $leadQuery->whereDate('created_at', '>=', $dateFrom);
+					if (!empty($dateTo))   $leadQuery->whereDate('created_at', '<=', $dateTo);
+
+					$lead = $leadQuery->latest()->first();
+
 					if(!empty($lead))
 					{
 						$q['lead_name']=$lead->name;
@@ -591,8 +764,14 @@ public function createPartner(Request $request)
 						$q['lead_status']="--";
 					}
 					return $q;
-				})->sortByDesc('lead_created_at')
-    			->values();
+				});
+
+		// When a date range is active, hide partners with no leads in that window.
+		if (!empty($dateFrom) || !empty($dateTo)) {
+			$data = $data->filter(function ($q) { return $q->lead_created_at !== "--"; });
+		}
+
+		$data = $data->sortByDesc('lead_created_at')->values();
 
 
             return Datatables::of($data)
@@ -604,14 +783,36 @@ public function createPartner(Request $request)
                     })
 					->addColumn('name', function($row)
 					{
-						$name = '<a class="view-partner-details" href="javascript:;" id="'.$row->id.'">'.Str::upper($row->name).'</a>';
+						$name     = (string) ($row->name ?? '');
+						$words    = preg_split('/\s+/', trim($name));
+						$initials = strtoupper(substr($words[0] ?? '', 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+						if ($initials === '') $initials = 'P';
+						$colors = ['c1','c2','c3','c4','c5','c6'];
+						$c = $colors[$row->id % count($colors)];
+						$flags = ENT_QUOTES | ENT_SUBSTITUTE;
 
-						return $name;
+						return '<a class="row-avatar view-partner-details" href="javascript:;" id="'.$row->id.'">'
+								.'<div class="av '.$c.'">'.htmlspecialchars($initials, $flags, 'UTF-8').'</div>'
+								.'<div class="nm">'
+									.'<div class="name">'.htmlspecialchars(strtoupper($name), $flags, 'UTF-8').'</div>'
+									.(($row->email ?? '') !== '' ? '<div class="sub">'.htmlspecialchars((string)$row->email, $flags, 'UTF-8').'</div>' : '')
+								.'</div>'
+							.'</a>';
                     })
-					
+
 					->addColumn('mobile', function($row)
 					{
 						return ($row->country_code?'+'.$row->country_code:'').$row->mobile;
+                    })
+
+					->editColumn('lead_created_at', function($row)
+					{
+						if (!$row->lead_created_at || $row->lead_created_at === '--') return '—';
+						try {
+							return Carbon::parse($row->lead_created_at)->diffForHumans();
+						} catch (\Exception $e) {
+							return $row->lead_created_at;
+						}
                     })
 
 					->addColumn('commission_per', function($row)
@@ -621,19 +822,21 @@ public function createPartner(Request $request)
 
 					->editColumn('lead_status', function($row)
 					{
-						if($row->lead_status=="Got Business")
-							$st="<span class='partner-active'>".$row->lead_status."</span>";
-						else if($row->lead_status=="New")
-							$st="<span class='partner-new-status'>".$row->lead_status."</span>";
-						else
-							$st=$row->lead_status;
-						return $st;
+						$s = strtoupper((string)$row->lead_status);
+						if ($s === 'GOT BUSINESS')               return '<span class="pill won">'.$row->lead_status.'</span>';
+						if ($s === 'NEW')                        return '<span class="pill qual">'.$row->lead_status.'</span>';
+						if (str_starts_with($s, 'LOST'))         return '<span class="pill cold">'.$row->lead_status.'</span>';
+						if ($s === 'INTERESTED' || str_contains($s,'DEMO') || str_contains($s,'PROPOSAL'))
+							return '<span class="pill demo">'.$row->lead_status.'</span>';
+						if ($row->lead_status == '--' || $row->lead_status === null) return '<span class="pill" style="background:#F1F5F9;color:#94A3B8;">—</span>';
+						return '<span class="pill" style="background:#F1F5F9;color:#475569;">'.$row->lead_status.'</span>';
                     })
-					
+
 					->addColumn('status', function($row)
 					{
-						if($row->status==1)
-						return '<span class="partner-active">Active</span>';	
+						if ((int)$row->status === 1)
+							return '<span class="pill paid">Active</span>';
+						return '<span class="pill unpaid">Inactive</span>';
                     })
 					
 					->addColumn('action', function($row)
@@ -676,24 +879,43 @@ public function createPartner(Request $request)
 		
     public function leads()
     {
-        $leads = Lead::all();
         $countries = CountryState::getCountries();
 
         $bussiness_categories = BussinessCategory::pluck('bussiness_category_name','id');
         $partner_list = Partner::all();
         $partner_with_leads = Lead::pluck('partner_id')->toArray();
-		
+
         $partners = $partner_list->whereIn('id',$partner_with_leads)->pluck('name','id')->toArray();
-		
+
         $all_partners = $partner_list->where('name','!=',null)->pluck('name','id');
 		$lead_status = LeadStatus::all();
 
-        //$total_commission = $leads->sum('commission_amount');
-        //$total_amount_paid = $leads->sum('amount_collected');
-        //$total_bussiness = $leads->sum('total_amount');
+		// Counts driving the page header + filter pills + KPI cards
+		$total_leads_count = Lead::count();
+		$stale_leads_count = Lead::whereRaw('UPPER(lead_status) = ?', ['NEW'])
+			->where('created_at', '<', Carbon::now()->subDays(7))
+			->count();
 
-        //return view('admin.leads',compact('lead_status','all_partners','partners','total_commission','total_amount_paid','total_bussiness','countries','bussiness_categories'));
-		return view('admin.leads',compact('lead_status','all_partners','partners','countries','bussiness_categories'));
+		$leads_this_week  = Lead::where('created_at', '>=', Carbon::now()->subDays(7))->count();
+		$closed_won_count = Lead::whereRaw('UPPER(lead_status) = ?', ['GOT BUSINESS'])->count();
+		$close_rate       = $total_leads_count > 0
+			? round(($closed_won_count / $total_leads_count) * 100, 1)
+			: 0;
+		$pipeline_value   = (int) Lead::whereRaw('UPPER(lead_status) NOT IN (?, ?)', ['GOT BUSINESS', 'CASE CLOSED'])
+			->whereRaw('UPPER(lead_status) NOT LIKE ?', ['LOST%'])
+			->sum('amount_collected');
+
+		$leadStatusCountsRaw = Lead::selectRaw('lead_status, COUNT(*) as cnt')
+			->whereNotNull('lead_status')
+			->groupBy('lead_status')
+			->pluck('cnt','lead_status');
+		$lead_status_counts = $leadStatusCountsRaw->sortDesc()->take(6);
+
+		return view('admin.leads', compact(
+			'lead_status','all_partners','partners','countries','bussiness_categories',
+			'total_leads_count','stale_leads_count','lead_status_counts',
+			'leads_this_week','closed_won_count','close_rate','pipeline_value'
+		));
     }
 	
 
@@ -924,24 +1146,81 @@ public function createPartner(Request $request)
 	
     public function listLeads(Request $request)
     {
-     
-			$lstatus=LeadStatus::pluck('lead_status');
-						
-            $data = Lead::latest()->leftJoin('partners','leads.partner_id','=','partners.id')
+			$lstatus = LeadStatus::pluck('lead_status');
+			$age     = $request->age_filter;
+			$now     = Carbon::now();
+
+            $query = Lead::latest()->leftJoin('partners','leads.partner_id','=','partners.id')
 			->where(function($q) use($request)
             {
                 $request->partner_id !=0 ? $q->where('partner_id',$request->partner_id):'';
                 $request->status !="" ?$q->where('lead_status',$request->status):'';
 				$request->pay_status !="" ?$q->where('payment_status',$request->pay_status):'';
-            })->select('leads.*','partners.name as partner_name','partners.commission_percentage','partners.renewal_comm_percentage')->get();
+            })->select('leads.*','partners.name as partner_name','partners.commission_percentage','partners.renewal_comm_percentage');
+
+			if ($age === 'stale')      $query->where('leads.created_at', '<', $now->copy()->subDays(7));
+			elseif ($age === 'cold')   $query->where('leads.created_at', '<', $now->copy()->subDays(14));
+
+			$data = $query->get();
+
+			// Scrub invalid UTF-8 in any string attribute so json_encode in DataTables doesn't blow up.
+			$data->transform(function ($row) {
+				foreach ($row->getAttributes() as $key => $val) {
+					if (is_string($val) && $val !== '' && !preg_match('//u', $val)) {
+						$row->setAttribute($key, mb_convert_encoding($val, 'UTF-8', 'UTF-8'));
+					}
+				}
+				return $row;
+			});
 
             return Datatables::of($data)
                     ->addIndexColumn()
                     ->addColumn('partner', function($row){
-                        
+
                         return $row->partner_name;
                     })
-					
+
+                    ->addColumn('lead', function($row){
+                        $name     = (string) ($row->name ?? '');
+                        $words    = preg_split('/\s+/', trim($name));
+                        $initials = strtoupper(substr($words[0] ?? '', 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+                        if ($initials === '') $initials = 'L';
+                        $colors = ['c1','c2','c3','c4','c5','c6'];
+                        $c = $colors[$row->id % count($colors)];
+
+                        $bits = array_filter([
+                            $row->email,
+                            ($row->country_code ? '+'.$row->country_code.' ' : '').$row->mobile,
+                        ]);
+                        $flags = ENT_QUOTES | ENT_SUBSTITUTE;
+                        $sub   = htmlspecialchars(implode(' · ', $bits), $flags, 'UTF-8');
+
+                        return '<div class="row-avatar">'
+                                .'<div class="av '.$c.'">'.htmlspecialchars($initials, $flags, 'UTF-8').'</div>'
+                                .'<div class="nm">'
+                                    .'<div class="name">'.htmlspecialchars($name, $flags, 'UTF-8').'</div>'
+                                    .'<div class="sub">'.$sub.'</div>'
+                                .'</div>'
+                            .'</div>';
+                    })
+
+                    ->addColumn('days_in_stage', function($row) use ($now) {
+                        if (!$row->created_at) return '—';
+                        $days = $now->diffInDays(Carbon::parse($row->created_at));
+                        $cls  = 'fresh';
+                        if ($days > 14)     $cls = 'cold';
+                        elseif ($days > 7)  $cls = 'stale';
+                        $label = $days.' day'.($days == 1 ? '' : 's');
+                        return '<span class="days '.$cls.'"><span class="dot"></span>'.$label.'</span>';
+                    })
+
+                    ->addColumn('deal_value', function($row){
+                        if ($row->amount_collected) {
+                            return '<span class="num strong">&#8377;'.number_format($row->amount_collected, 0, '.', ',').'</span>';
+                        }
+                        return '<span class="num muted">—</span>';
+                    })
+
                     ->addColumn('commission_amount', function($row){
                         if($row->commission_amount)
                         {
@@ -986,20 +1265,13 @@ public function createPartner(Request $request)
                     })
 					->addColumn('pay_status', function($row)
 					{
-
-						$pay_status="";
-												
-						if($row->payment_status==0){
-							$pay_status	="<span class='payment-inactive'>Not Paid</span>";
+						if ($row->payment_status == 0) {
+							return '<span class="pill unpaid">Not Paid</span>';
 						}
-						elseif($row->payment_status==2){
-							$pay_status	="<span class='payment-pending'>Pending</span>";
+						if ($row->payment_status == 2) {
+							return '<span class="pill pending">Pending</span>';
 						}
-						else {
-							$pay_status	="<span class='success'>Paid</span>";
-						}
-
-						return $pay_status;
+						return '<span class="pill paid">Paid</span>';
                     })
 
 					->addColumn('mobile', function($row)
@@ -1014,41 +1286,29 @@ public function createPartner(Request $request)
                     })
 					
                      ->addColumn('action', function($row){
-						
-						/*if($row->payment_status==1)
-						{
-						 $btn = '<div class="btn-group">
-							<button type="button" class="btn btn-outline edit_lead" id="'.$row->id.'" data-bs-toggle="modal" data-bs-target="#edit-lead-modal" ><i class="fa fa-pencil"></i></button>';
-						}
-						else
-						{*/
-						$btn_r="";
-						if($row->payment_status==1) //for add renewal commission
-						{
-							$btn_r='<button type="button" class="btn btn-outline renewal_commission" data-lstatus="'.$row->lead_status.'" data-leadid="'.$row->id.'" data-commission="'.$row->commission_percentage.'" data-recommission="'.$row->renewal_comm_percentage.'" data-bs-toggle="modal" data-bs-target="#set-commission-modal" >Re-com</button>';
+						$reCom = '';
+						if ($row->payment_status == 1) {
+							$reCom = '<button type="button" class="row-action-btn text accent renewal_commission" '
+								.'data-lstatus="'.$row->lead_status.'" '
+								.'data-leadid="'.$row->id.'" '
+								.'data-commission="'.$row->commission_percentage.'" '
+								.'data-recommission="'.$row->renewal_comm_percentage.'" '
+								.'data-bs-toggle="modal" data-bs-target="#set-commission-modal" '
+								.'title="Renewal commission">Re-Com</button>';
 						}
 
-						$btn = '<div class="btn-group">
-							<button type="button" class="btn btn-outline edit_lead" id="'.$row->id.'" data-bs-toggle="modal" data-bs-target="#edit-lead-modal" ><i class="fa fa-pencil"></i></button>
-							<button type="button" class="btn btn-outline dropdown-toggle"
-							data-bs-toggle="dropdown">
-							<i class="fa fa-trash"></i>
-						</button>
-					
-						<ul class="dropdown-menu pull-right" role="menu">
-							<li class="text-center mb-2"><a href="#">Confirm Deletion</a></li>
-							<li class="divider"></li>
-							<li style="display: flex;align-items:center;justify-content:center;" class="confirm_buttons">
-							<button type="button" class="btn btn-outline btn-success ok_btn confirm_deletion" data-id="'.$row->id.'"><i class="fa fa-check"></i></button>&nbsp;
-							<button type="button" class="btn btn-outline btn-danger no_btn"><i class="fa fa-times"></i></button>
-							</li>
-						</ul>
-						</div>';
-						
-						//}
-                      return $btn.$btn_r;
+						return '<div class="row-action">'
+								.'<button type="button" class="row-action-btn edit_lead" id="'.$row->id.'" '
+									.'data-bs-toggle="modal" data-bs-target="#edit-lead-modal" title="Edit lead">'
+									.'<i class="bx bx-pencil"></i>'
+								.'</button>'
+								.$reCom
+								.'<button type="button" class="row-action-btn danger confirm_deletion" data-id="'.$row->id.'" title="Delete lead">'
+									.'<i class="bx bx-trash"></i>'
+								.'</button>'
+							.'</div>';
                     })
-                      ->rawColumns(['pay_status','mobile','status','action'])
+                      ->rawColumns(['lead','days_in_stage','deal_value','pay_status','mobile','status','action'])
                       ->make(true);
     }
 
@@ -1154,36 +1414,82 @@ public function updateLeadCommission(Request $request)
 
     public function agentList(Request $request)
     {
-
         if ($request->ajax()) {
-        $data = Agent::latest()->get();
+
+            // Partners assigned to each agent
+            $partnersCountByAgent = Partner::selectRaw('agent_id, COUNT(*) as cnt')
+                ->whereNotNull('agent_id')
+                ->groupBy('agent_id')
+                ->pluck('cnt', 'agent_id');
+
+            // Open leads count per agent (via partner_id → partners.agent_id), excluding closed/lost
+            $openLeadsCountByAgent = Lead::leftJoin('partners', 'leads.partner_id', '=', 'partners.id')
+                ->whereRaw('UPPER(leads.lead_status) NOT IN (?, ?)', ['GOT BUSINESS', 'CASE CLOSED'])
+                ->whereRaw('UPPER(leads.lead_status) NOT LIKE ?', ['LOST%'])
+                ->whereNotNull('partners.agent_id')
+                ->selectRaw('partners.agent_id, COUNT(*) as cnt')
+                ->groupBy('partners.agent_id')
+                ->pluck('cnt', 'partners.agent_id');
+
+            $data = Agent::latest()->get()->map(function ($a) use ($partnersCountByAgent, $openLeadsCountByAgent) {
+                $a['partners_count']   = (int) ($partnersCountByAgent[$a->id]   ?? 0);
+                $a['open_leads_count'] = (int) ($openLeadsCountByAgent[$a->id] ?? 0);
+                return $a;
+            });
+
             return Datatables::of($data)
                     ->addIndexColumn()
-                    ->addColumn('action', function($row){
-                            $btn = '<button type="button" class="btn btn-outline edit_agent"  data-bs-toggle="modal" data-bs-target="#edit-agent-modal" id="'.$row->id.'"><i class="fa fa-pencil"></i></button>
-									<button type="button" class="btn btn-outline dropdown-toggle"
-									data-bs-toggle="dropdown" title="Delete">
-									<i class="fa fa-trash"></i>
-								</button>
-								
-								<ul class="dropdown-menu pull-right" role="menu">
-									<li class="text-center mb-2"><a href="#">Confirm Deletion</a></li>
-									<li class="divider"></li>
-									<li style="display: flex;align-items:center;justify-content:center;" class="confirm_buttons">
-									<button type="button" class="btn btn-outline btn-success ok_btn confirm_agent_deletion" data-id="'.$row->id.'"><i class="fa fa-check"></i></button>&nbsp;
-									<button type="button" class="btn btn-outline btn-danger no_btn"><i class="fa fa-times"></i></button>
-									</li>
-								</ul>
-							</div>';
-							
-							
-							
-							return $btn;
+
+                    ->addColumn('agent', function($row){
+                        $words    = preg_split('/\s+/', trim((string) $row->name));
+                        $initials = strtoupper(substr($words[0] ?? '', 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+                        if ($initials === '') $initials = 'A';
+                        $colors = ['c1','c2','c3','c4','c5','c6'];
+                        $c = $colors[$row->id % count($colors)];
+                        $flags = ENT_QUOTES | ENT_SUBSTITUTE;
+
+                        return '<div class="row-avatar">'
+                                .'<div class="av '.$c.'">'.htmlspecialchars($initials, $flags, 'UTF-8').'</div>'
+                                .'<div class="nm">'
+                                    .'<div class="name">'.htmlspecialchars((string) $row->name, $flags, 'UTF-8').'</div>'
+                                    .'<div class="sub">'.htmlspecialchars((string) ($row->email ?? ''), $flags, 'UTF-8').'</div>'
+                                .'</div>'
+                            .'</div>';
                     })
-                    ->rawColumns(['action'])
+
+                    ->addColumn('mobile_fmt', function($row){
+                        return $row->mobile ? htmlspecialchars((string) $row->mobile, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') : '—';
+                    })
+
+                    ->addColumn('partners_count', function($row){
+                        return (int) ($row->partners_count ?? 0);
+                    })
+
+                    ->addColumn('open_leads_count', function($row){
+                        return (int) ($row->open_leads_count ?? 0);
+                    })
+
+                    ->addColumn('joined', function($row){
+                        return $row->created_at ? Carbon::parse($row->created_at)->diffForHumans() : '—';
+                    })
+
+                    ->addColumn('action', function($row){
+                        return '<div class="row-action">'
+                                .'<button type="button" class="row-action-btn edit_agent" id="'.$row->id.'" data-bs-toggle="modal" data-bs-target="#edit-agent-modal" title="Edit agent">'
+                                    .'<i class="bx bx-pencil"></i>'
+                                .'</button>'
+                                .'<button type="button" class="row-action-btn danger confirm_agent_deletion" data-id="'.$row->id.'" title="Delete agent">'
+                                    .'<i class="bx bx-trash"></i>'
+                                .'</button>'
+                            .'</div>';
+                    })
+                    ->rawColumns(['agent','action'])
                     ->make(true);
         }
-        return view('admin.agent_list');
+
+        $total_agents    = Agent::count();
+        $assigned_agents = Partner::whereNotNull('agent_id')->distinct('agent_id')->count('agent_id');
+        return view('admin.agent_list', compact('total_agents','assigned_agents'));
     }
 
     public function createAgent(Request $request)
@@ -1260,36 +1566,46 @@ public function updateAgent(Request $request)
 
 public function payouts(Request $request)
     {
-    
-        $partners = Partner::whereIn('id',Lead::pluck('partner_id')->toArray())->pluck('name','id')->toArray();
+
+        $partners = Partner::whereIn('id', Lead::pluck('partner_id')->toArray())->pluck('name','id')->toArray();
 		$lead_status = LeadStatus::all();
-		return view('admin.payouts_list',compact('partners','lead_status'));
+
+		// Info card metrics — driven entirely by lead_commissions
+		$unpaid = LeadCommission::where('lead_status', 'Got Business')->where('payment_status', 0);
+
+		$pending_payout = (int) (clone $unpaid)->sum('balance');
+		$pending_deals  = (clone $unpaid)->count();
+		$partners_owed  = (clone $unpaid)->whereNotNull('partner_id')->distinct('partner_id')->count('partner_id');
+
+		$aged_payout    = (int) (clone $unpaid)->where('created_at', '<', Carbon::now()->subDays(14))->sum('balance');
+		$aged_deals     = (clone $unpaid)->where('created_at', '<', Carbon::now()->subDays(14))->count();
+
+		$paid_this_month = (int) LeadCommission::where('lead_status', 'Got Business')
+			->where('payment_status', 1)
+			->whereMonth('payment_date', date('m'))
+			->whereYear('payment_date', date('Y'))
+			->sum('paid_amount');
+
+		$unpaid_count = (clone $unpaid)->count();
+		$paid_count   = LeadCommission::where('lead_status', 'Got Business')->where('payment_status', 1)->count();
+
+		return view('admin.payouts_list', compact(
+			'partners','lead_status',
+			'pending_payout','pending_deals','partners_owed',
+			'aged_payout','aged_deals','paid_this_month',
+			'unpaid_count','paid_count'
+		));
     }
 
-public function payoutHistory(Request $request)
-    {
-   
-        $partners = Partner::whereIn('id',Lead::pluck('partner_id')->toArray())->pluck('name','id')->toArray();
-		$lead_status = LeadStatus::all();
-		return view('admin.payouts_history',compact('partners','lead_status'));
-    }
 
 
 	
 public function gotBusinessUnPaidLeads(Request $request)
     {
-
-			/*$data = Lead::select('leads.*','partners.name as partner_name','partners.commission_percentage','lead_commissions.renewal_status')
-			->leftJoin('partners','leads.partner_id','=','partners.id')
-			->where(function($q)use($request)
-            {
-                $request->partner_id !=0 ? $q->where('partner_id',$request->partner_id):'';
-            })->where('leads.lead_status',"Got Business")
-			  ->where('leads.payment_status',0)
-			  ->latest()->get()*/
 			  
-			 $data = LeadCommission::select('lead_commissions.*','leads.name','leads.mobile','leads.email','partners.name as partner_name','partners.commission_percentage','partners.renewal_comm_percentage')
+			 $data = LeadCommission::select('lead_commissions.*','leads.name','leads.mobile','leads.email','partners.name as partner_name','partners.commission_percentage','partners.renewal_comm_percentage','partner_tiers.partner_tier')
 			->leftJoin('partners','lead_commissions.partner_id','=','partners.id')
+			->leftJoin('partner_tiers','partners.partner_tier_id','=','partner_tiers.id')
 			->leftJoin('leads','lead_commissions.lead_id','=','leads.id')
 			->where(function($q)use($request)
             {
@@ -1299,21 +1615,19 @@ public function gotBusinessUnPaidLeads(Request $request)
 			  ->latest()->get()->map(function($q)
 			  {
 				  //$lcom=LeadCommission::where('lead_id',$q->id)->where('renewal_status','renewal')->first();
-				  if($q->renewal_status=="renewal")
+				  if(strtoupper($q->renewal_status)=="RENEWAL")
 				  {
 						$q['amount_collected']=$q->amount_collected;
 				  		$q['commission_amount']=$q->commission_amount;
 				  		$q['paid_amount']=$q->paid_amount;
 				  		$q['balance']=$q->balance;
-						$q['com_type']="renewal";
-				  }
+					  }
 				  else
 				  {
 				  	$q['amount_collected']=$q->amount_collected;
 				  	$q['commission_amount']=$q->comnission_amount;
 				  	$q['paid_amount']=$q->paid_amount;
 	  			    $q['balance']=$q->balance;
-					$q['com_type']="first";
 				  }
 
 				  return $q;
@@ -1322,72 +1636,81 @@ public function gotBusinessUnPaidLeads(Request $request)
             return Datatables::of($data)
                     ->addIndexColumn()
                     ->addColumn('partner', function($row){
-					   $pname='<a href="'.route('admin.pay-partner-payment',$row->partner_id).'" style="color:#2020db;">'.strtoupper($row->partner_name).'</a>';
-                       return $pname;
+                        $name     = (string) ($row->partner_name ?? '');
+                        $words    = preg_split('/\s+/', trim($name));
+                        $initials = strtoupper(substr($words[0] ?? '', 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+                        if ($initials === '') $initials = 'P';
+                        $colors = ['c1','c2','c3','c4','c5','c6'];
+                        $c = $colors[((int) $row->partner_id) % count($colors)];
+                        $flags = ENT_QUOTES | ENT_SUBSTITUTE;
+                        $href = route('admin.pay-partner-payment', $row->partner_id);
+
+                        return '<a href="'.$href.'" class="row-avatar partner-link">'
+                                .'<div class="av '.$c.'">'.htmlspecialchars($initials, $flags, 'UTF-8').'</div>'
+                                .'<div class="nm">'
+                                    .'<div class="name">'.htmlspecialchars(strtoupper($name), $flags, 'UTF-8').'</div>'
+                                    .'<div class="sub">'.$row->partner_tier.'</div>'
+                                .'</div>'
+                            .'</a>';
                     })
 					->addColumn('lead_name', function($row){
-					
-						if($row->renewal_status!='')
-							$nam=$row->name.'&nbsp;<sup class="fs-10">R</sup>';
-						else
-							$nam=$row->name;
-						return $nam;
-						})
-																				
+                        return $row->name;
+                    })
+
+                    ->addColumn('type', function($row){
+                        if (strtoupper($row->renewal_status)=="RENEWAL") {
+                            return '<span class="type-mark r" title="Renewal commission">R</span>';
+                        }
+                        return '<span class="type-mark i" title="First commission">I</span>';
+                    })
+
 					->addColumn('amount_collected', function($row){
-						$col_amount="₹ ".number_format($row->amount_collected,'2','.','');
-						return $col_amount;
+						return '&#8377;'.number_format($row->amount_collected, 0, '.', ',');
                     })
 					->addColumn('commission_amount', function($row){
-						$com_amount="₹ ". number_format($row->commission_amount,'2','.','');
-						return $com_amount;
+						return '<span class="num strong">&#8377;'.number_format($row->commission_amount, 0, '.', ',').'</span>';
                     })
-					
-					->addColumn('amount', function($row){
-						$paid_amt="₹ ". number_format($row->paid_amount,'2','.','');
-						return $paid_amt;
-                    })
-					
-					->addColumn('balance', function($row){
 
-						$bal_amount="₹ ". number_format($row->balance,'2','.','');
-								return $bal_amount;
+					->addColumn('amount', function($row){
+                        $paid = (int) $row->paid_amount;
+                        if ($paid === 0) {
+                            return '<span class="num muted">&#8377;0</span>';
+                        }
+                        return '&#8377;'.number_format($paid, 0, '.', ',');
                     })
-					
+
+					->addColumn('balance', function($row){
+                        return '<span class="num strong" style="color:#D97706;">&#8377;'.number_format($row->balance, 0, '.', ',').'</span>';
+                    })
+
 					->addColumn('status', function($row){
-						$lst='<span style="color:green;">'.$row->lead_status.'</span>';
-						return $lst;
+                        return '<span class="pill won">Got Business</span>';
+                    })
+
+                    ->addColumn('aged', function($row){
+                        if (!$row->created_at) return '<span class="days fresh"><span class="dot"></span>—</span>';
+                        $days = Carbon::parse($row->created_at)->diffInDays(Carbon::now());
+                        $cls  = 'fresh';
+                        if ($days > 14)    $cls = 'cold';
+                        elseif ($days > 7) $cls = 'stale';
+                        return '<span class="days '.$cls.'"><span class="dot"></span>'.$days.'d</span>';
                     })
 
 					->addColumn('email', function($row)
 					{
-						$email = $row->email.'<br/>';
-						$email .= $row->mobile;
-						return $email;
+                        $flags = ENT_QUOTES | ENT_SUBSTITUTE;
+                        return htmlspecialchars((string)($row->email ?? ''), $flags, 'UTF-8').'<br>'
+                            .htmlspecialchars((string)($row->mobile ?? ''), $flags, 'UTF-8');
                     })
 					->addColumn('actions', function($row)
 					{
+                        $href = route('admin.pay-partner-payment', $row->partner_id);
+                        return '<a href="'.$href.'" class="gl-btn gl-btn-outline btn-pay" title="Set Payout">'
+                                .'<i class="bx bx-plus"></i> Payout'
+                            .'</a>';
+                    })
 
-						/*$comPer=($row->renewal_status=="renewal")?$row->renewal_comm_percentage:$row->commission_percentage;
-							<li>
-								  <a class="dropdown-item dropdown-item-size set-commission" href="javascript:;" data-comtype="'.$row->com_type.'" data-partnerid="'.$row->partner_id.'" data-percentage="'.$comPer
-								  .'" data-leadid="'.$row->lead_id.'" data-leadstatus="'.$row->lead_status.'" data-bs-toggle="modal" data-bs-target="#set-commission-modal">
-								  <i class="ico-icon icon-billing-payment"></i>New Commission</a> </li>
-								  <li>*/
-
-						   $btn='
-									<a class="dropdown-item dropdown-item-size btn-pay" href="'.route('admin.pay-partner-payment',$row->partner_id).'">
-								   <i class="ico-icon icon-billing-payment"></i>Set Payout</a> </li>';
-										
-						$action= '<div class="fs-5 ms-auto dropdown">
-					 		   <div class="dropdown-toggle cursor-pointer" data-bs-toggle="dropdown"><i class="fa fa-ellipsis-v"></i></div>
-								<ul class="dropdown-menu">'.$btn.
-								
-								 '</div>';
-					return $action;
-					})
-					
-                    ->rawColumns(['actions','lead_name','partner','email','status','pay_status'])
+                    ->rawColumns(['actions','lead_name','partner','email','status','pay_status','type','amount_collected','commission_amount','amount','balance','aged'])
                     ->make(true);
     }
 	
@@ -1395,124 +1718,198 @@ public function gotBusinessUnPaidLeads(Request $request)
 public function gotBusinessPaidLeads(Request $request)
     {
 
-			$data = Lead::select('leads.*','partners.name as partner_name','partners.commission_percentage')
-			->leftJoin('partners','leads.partner_id','=','partners.id')
-			->where(function($q)use($request)
-            {
-                $request->partner_id !=0 ? $q->where('partner_id',$request->partner_id):'';
-            })->where('leads.lead_status',"Got Business")
-			  ->where('leads.payment_status',1)
-			  ->latest()->get()->map(function($q)
-			  {
-				  /*$sum=PaymentHistory::selectRaw('SUM(commission) as camount,SUM(paid_amount) as pamount')->where('lead_id',$q->id)->first();
-				  $q['com_amount']=$sum->camount;
-				  $q['com_paid']=$sum->pamount;
-				  return $q;*/
-
-				  $sum=LeadCommission::where('lead_id',$q->id)->selectRaw('SUM(amount_collected) as amount,SUM(paid_amount)as paid_amount')->first();
-				  $q['com_amount']=$sum->amount;
-				  $q['com_paid']=$sum->paid_amount;
-				  return $q;
-
-			  });
+			$data = LeadCommission::select(
+                    'lead_commissions.*',
+                    'leads.name','leads.mobile','leads.email','leads.country_code',
+                    'partners.name as partner_name','partners.commission_percentage','partners.renewal_comm_percentage','partner_tiers.partner_tier'
+                )
+                ->leftJoin('partners','lead_commissions.partner_id','=','partners.id')
+				->leftJoin('partner_tiers','partners.partner_tier_id','=','partner_tiers.id')
+                ->leftJoin('leads','lead_commissions.lead_id','=','leads.id')
+                ->where(function($q) use($request) {
+                    $request->partner_id != 0 ? $q->where('lead_commissions.partner_id', $request->partner_id) : '';
+                })
+                ->where('lead_commissions.lead_status', 'Got Business')
+                ->where('lead_commissions.payment_status', 1)
+                ->latest('lead_commissions.created_at')
+                ->get();
 
             return Datatables::of($data)
                     ->addIndexColumn()
                     ->addColumn('partner', function($row){
-					   $pname='<a href="'.route('admin.pay-partner-payment',$row->partner_id).'" style="color:#2020db;">'.strtoupper($row->partner_name).'</a>';
-                       return $pname;
-                    })
-					
-					->addColumn('com_amount', function($row){
-						$com_amount="₹ ". number_format($row->com_amount,'2','.','');
-						return $com_amount;
-                    })
-					
-					->addColumn('paid_amount', function($row){
-						$paid_amt="₹ ". number_format($row->com_paid,'2','.','');
-						return $paid_amt;
-                    })
-					
-					->addColumn('balance', function($row){
+                        $name     = (string) ($row->partner_name ?? '');
+                        $words    = preg_split('/\s+/', trim($name));
+                        $initials = strtoupper(substr($words[0] ?? '', 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+                        if ($initials === '') $initials = 'P';
+                        $colors = ['c1','c2','c3','c4','c5','c6'];
+                        $c = $colors[((int) $row->partner_id) % count($colors)];
+                        $flags = ENT_QUOTES | ENT_SUBSTITUTE;
+                        $href = route('admin.pay-partner-payment', $row->partner_id);
 
-						$bal_amount="₹ ". number_format($row->balance,'2','.','');
-								return $bal_amount;
-                    })
-					
-					->addColumn('status', function($row){
-						$lst='<span style="color:green;">'.$row->lead_status.'</span>';
-						return $lst;
+                        return '<a href="'.$href.'" class="row-avatar partner-link">'
+                                .'<div class="av '.$c.'">'.htmlspecialchars($initials, $flags, 'UTF-8').'</div>'
+                                .'<div class="nm">'
+                                    .'<div class="name">'.htmlspecialchars(strtoupper($name), $flags, 'UTF-8').'</div>'
+                                    .'<div class="sub">'.$row->partner_tier.'</div>'
+                                .'</div>'
+                            .'</a>';
                     })
 
-					->addColumn('email', function($row)
-					{
-						$email = $row->email.'<br/>';
-						$email .= $row->mobile;
-						return $email;
+                    ->addColumn('lead_name', function($row){
+                        $name = (string) ($row->name ?? '');
+                        if ($row->renewal_status != '') {
+                            return htmlspecialchars($name, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').' <sup class="fs-10">R</sup>';
+                        }
+                        return htmlspecialchars($name, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
                     })
-					->addColumn('pay_status', function($row)
-					{
-						$pay_stat='<span style="color:green;">Paid</span>';
-						return $pay_stat;
-					})
 
-                    ->rawColumns(['actions','partner','email','status','pay_status'])
+                    ->addColumn('email', function($row){
+                        $flags = ENT_QUOTES | ENT_SUBSTITUTE;
+                        return htmlspecialchars((string)($row->email ?? ''), $flags, 'UTF-8').'<br>'
+                            .htmlspecialchars((string)($row->mobile ?? ''), $flags, 'UTF-8');
+                    })
+
+                    ->addColumn('type', function($row){
+                        if (strtoupper($row->renewal_status) == 'RENEWAL') {
+                            return '<span class="type-mark r" title="Renewal commission">R</span>';
+                        }
+                        return '<span class="type-mark i" title="First commission">I</span>';
+                    })
+
+                    ->addColumn('status', function($row){
+                        return '<span class="pill won">Got Business</span>';
+                    })
+
+                    ->addColumn('amount_collected', function($row){
+                        return '&#8377;'.number_format($row->amount_collected, 0, '.', ',');
+                    })
+
+                    ->addColumn('commission_amount', function($row){
+                        return '<span class="num strong">&#8377;'.number_format($row->commission_amount, 0, '.', ',').'</span>';
+                    })
+
+                    ->addColumn('paid_amount', function($row){
+                        return '<span class="num strong" style="color:#059669;">&#8377;'.number_format($row->paid_amount, 0, '.', ',').'</span>';
+                    })
+
+                    ->addColumn('aged', function($row){
+                        if (!$row->created_at) return '<span class="days fresh"><span class="dot"></span>—</span>';
+                        $days = Carbon::parse($row->created_at)->diffInDays(Carbon::now());
+                        $cls  = 'fresh';
+                        if ($days > 14)    $cls = 'cold';
+                        elseif ($days > 7) $cls = 'stale';
+                        return '<span class="days '.$cls.'"><span class="dot"></span>'.$days.'d</span>';
+                    })
+
+                    ->addColumn('pay_status', function($row){
+                        return '<span class="pill paid">Paid</span>';
+                    })
+
+                    ->rawColumns(['partner','lead_name','email','type','status','amount_collected','commission_amount','paid_amount','balance','aged','pay_status'])
                     ->make(true);
     }
-	
+
+public function payoutHistory(Request $request)
+    {
+        $partners = Partner::whereIn('id', Lead::pluck('partner_id')->toArray())->pluck('name','id')->toArray();
+		$lead_status = LeadStatus::all();
+
+		$payout_counts = [
+			'all'    => LeadCommission::count(),
+			'paid'   => LeadCommission::where('payment_status', 1)->count(),
+			'unpaid' => LeadCommission::where('payment_status', '!=', 1)->count(),
+		];
+
+		return view('admin.payouts_history', compact('partners','lead_status','payout_counts'));
+    }
 
 
 public function viewPaymentDetails(Request $request)  //payment history page
     {
 
+		$statusFilter = $request->status_filter;
+		$dateFrom     = $request->date_from;
+		$dateTo       = $request->date_to;
+
 		$data = LeadCommission::select('lead_commissions.*','leads.name','leads.mobile')
 		->leftJoin('leads','lead_commissions.lead_id','=','leads.id')
-		->where(function($q)use($request)
+		->where(function($q) use($request)
 		{
 			$request->partner_id !="" ? $q->where('lead_commissions.partner_id',$request->partner_id):'';
-		})->get();
-				
+		})
+		->when($statusFilter === 'paid', function($q) {
+			$q->where('lead_commissions.payment_status', 1);
+		})
+		->when($statusFilter === 'unpaid', function($q) {
+			$q->where('lead_commissions.payment_status', '!=', 1);
+		})
+		->when(!empty($dateFrom), function($q) use ($dateFrom) {
+			$q->whereDate('lead_commissions.updated_at', '>=', $dateFrom);
+		})
+		->when(!empty($dateTo), function($q) use ($dateTo) {
+			$q->whereDate('lead_commissions.updated_at', '<=', $dateTo);
+		})
+		->get();
 
 		return Datatables::of($data)
 				->addIndexColumn()
 				->addColumn('name', function($row){
-				   
-					return $row->name;
+					$name     = (string) ($row->name ?? '');
+					$words    = preg_split('/\s+/', trim($name));
+					$initials = strtoupper(substr($words[0] ?? '', 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+					if ($initials === '') $initials = 'L';
+					$colors = ['c1','c2','c3','c4','c5','c6'];
+					$c = $colors[((int) ($row->lead_id ?? $row->id ?? 0)) % count($colors)];
+					$flags = ENT_QUOTES | ENT_SUBSTITUTE;
+
+					return '<div class="row-avatar">'
+							.'<div class="av '.$c.'">'.htmlspecialchars($initials, $flags, 'UTF-8').'</div>'
+							.'<div class="nm">'
+								.'<div class="name">'.htmlspecialchars($name, $flags, 'UTF-8').'</div>'
+								.(($row->mobile ?? '') !== '' ? '<div class="sub">'.htmlspecialchars((string)$row->mobile, $flags, 'UTF-8').'</div>' : '')
+							.'</div>'
+						.'</div>';
 				})
 				->addColumn('collected_amount', function($row){
-					$col_amount="₹ ".number_format($row->amount_collected,'2','.','');
-					return $col_amount;
+					return '&#8377;'.number_format($row->amount_collected, 0, '.', ',');
 				})
 				->addColumn('commission', function($row){
-					$com_amount="₹ ". number_format($row->commission_amount,'2','.','');
-					return $com_amount;
+					return '<span class="num strong">&#8377;'.number_format($row->commission_amount, 0, '.', ',').'</span>';
 				})
-				
+
 				->addColumn('amount', function($row){
-					$paid_amt="₹ ". number_format($row->paid_amount,'2','.','');
-					return $paid_amt;
+					return '<span class="num strong" style="color:#059669;">&#8377;'.number_format($row->paid_amount, 0, '.', ',').'</span>';
 				})
-				
+
 				->addColumn('balance', function($row){
-
-					$bal_amount="₹ ". number_format($row->balance,'2','.','');
-							return $bal_amount;
+					$bal = (int) $row->balance;
+					if ($bal === 0) {
+						return '<span class="num muted">&#8377;0</span>';
+					}
+					return '<span class="num strong" style="color:#D97706;">&#8377;'.number_format($bal, 0, '.', ',').'</span>';
 				})
-				
+				->addColumn('type', function($row){
+                        if (strtoupper($row->renewal_status) == 'RENEWAL') {
+                            return '<span class="type-mark r" title="Renewal commission">R</span>';
+                        }
+                        return '<span class="type-mark i" title="Initial commission">I</span>';
+                    })
+
+				->addColumn('updateAt', function($row){
+                        if ($row->updated_at!="") {
+                            return Carbon::parse($row->updated_at)->format('d-m-Y h:i A');
+                        }
+                        return '--';
+                    })
+
 				->addColumn('status', function($row){
-
-					if($row->balance==0)
-					{
-						$stat="<span class='success'>Paid</span>";
+					if ((int)$row->balance === 0) {
+						return '<span class="pill paid">Paid</span>';
 					}
-					else
-					{
-						$stat="<span class='danger'>Not Paid</span>";
-					}
-					return $stat;
+					return '<span class="pill unpaid">Not Paid</span>';
 				})
-				
-		->rawColumns(['status'])
+
+		->rawColumns(['name','status','collected_amount','commission','amount','balance','type'])
 		->make(true);
     }
 
@@ -1520,12 +1917,23 @@ public function viewPaymentDetails(Request $request)  //payment history page
 public function viewAllPaymentHistory(Request $request)
     {
 
-		$data = PaymentHistory::select('payment_histories.*','leads.name','leads.mobile')
+		$dateFrom     = $request->date_from;
+		$dateTo       = $request->date_to;
+
+		$data = PaymentHistory::select('payment_histories.*','leads.name','leads.mobile','partners.name as partner_name')
 		->leftJoin('leads','payment_histories.lead_id','=','leads.id')
+		->leftJoin('partners','payment_histories.partner_id','=','partners.id')
 		->where(function($q)use($request)
 		{
 			$request->partner_id !=0 ? $q->where('payment_histories.partner_id',$request->partner_id):'';
-		})->get()->map(function($q)
+		})
+		->when(!empty($dateFrom), function($q) use ($dateFrom) {
+			$q->whereDate('payment_histories.payment_date', '>=', $dateFrom);
+		})
+		->when(!empty($dateTo), function($q) use ($dateTo) {
+			$q->whereDate('payment_histories.payment_date', '<=', $dateTo);
+		})
+		->get()->map(function($q)
 		{
 			if($q->multiple_leads!=null)
 			{
@@ -1539,34 +1947,58 @@ public function viewAllPaymentHistory(Request $request)
 
 		return Datatables::of($data)
 				->addIndexColumn()
+
+				->addColumn('partner_name', function($row){
+					$name     = (string) ($row->partner_name ?? '');
+					$words    = preg_split('/\s+/', trim($name));
+					$initials = strtoupper(substr($words[0] ?? '', 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+					if ($initials === '') $initials = 'L';
+					$colors = ['c1','c2','c3','c4','c5','c6'];
+					$c = $colors[((int) ($row->lead_id ?? $row->id ?? 0)) % count($colors)];
+					$flags = ENT_QUOTES | ENT_SUBSTITUTE;
+
+					return '<div class="row-avatar">'
+							.'<div class="av '.$c.'">'.htmlspecialchars($initials, $flags, 'UTF-8').'</div>'
+							.'<div class="nm">'
+								.'<div class="name">'.htmlspecialchars($name, $flags, 'UTF-8').'</div>'
+							.'</div>'
+						.'</div>';
+				})
+
 				->addColumn('name', function($row){
-					if($row->multiple_leads!=null)
-						return $row->multiple_lead_name;
-					else
-						return $row->name;
+					$flags = ENT_QUOTES | ENT_SUBSTITUTE;
+
+					if ($row->multiple_leads != null) {
+						$label = (string) ($row->multiple_lead_name ?? '');
+						return '<div class="lead-cell">'
+								.'<div class="name">'.htmlspecialchars($label, $flags, 'UTF-8').'</div>'
+								.'<div class="sub">Multiple leads</div>'
+							.'</div>';
+					}
+					return htmlspecialchars((string) ($row->name ?? ''), $flags, 'UTF-8');
 				})
 				->addColumn('amount', function($row){
-					$amount="₹ ".number_format($row->paid_amount,'2','.','');
-					return $amount;
+					return '<span class="num strong" style="color:#059669;">&#8377;'.number_format($row->paid_amount, 0, '.', ',').'</span>';
 				})
 				->addColumn('payment_date', function($row){
 					if (!empty($row->payment_date))
 						return Carbon::createFromFormat('Y-m-d',$row->payment_date)->format('d-m-Y');
 					 return '';
 				})
-				->addColumn('receipt', function($row){
-					
-					if($row->receipt!="")
-					{
-						$url='<a href="'.url('/uploads/receipts')."/".$row->receipt.'" target="_blank">view</a>';
-					}
-					else
-					{
-						$url='--';
-					}
-					return $url;
+				->addColumn('status', function($row){
+					return '<span class="pill paid">Paid</span>';
 				})
-		->rawColumns(['receipt'])
+
+				->addColumn('receipt', function($row){
+					if ($row->receipt != '') {
+						$href = url('/uploads/receipts').'/'.$row->receipt;
+						return '<a href="'.$href.'" target="_blank" class="gl-btn gl-btn-outline gl-btn-sm" title="View receipt">'
+								.'<i class="bx bx-receipt"></i> Receipt'
+							.'</a>';
+					}
+					return '<span class="num muted">—</span>';
+				})
+		->rawColumns(['name','receipt','amount','status','partner_name'])
 		->make(true);
     }
 
@@ -1584,9 +2016,10 @@ public function verifyPayouts(Request $request)
 	public function verifyPayments(Request $request)
     {
 
-		$data = PaymentVerify::select('payment_verify.*','leads.name as lead_name','leads.mobile','partners.name as partner_name','partners.company_name')
+		$data = PaymentVerify::select('payment_verify.*','leads.name as lead_name','leads.mobile','partners.name as partner_name','partners.company_name','partner_tiers.partner_tier')
 		->leftJoin('leads','payment_verify.lead_id','=','leads.id')
 		->leftJoin('partners','payment_verify.partner_id','=','partners.id')
+		->leftJoin('partner_tiers','partners.partner_tier_id','=','partner_tiers.id')
 		->where(function($q)use($request)
 		{
 			$request->partner_id !=0 ? $q->where('payment_verify.partner_id',$request->partner_id):'';
@@ -1610,16 +2043,33 @@ public function verifyPayouts(Request $request)
 
 		return Datatables::of($data)
 				->addIndexColumn()
+				->addColumn('partner_name', function($row){
+					$name     = (string) ($row->partner_name ?? '');
+					$words    = preg_split('/\s+/', trim($name));
+					$initials = strtoupper(substr($words[0] ?? '', 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+					if ($initials === '') $initials = 'P';
+					$colors = ['c1','c2','c3','c4','c5','c6'];
+					$c = $colors[((int) $row->partner_id) % count($colors)];
+					$flags = ENT_QUOTES | ENT_SUBSTITUTE;
+
+					return '<div class="row-avatar">'
+							.'<div class="av '.$c.'">'.htmlspecialchars($initials, $flags, 'UTF-8').'</div>'
+							.'<div class="nm">'
+								.'<div class="name">'.htmlspecialchars(strtoupper($name), $flags, 'UTF-8').'</div>'
+								.'<div class="sub">'.$row->partner_tier.'</div>'
+							.'</div>'
+						.'</div>';
+				})
 				->addColumn('lead_name', function($row){
 					if($row->multiple_leads!=null){
 						return $row->multiple_lead_name;
 					}
 					else
 					{
-						if($row->renewal_status=="renewal")   
+						if(strtoupper($row->renewal_status)=="RENEWAL")   
 							return $row->lead_name.'&nbsp;<sup class="fs-10">R</sup>';
 						else
-							return $row->lead_name."K-".$row->renewal_status;
+							return $row->lead_name;
 					}
 				})
 				->addColumn('total_collection', function($row){
@@ -1636,26 +2086,27 @@ public function verifyPayouts(Request $request)
 					 return '';
 				})
 				->addColumn('view_leads', function($row){
-					
-					$leadId='<a href="javascript:;" class="btn-view-leads text-center" data-id="'.$row->id.'" data-leadid="'.$row->lead_id.'" data-bs-toggle="modal"  data-bs-target="#view-payment-leads-modal" >View</a>';
-					return $leadId;
+					return '<a href="javascript:;" class="gl-btn gl-btn-outline gl-btn-sm btn-view-leads" '
+							.'data-id="'.$row->id.'" data-leadid="'.$row->lead_id.'" '
+							.'data-bs-toggle="modal" data-bs-target="#view-payment-leads-modal" title="View leads">'
+							.'<i class="bx bx-show"></i> View'
+						.'</a>';
 				})
 
 				->addColumn('pay_status', function($row){
-					$pstatus=($row->payment_status=="Paid")?
-					'<span class="success">'.$row->payment_status.'</span>':
-					'<span class="danger">'.$row->payment_status.'</span>';
-					return $pstatus;
+					if (strtoupper((string)$row->payment_status) === 'PAID') {
+						return '<span class="pill paid">Paid</span>';
+					}
+					return '<span class="pill unpaid">'.htmlspecialchars((string)$row->payment_status, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</span>';
 				})
 
 				->addColumn('verify_status', function($row){
-					
-				if(strtoupper($row->verify_status)=="VERIFIED")	
-					$vs='<span class="success">'.$row->verify_status.'</span>';
-				else
-					$vs='<button class="btn-verify btn btn-primary btn-sm" data-id="'.$row->id.'"> Verify </button>';
-				
-				return $vs;
+					if (strtoupper((string)$row->verify_status) === 'VERIFIED') {
+						return '<span class="pill paid">Verified</span>';
+					}
+					return '<button class="gl-btn gl-btn-primary gl-btn-sm btn-verify" data-id="'.$row->id.'" title="Mark as verified">'
+							.'<i class="bx bx-check"></i> Verify'
+						.'</button>';
 				})
 
 				/*->addColumn('action', function($row)
@@ -1665,7 +2116,7 @@ public function verifyPayouts(Request $request)
 					})
 					*/
 
-			->rawColumns(['lead_name','view_leads','verify_status','pay_status'])
+			->rawColumns(['partner_name','lead_name','view_leads','verify_status','pay_status'])
 		->make(true);
     }
 
@@ -1724,9 +2175,10 @@ public function payVerifiedPayments(Request $request)
 	public function viewVerifiedPaymentsList(Request $request)
     {
 
-		$data = PaymentVerify::select('payment_verify.*','leads.name as lead_name','leads.mobile','partners.name as partner_name','partners.company_name')
+		$data = PaymentVerify::select('payment_verify.*','leads.name as lead_name','leads.mobile','partners.name as partner_name','partners.company_name','partner_tiers.partner_tier')
 		->leftJoin('leads','payment_verify.lead_id','=','leads.id')
 		->leftJoin('partners','payment_verify.partner_id','=','partners.id')
+		->leftJoin('partner_tiers','partners.partner_tier_id','=','partner_tiers.id')
 		->where('verify_status','Verified')
 		->where(function($q)use($request)
 		{
@@ -1745,6 +2197,25 @@ public function payVerifiedPayments(Request $request)
 
 		return Datatables::of($data)
 				->addIndexColumn()
+
+				->addColumn('partner_name', function($row){
+					$name     = (string) ($row->partner_name ?? '');
+					$words    = preg_split('/\s+/', trim($name));
+					$initials = strtoupper(substr($words[0] ?? '', 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+					if ($initials === '') $initials = 'P';
+					$colors = ['c1','c2','c3','c4','c5','c6'];
+					$c = $colors[((int) $row->partner_id) % count($colors)];
+					$flags = ENT_QUOTES | ENT_SUBSTITUTE;
+
+					return '<div class="row-avatar">'
+							.'<div class="av '.$c.'">'.htmlspecialchars($initials, $flags, 'UTF-8').'</div>'
+							.'<div class="nm">'
+								.'<div class="name">'.htmlspecialchars(strtoupper($name), $flags, 'UTF-8').'</div>'
+								.'<div class="sub">'.$row->partner_tier.'</div>'
+							.'</div>'
+						.'</div>';
+				})
+
 				->addColumn('lead_name', function($row){
 					if($row->multiple_leads!=null)
 						return $row->multiple_lead_name;
@@ -1753,12 +2224,10 @@ public function payVerifiedPayments(Request $request)
 				})
 
 				->addColumn('total_collection', function($row){
-					$camount="₹ ".number_format($row->collected_amount,'2','.','');
-					return $camount;
+					return '&#8377;'.number_format($row->collected_amount, 0, '.', ',');
 				})
 				->addColumn('amount', function($row){
-					$amount="₹ ".number_format($row->commission,'2','.','');
-					return $amount;
+					return '<span class="num strong">&#8377;'.number_format($row->commission, 0, '.', ',').'</span>';
 				})
 				->addColumn('payment_date', function($row){
 					 if (!empty($row->payment_date))
@@ -1766,33 +2235,38 @@ public function payVerifiedPayments(Request $request)
 					 return '';
 				})
 				->addColumn('view_leads', function($row){
-					
-					$leadId='<a href="javascript:;" class="btn-view-leads text-center" data-id="'.$row->id.'" data-leadid="'.$row->lead_id.'" data-bs-toggle="modal"  data-bs-target="#view-payment-leads-modal" >View</a>';
-					return $leadId;
+					return '<a href="javascript:;" class="gl-btn gl-btn-outline gl-btn-sm btn-view-leads" '
+							.'data-id="'.$row->id.'" data-leadid="'.$row->lead_id.'" '
+							.'data-bs-toggle="modal" data-bs-target="#view-payment-leads-modal" title="View leads">'
+							.'<i class="bx bx-show"></i> View'
+						.'</a>';
 				})
 
 				->addColumn('pay_status', function($row){
-					$pstatus=($row->payment_status=="Paid")?
-					'<span class="success">'.$row->payment_status.'</span>':
-					'<span class="danger">'.$row->payment_status.'</span>';
-					return $pstatus;
+					if (strtoupper((string)$row->payment_status) === 'PAID') {
+						return '<span class="pill paid">Paid</span>';
+					}
+					return '<span class="pill unpaid">'.htmlspecialchars((string)$row->payment_status, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</span>';
 				})
 
 				->addColumn('verify_status', function($row){
-					$vs='<span class="success">'.$row->verify_status.'</span>';
-					return $vs;
-				})				
+					return '<span class="pill paid">Verified</span>';
+				})
 
-				->addColumn('action', function($row)
-					{
-					if($row->receipt!="" and $row->payment_status=="Paid")
-						$action='<a href="'.url('/uploads/receipts')."/".$row->receipt.'" target="_blank">Receipt</a>';
-					else
-					  $action='<button class="btn-pay btn btn-primary btn-sm" data-id="'.$row->id.'" data-bs-toggle="modal" data-bs-target="#set-payment-modal"> Pay </button>';
+				->addColumn('action', function($row){
+					if ($row->receipt != '' && $row->payment_status == 'Paid') {
+						$href = url('/uploads/receipts').'/'.$row->receipt;
+						return '<a href="'.$href.'" target="_blank" class="gl-btn gl-btn-outline gl-btn-sm" title="Download receipt">'
+								.'<i class="bx bx-receipt"></i> Receipt'
+							.'</a>';
+					}
+					return '<button class="gl-btn gl-btn-primary gl-btn-sm btn-pay" '
+							.'data-id="'.$row->id.'" data-bs-toggle="modal" data-bs-target="#set-payment-modal" title="Set payout">'
+							.'<i class="bx bx-rupee"></i> Pay'
+						.'</button>';
+				})
 
-					return $action;
-					})
-			->rawColumns(['action','view_leads','pay_status','verify_status'])
+			->rawColumns(['partner_name','action','view_leads','pay_status','verify_status','total_collection','amount'])
 		->make(true);
     }
 
@@ -1825,8 +2299,8 @@ public function savePayout(Request $request)
 	
 	DB::beginTransaction();
 	
-	//try
-	//{
+	try
+	{
 
 			$fileName='';
 			if($request->file('payment_receipt'))
@@ -1927,11 +2401,11 @@ public function savePayout(Request $request)
 			if($result)
 			{
 				
-				//$partner=Partner::where('id',$request->pay_partner_id)->first();
-				// general notification ----
-				//$msg="Hi,".$partner->name.", Your commission Rs. ".$request->pay_commission." credited to your account on ".$request->payment_date.", Thank You!";
-				//$ndat=['notification'=>$msg, 'partner_id'=>$request->pay_partner_id,'category'=>2,'status'=>0];
-				//Notification::create($ndat);
+				$partner=Partner::where('id',$request->pay_partner_id)->first();
+				//-- general notification ----
+				$msg="Hi,".$partner->name.", Your commission Rs. ".$request->pay_commission." credited to your account on ".$request->payment_date.", Thank You!";
+				$ndat=['notification'=>$msg, 'partner_id'=>$request->pay_partner_id,'category'=>2,'status'=>0];
+				Notification::create($ndat);
 				//--------------------------
 						
 			Session::flash('success',"Payment successfully completed!");
@@ -1943,13 +2417,13 @@ public function savePayout(Request $request)
 				Session::flash('error',"Something wrong, Please try again.");
 			}
 
-		/*}catch(\Exception $e)
+		}catch(\Exception $e)
 		{
 			DB::rollback();
 			\Log::info($e->getMessage());
 			Session::flash('error',$e->getMessage());
 			//return response()->json(['status'=>false,'msg'=>$e->getMessage()]);
-		}*/
+		}
 
 	return redirect('admin/pay-verified-payments');
 		
@@ -1967,8 +2441,6 @@ public function savePayout(Request $request)
 	return view('admin.payouts',compact('lead_status','total','tot_paid','partner','pid'));
   }
    
-
-
   
   public function gotBusinessPartnerUnpaidLeads($id)
   {
@@ -2198,49 +2670,51 @@ public function notifications()
 public function notificationList(Request $request)
     {
         if ($request->ajax()) {
+        $dateFrom = $request->date_from;
+        $dateTo   = $request->date_to;
+
         $data = Notification::select('notifications.*','partners.name')
-		->leftJoin('partners','notifications.partner_id','=','partners.id')->latest()
+		->leftJoin('partners','notifications.partner_id','=','partners.id')
+		->when(!empty($dateFrom), function($q) use ($dateFrom) {
+			$q->whereDate('notifications.created_at', '>=', $dateFrom);
+		})
+		->when(!empty($dateTo), function($q) use ($dateTo) {
+			$q->whereDate('notifications.created_at', '<=', $dateTo);
+		})
+		->latest()
 		->get();
 
         return Datatables::of($data)
                     ->addIndexColumn()
 					->addColumn('cdate', function($row){
-                        $dt=Carbon::createFromDate($row->created_at)->format('d-m-Y h:i:s');
-						return $dt;
+                        if (!$row->created_at) return '—';
+                        try {
+                            //return Carbon::parse($row->created_at)->diffForHumans();
+						return Carbon::parse($row->created_at)->format('Y-m-d h:i A');
+                        } catch (\Exception $e) {
+                            return $row->created_at;
+                        }
                     })
 					->addColumn('status', function($row){
-						$status = '--';
-						if($row->status==0)
-						{
-                            $status = '<span class="noti-dot success rounded-pill">New</span>';
-						}
-						return $status;
+                        if ((int)$row->status === 0) {
+                            return '<span class="pill new">New</span>';
+                        }
+                        return '<span class="pill read">Read</span>';
                     })
-					
+
 					->addColumn('addedby', function($row){
-						 $addedby = '<span class="noti-dot success rounded-pill">'.$row->name.'</span>';
-						if($row->category==1)
-						{
-                            $addedby = '<span class="noti-dot noti-admin rounded-pill">Getlead</span>';
-						}
-						return $addedby;
+                        if ((int)$row->category === 1) {
+                            return '<span class="pill admin">Getlead</span>';
+                        }
+                        return '<span class="pill partner">'.htmlspecialchars((string)($row->name ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</span>';
                     })
-					
+
                     ->addColumn('action', function($row){
-                        $btn = '<div class="btn-group">
-                        <button type="button" class="btn btn-outline dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-trash"></i> </button>
-					
-							<ul class="dropdown-menu pull-right" role="menu">
-								<li class="text-center mb-2"><a href="#">Confirm Deletion</a></li>
-								<li class="divider"></li>
-								<li style="display: flex;align-items:center;justify-content:center;" class="confirm_buttons">
-								<button type="button" class="btn btn-outline ok_btn confirm_deletion" data-id="'.$row->id.'"><i class="fa fa-check"></i></button>&nbsp;
-								<button type="button" class="btn btn-outline no_btn"><i class="fa fa-times"></i></button>
-								</li>
-							</ul>
-						</div>';
-							
-                            return $btn;
+                        return '<div class="row-action">'
+                                .'<button type="button" class="row-action-btn danger confirm_deletion" data-id="'.$row->id.'" title="Delete notification">'
+                                    .'<i class="bx bx-trash"></i>'
+                                .'</button>'
+                            .'</div>';
                     })
                     ->rawColumns(['action','status','addedby'])
                     ->make(true);
@@ -2359,9 +2833,10 @@ public function getLatestNotifications() //master page notifications top bar
 		if(empty($noti)){$noti=new NotificationStatus();};
 		
 		$lstatus=LeadStatus::all();
+		$ptiers=PartnerTier::all();
 		$products = ProductAndService::all();
 		$ams=AdminMessageSetting::whereId(1)->first();
-        return view('admin.settings_new',compact('noti','lstatus','products','ams'));
+        return view('admin.settings_new',compact('noti','lstatus','ptiers','products','ams'));
     }
 
 
@@ -2474,24 +2949,10 @@ public function getNewsList()
 				
 				->addColumn('action', function($row)
 				{
-                    $btn = '<div class="btn-group">
-							<a href="'.route("admin.edit-news",$row->id).'"  type="button" class="btn btn-outline"><i class="fa fa-pencil"></i></a>
-							<button type="button" class="btn btn-outline dropdown-toggle"
-							data-bs-toggle="dropdown">
-							<i class="fa fa-trash"></i>
-						</button>
-					
-						<ul class="dropdown-menu pull-right" role="menu">
-							<li class="text-center mb-2"><a href="#">Confirm Deletion</a></li>
-							<li class="divider"></li>
-							<li style="display: flex;align-items:center;justify-content:center;" class="confirm_buttons">
-							<button type="button" class="btn btn-outline btn-success ok_btn confirm_deletion" data-id="'.$row->id.'"><i class="fa fa-check"></i></button>&nbsp;
-							<button type="button" class="btn btn-outline btn-danger no_btn"><i class="fa fa-times"></i></button>
-							</li>
-						</ul>
-						</div>';
-
-					return $btn;
+                    return '<div class="row-action">'
+                            .'<a href="'.route('admin.edit-news', $row->id).'" class="row-action-btn" title="Edit"><i class="bx bx-pencil"></i></a>'
+                            .'<button type="button" class="row-action-btn danger confirm_deletion" data-id="'.$row->id.'" title="Delete"><i class="bx bx-trash"></i></button>'
+                        .'</div>';
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -2543,20 +3004,56 @@ public function deleteNews(Request $request)
 // export partner details ----------------------------------------------------
 
 
-public function exportPartnerList($status)
+public function exportPartnerList(Request $request)
 	{
-        return Excel::download(new partnerExport($status), 'partner_list'.'_'.date('Y-m-d').'.'.'xlsx');
-    } 
+        $filters = [
+            'status'   => $request->query('status', ''),
+            'tier'     => $request->query('tier', ''),
+            'agent_id' => $request->query('agent_id', ''),
+            'activity' => $request->query('activity', ''),
+        ];
+        return Excel::download(new partnerExport($filters), 'partner_list_'.date('Y-m-d').'.xlsx');
+    }
 
-public function exportPartnersActivity()
+public function exportPartnersActivity(Request $request)
 	{
-        return Excel::download(new partnerActivityExport(), 'partners_activity_list'.'_'.date('Y-m-d').'.'.'xlsx');
-    } 
+        $filters = [
+            'partner_id' => $request->query('partner_id', ''),
+            'date_from'  => $request->query('date_from', ''),
+            'date_to'    => $request->query('date_to', ''),
+        ];
+        return Excel::download(new partnerActivityExport($filters), 'partners_activity_list_'.date('Y-m-d').'.xlsx');
+    }
 
- public function exportLeadList($status,$partner,$pay_status)
+ public function exportLeadList(Request $request)
 	{
-        return Excel::download(new leadsExport($status,$partner,$pay_status), 'leads_list'.'_'.date('Y-m-d').'.'.'xlsx');
-    } 
+        $status     = $request->query('status', 'All') ?: 'All';
+        $partner    = $request->query('partner', 'All') ?: 'All';
+        $pay_status = $request->query('payment', 'All') ?: 'All';
+        $age        = $request->query('age', '') ?: '';
+        return Excel::download(new leadsExport($status, $partner, $pay_status, $age), 'leads_list_'.date('Y-m-d').'.xlsx');
+    }
+
+ public function exportPayoutDetails(Request $request)
+    {
+        $filters = [
+            'partner_id'    => $request->query('partner_id', ''),
+            'status_filter' => $request->query('status_filter', ''),
+            'date_from'     => $request->query('date_from', ''),
+            'date_to'       => $request->query('date_to', ''),
+        ];
+        return Excel::download(new payoutDetailsExport($filters), 'payout_details_'.date('Y-m-d').'.xlsx');
+    }
+
+ public function exportPaymentHistory(Request $request)
+    {
+        $filters = [
+            'partner_id' => $request->query('partner_id', ''),
+            'date_from'  => $request->query('date_from', ''),
+            'date_to'    => $request->query('date_to', ''),
+        ];
+        return Excel::download(new paymentHistoryExport($filters), 'payment_history_'.date('Y-m-d').'.xlsx');
+    }
  
  
  // business category -----------------------------------------------------------
@@ -2648,6 +3145,86 @@ public function exportPartnersActivity()
     BussinessCategory::where('id',$id)->first()->delete();
     return response()->json(['status'=>1,'msg'=>"Business category successfully removed!"]);
  }
+ //Partner Tiers -----------------------------------------
+
+ public function savePartnerTier(Request $request)
+ {
+	try
+		{
+			$result=PartnerTier::create([
+				'partner_tier' => $request->partner_tier,
+				'tier_color' => $request->tier_color_text,
+			]);
+
+			if($result)
+			{
+				return response()->json(['status'=>1,'data'=>$result,'msg'=>"Partner tier successfully added!"]);
+			}
+			else
+			{
+				return response()->json(['status'=>0,'msg'=>"Something wrong, Please check."]);
+			}
+
+		}catch(\Exception $e)
+		{
+			\Log::info($e->getMessage());
+			return response()->json(['status'=>0,'msg'=>$e->getMessage()]);
+		}
+ }
+
+ public function editPartnerTier($id)
+ {
+	$tier = PartnerTier::find($id);
+	if (!$tier) {
+		return response()->json(['status'=>0,'msg'=>'Tier not found.']);
+	}
+	return response()->json(['status'=>1,'data'=>$tier]);
+ }
+
+ public function updatePartnerTier(Request $request)
+ {
+	try
+		{
+			$tier = PartnerTier::find($request->tier_id);
+			if (!$tier) {
+				return response()->json(['status'=>0,'msg'=>'Tier not found.']);
+			}
+
+			$tier->partner_tier = $request->partner_tier;
+			$tier->tier_color   = $request->tier_color_text;
+			$tier->save();
+
+			return response()->json(['status'=>1,'data'=>$tier,'msg'=>'Partner tier updated!']);
+
+		}catch(\Exception $e)
+		{
+			\Log::info($e->getMessage());
+			return response()->json(['status'=>0,'msg'=>$e->getMessage()]);
+		}
+ }
+
+ public function deletePartnerTier($id)
+ {
+	try
+		{
+			// Block deletion if any partner is still assigned to this tier
+			$inUse = Partner::where('partner_tier_id', $id)->count();
+			if ($inUse > 0) {
+				return response()->json(['status'=>0,'msg'=>'Cannot delete — '.$inUse.' partner(s) are assigned to this tier.']);
+			}
+
+			$res = PartnerTier::whereId($id)->delete();
+			if ($res) {
+				return response()->json(['status'=>1,'msg'=>'Partner tier removed!']);
+			}
+			return response()->json(['status'=>0,'msg'=>'Tier not found.']);
+
+		}catch(\Exception $e)
+		{
+			\Log::info($e->getMessage());
+			return response()->json(['status'=>0,'msg'=>$e->getMessage()]);
+		}
+ }
  
  
 // product and services plans -------------------------------
@@ -2686,7 +3263,8 @@ public function exportPartnersActivity()
                       ->make(true);
     }
 
- 
+
+
  public function savePlan(Request $request)   //product and services
  {
 	 

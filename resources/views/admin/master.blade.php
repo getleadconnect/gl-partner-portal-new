@@ -29,6 +29,24 @@
 	{
 		text-align:left;
 	}
+	.sidebar-badge {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 26px;
+		height: 18px;
+		padding: 0 7px;
+		margin-left: auto;
+		background: #E5384C;
+		color: #fff;
+		border-radius: 999px;
+		font-size: 11px;
+		font-weight: 600;
+		line-height: 1;
+		font-family: monospace;
+	}
+	#side-menu li a { display: flex; align-items: center; }
+	#side-menu li a .menu-item { flex: 1; }
 	</style>
 	
 </head>
@@ -175,6 +193,9 @@
                     <a href="{{ route('admin.channel-partners')}}" >
                         <i class="bx bx-user-circle icon nav-icon"></i>
                         <span class="menu-item" data-key="t-partners">Partners</span>
+                        @if(!empty($sidebar_partners_count))
+                            <span class="sidebar-badge">{{ $sidebar_partners_count }}</span>
+                        @endif
                     </a>
                 </li>
 
@@ -182,6 +203,9 @@
                     <a href="{{ route('admin.leads')}}">
                         <i class="bx bx-user-pin icon nav-icon"></i>
                         <span class="menu-item" data-key="t-leads">Leads</span>
+                        @if(!empty($sidebar_leads_count))
+                            <span class="sidebar-badge">{{ $sidebar_leads_count }}</span>
+                        @endif
                     </a>
                 </li>
 				
@@ -196,6 +220,9 @@
                     <a href="{{ route('admin.payouts')}}">
                         <i class="bx bx-message-square-edit icon nav-icon"></i>
                         <span class="menu-item" data-key="t-payouts">Prepare Payouts</span>
+                        @if(!empty($sidebar_payouts_count))
+                            <span class="sidebar-badge">{{ $sidebar_payouts_count }}</span>
+                        @endif
                     </a>
                 </li>
 

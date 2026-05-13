@@ -177,8 +177,10 @@ Route::prefix('admin')->name('admin.')->group(function(){
 			Route::get('partner-details/{id}','partnerDetails')->name('partner-details');
 			Route::get('get-partner-leads/{id}','getPartnerLeads')->name('get-partner-leads');
 			
-			Route::get('/export-partner-list/{status}', 'exportPartnerList')->name('export-partner-list');
-			Route::get('/export-lead-list/{status}/{partner}/{payment}', 'exportLeadList')->name('export-lead-list');
+			Route::get('/export-partner-list', 'exportPartnerList')->name('export-partner-list');
+			Route::get('/export-lead-list', 'exportLeadList')->name('export-lead-list');
+			Route::get('/export-payout-details', 'exportPayoutDetails')->name('export-payout-details');
+			Route::get('/export-payment-history', 'exportPaymentHistory')->name('export-payment-history');
 
 			Route::get('/developer-api', 'developerApi')->name('developer-api');
 			
@@ -200,6 +202,15 @@ Route::prefix('admin')->name('admin.')->group(function(){
 			Route::post('save-plan','savePlan')->name('save-plan'); 
 			Route::get('delete-plan/{id}','deletePlan')->name('delete-plan'); //product and services
 			Route::post('update-plan','updatePlan')->name('update-plan'); 
+
+
+            Route::post('save-partner-tier','savePartnerTier')->name('save-partner-tier');
+            Route::get('edit-partner-tier/{id}','editPartnerTier')->name('edit-partner-tier');
+            Route::post('update-partner-tier','updatePartnerTier')->name('update-partner-tier');
+            Route::get('delete-partner-tier/{id}','deletePartnerTier')->name('delete-partner-tier');
+
+
+
 			
 			Route::get('set-notifications-as-read','setNotificationsAsRead')->name('set-notifications-as-read');
 			Route::get('get-latest-notifications','getLatestNotifications')->name('get-latest-notifications');  //master page top bar bell icon
@@ -301,7 +312,9 @@ Route::prefix('admin')->name('admin.')->group(function(){
 			Route::get('payout-history','payoutHistory')->name('payout-history');
 			Route::get('view-payment-details','viewPaymentDetails')->name('view-payment-details');
 			Route::get('view-payment-history','viewPaymentHistory')->name('view-payment-history');
-			
+			Route::get('export-payout-details','exportPayoutDetails')->name('export-payout-details');
+			Route::get('export-payment-history','exportPaymentHistory')->name('export-payment-history');
+
         });
 
     });

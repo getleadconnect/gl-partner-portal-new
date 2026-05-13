@@ -7,144 +7,377 @@
 	font-size:12px !important;
 }
 
-.dataTables_wrapper .dataTables_filter {
-    float: right;
-    text-align: right;
-    display: flex !important;
-}
-
-.filter-select
-{
-	width:110px;
-	height:34px;
-	margin:8px 0px 8px 8px;
-	border-color:#aaa !important;
-}
-.lbl-bold
-{
-	font-weight:700;
-	color:#5e34a3;
-}
-
-.payment-active { color:green;}
-.payment-inactive{ color:#f32c2c;}
-.payment-pending{ color:purple;}
 .form-select option{ color:black;}
+.form-select { width:170px !important;}
 .t-amt{ font-size:14px;font-weight:600;}
 .pd-view p{ margin-bottom:.3rem;}
-.txt-center{
-	text-align:center;
+.txt-center{ text-align:center; }
+
+/* ============ LEADS — PAGE HEADER ============ */
+.gl-page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 8px 4px 20px;
+    flex-wrap: wrap;
+    font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+.gl-page-title { font-size: 24px; font-weight: 700; color: #0F172A; letter-spacing: -0.01em; margin: 0 0 4px 0; line-height: 1.2; }
+.gl-page-subtitle { font-size: 13px; color: #475569; }
+.gl-page-header__actions { display: inline-flex; align-items: center; gap: 10px; }
+.gl-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 8px;
+    font-size: 13px; font-weight: 500; line-height: 1.2;
+    font-family: inherit; text-decoration: none; cursor: pointer;
+    transition: background .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
+    border: 1px solid transparent; white-space: nowrap;
+}
+.gl-btn i { font-size: 15px; line-height: 1; }
+.gl-btn-outline { background: #FFFFFF; border-color: #E7E9EE; color: #0F172A; }
+.gl-btn-outline:hover { border-color: #CBD5E1; background: #FAFAFB; color: #0F172A; }
+.gl-btn-primary { background: #1E3A5F; color: #fff; border-color: #1E3A5F; box-shadow: 0 1px 2px rgba(15,23,42,0.08); }
+.gl-btn-primary:hover { background: #15294A; border-color: #15294A; color: #fff; }
+
+/* ============ LEADS — KPI CARDS ============ */
+.gl-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+    font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+.gl-kpi {
+    background: #FFFFFF;
+    border: 1px solid #E7E9EE;
+    border-radius: 8px;
+    padding: 16px 18px;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+}
+.gl-kpi-head {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 10px;
+}
+.gl-kpi-icon {
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    display: grid; place-items: center;
+    background: #EEF2F8;
+    color: #1E3A5F;
+}
+.gl-kpi-icon i { font-size: 15px; line-height: 1; }
+.gl-kpi-icon.warn    { background: #FEF3C7; color: #D97706; }
+.gl-kpi-icon.success { background: #ECFDF5; color: #059669; }
+.gl-kpi-icon.danger  { background: #FEE2E2; color: #DC2626; }
+.gl-kpi-label {
+    font-size: 12px;
+    color: #475569;
+    font-weight: 500;
+}
+.gl-kpi-value {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #0F172A;
+    line-height: 1.1;
+    font-family: 'Geist Mono', monospace;
+    font-variant-numeric: tabular-nums;
+}
+.gl-kpi-foot {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #475569;
+}
+.gl-kpi-foot.warn { color: #D97706; font-weight: 500; }
+
+@media (max-width: 1100px) {
+    .gl-kpi-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 540px) {
+    .gl-kpi-grid { grid-template-columns: 1fr; }
+}
+
+/* ============ LEADS — TABLE TOOLBAR ============ */
+.gl-leads-toolbar {
+    padding: 12px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 14px; border-bottom: 1px solid #F0F2F5;
+    flex-wrap: wrap; background: #FAFAFB;
+}
+.gl-leads-toolbar .filter-group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.gl-leads-toolbar .filter-label { font-size: 11.5px; color: #94A3B8; font-weight: 500; margin-right: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+.gl-leads-toolbar .filter-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 12px; background: #FFFFFF; border: 1px solid #E7E9EE; border-radius: 999px;
+    font-size: 12px; font-weight: 500; color: #475569; cursor: pointer; font-family: inherit;
+    transition: all 0.15s ease;
+}
+.gl-leads-toolbar .filter-pill:hover { background: #EEF2F8; border-color: #1E3A5F; color: #1E3A5F; }
+.gl-leads-toolbar .filter-pill.active { background: #1E3A5F; border-color: #1E3A5F; color: #fff; }
+.gl-leads-toolbar .filter-pill .mono { font-family: 'Geist Mono', monospace; font-size: 11px; opacity: 0.85; }
+.gl-leads-toolbar .gl-divider { width: 1px; height: 20px; background: #E7E9EE; margin: 0 4px; }
+.gl-leads-toolbar .filter-select-gl {
+    padding: 6px 10px; border: 1px solid #E7E9EE; border-radius: 6px; background: #FFFFFF;
+    font-size: 12.5px; color: #0F172A; font-family: inherit; cursor: pointer; outline: none;
+}
+.gl-leads-toolbar .filter-select-gl:focus { border-color: #1E3A5F; }
+.gl-leads-toolbar .table-stats { display: flex; gap: 10px; font-size: 12px; color: #475569; align-items: center; }
+.gl-leads-toolbar .table-stats strong { color: #0F172A; font-weight: 600; margin: 0 4px; font-family: 'Geist Mono', monospace; }
+.gl-leads-toolbar .table-stats .sep { color: #E7E9EE; }
+
+/* ============ LEADS — TABLE ============ */
+.gl-leads {
+    --gl-surface: #FFFFFF;
+    --gl-surface-2: #FAFAFB;
+    --gl-border: #E7E9EE;
+    --gl-border-soft: #F0F2F5;
+    --gl-text: #0F172A;
+    --gl-text-soft: #475569;
+    --gl-text-muted: #94A3B8;
+    font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+.gl-leads table.data { width: 100%; border-collapse: collapse; font-size: 13px; }
+.gl-leads table.data thead tr { background: var(--gl-surface-2); }
+.gl-leads table.data thead th {
+    padding: 10px 16px; text-align: left;
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--gl-text-muted); font-weight: 600;
+    border-bottom: 1px solid var(--gl-border-soft); white-space: nowrap;
+}
+.gl-leads table.data thead th.num { text-align: right; }
+.gl-leads table.data tbody td {
+    padding: 12px 16px; border-bottom: 1px solid var(--gl-border-soft);
+    color: var(--gl-text-soft); vertical-align: middle; background: var(--gl-surface);
+}
+.gl-leads table.data tbody tr:hover td { background: #FAFBFC; }
+.gl-leads table.data td.num { font-family: 'Geist Mono', monospace; text-align: right; font-variant-numeric: tabular-nums; }
+.gl-leads table.data td .num.strong { color: var(--gl-text); font-weight: 600; font-family: 'Geist Mono', monospace; }
+.gl-leads table.data td .num.muted { color: var(--gl-text-muted); font-family: 'Geist Mono', monospace; }
+
+/* Lead avatar cell */
+.gl-leads .row-avatar { display: inline-flex; align-items: center; gap: 10px; }
+.gl-leads .row-avatar .av {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: grid; place-items: center; font-size: 11px; font-weight: 600;
+    color: #fff; flex-shrink: 0; letter-spacing: 0.02em;
+}
+.gl-leads .row-avatar .av.c1 { background: #1E3A5F; }
+.gl-leads .row-avatar .av.c2 { background: #059669; }
+.gl-leads .row-avatar .av.c3 { background: #B68B3C; }
+.gl-leads .row-avatar .av.c4 { background: #DC2626; }
+.gl-leads .row-avatar .av.c5 { background: #475569; }
+.gl-leads .row-avatar .av.c6 { background: #2C5282; }
+.gl-leads .row-avatar .nm { line-height: 1.25; }
+.gl-leads .row-avatar .nm .name { color: var(--gl-text); font-weight: 500; font-size: 13px; }
+.gl-leads .row-avatar .nm .sub { color: var(--gl-text-muted); font-size: 12px; margin-top: 2px; font-family: 'Geist Mono', monospace; }
+
+/* Payment + Status pills */
+.gl-leads .pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px; border-radius: 4px;
+    font-size: 11.5px; font-weight: 500;
+}
+.gl-leads .pill::before { content:''; width:5px; height:5px; border-radius:50%; }
+.gl-leads .pill.paid     { background: #ECFDF5; color: #059669; }
+.gl-leads .pill.paid::before { background: #059669; }
+.gl-leads .pill.unpaid   { background: #FEE2E2; color: #DC2626; }
+.gl-leads .pill.unpaid::before { background: #DC2626; }
+.gl-leads .pill.pending  { background: #FEF3C7; color: #B45309; }
+.gl-leads .pill.pending::before { background: #D97706; }
+
+/* Days in stage */
+.gl-leads .days {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--gl-text-soft);
+}
+.gl-leads .days.fresh { color: var(--gl-text-muted); }
+.gl-leads .days.stale { color: #D97706; font-weight: 500; }
+.gl-leads .days.cold  { color: #DC2626; font-weight: 600; }
+.gl-leads .days .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+/* Row action buttons */
+.gl-leads .row-action {
+    display: inline-flex; gap: 6px;
+}
+.gl-leads .row-action-btn {
+    width: 32px; height: 32px;
+    border: 1px solid var(--gl-border);
+    background: var(--gl-surface);
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--gl-text-soft);
+    cursor: pointer;
+    padding: 0;
+    transition: background .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
+}
+.gl-leads .row-action-btn i { font-size: 15px; line-height: 1; }
+.gl-leads .row-action-btn:hover {
+    background: #EEF2F8;
+    border-color: #1E3A5F;
+    color: #1E3A5F;
+}
+.gl-leads .row-action-btn.accent {
+    color: #B68B3C;
+}
+.gl-leads .row-action-btn.accent:hover {
+    background: #FBF5E5;
+    border-color: #B68B3C;
+    color: #B68B3C;
+}
+.gl-leads .row-action-btn.danger:hover {
+    background: #FEE2E2;
+    border-color: #DC2626;
+    color: #DC2626;
+}
+/* Text-mode action button (e.g. "Re-Com") — auto width, horizontal padding, pill shape */
+.gl-leads .row-action-btn.text
+ {
+    width: 71px;
+    min-width: 0;
+    height: 32px;
+    padding: 0px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
 }
 </style>
 
  <div class="page-content">
         <div class="container-fluid">
 
-            <!-- Start page title -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="page-title-box d-flex align-items-center justify-content-between">
-                        <h4 class="mb-0">Leads</h4>
-                        <div class="page-title-right">
-                            <ol class="breadcrumb m-0">
-                               <li class="breadcrumb-item"><a href="{{route('admin.dashboard')}}">Home</a></li>
-                                <li class="breadcrumb-item active">Leads</li>
-                            </ol>
-                        </div>
+            <div class="gl-page-header">
+                <div class="gl-page-header__text">
+                    <h1 class="gl-page-title">Leads</h1>
+                    <div class="gl-page-subtitle">
+                        {{ $total_leads_count }} total · {{ $stale_leads_count }} stale · Move leads through the pipeline.
                     </div>
                 </div>
+                <div class="gl-page-header__actions">
+                    <a href="javascript:void(0);" id="export_to_excel" class="gl-btn gl-btn-outline">
+                        <i class="bx bx-download"></i> Export CSV
+                    </a>
+                    <button id="btnOffcanvas" type="button" class="gl-btn gl-btn-primary" data-bs-toggle="modal" data-bs-target="#add-lead-modal">
+                        <i class="bx bx-plus"></i> Add Lead
+                    </button>
+                </div>
             </div>
-            <!-- End page title -->
+
+            {{-- KPI cards --}}
+            @php
+                $shortInr = function ($val) {
+                    $val = (int) $val;
+                    if ($val >= 10000000) return '&#8377;'.round($val/10000000, 1).'Cr';
+                    if ($val >= 100000)   return '&#8377;'.round($val/100000, 1).'L';
+                    if ($val >= 1000)     return '&#8377;'.round($val/1000, 1).'K';
+                    return '&#8377;'.number_format($val, 0, '.', ',');
+                };
+            @endphp
+            <div class="gl-kpi-grid">
+                <div class="gl-kpi">
+                    <div class="gl-kpi-head">
+                        <div class="gl-kpi-icon"><i class="bx bx-search"></i></div>
+                        <div class="gl-kpi-label">Total Leads</div>
+                    </div>
+                    <div class="gl-kpi-value">{{ $total_leads_count }}</div>
+                    <div class="gl-kpi-foot">+{{ $leads_this_week }} this week</div>
+                </div>
+                <div class="gl-kpi">
+                    <div class="gl-kpi-head">
+                        <div class="gl-kpi-icon warn"><i class="bx bx-time-five"></i></div>
+                        <div class="gl-kpi-label">Stale (&gt;7d in stage)</div>
+                    </div>
+                    <div class="gl-kpi-value">{{ $stale_leads_count }}</div>
+                    <div class="gl-kpi-foot warn">&rarr; Filter below to act</div>
+                </div>
+                <div class="gl-kpi">
+                    <div class="gl-kpi-head">
+                        <div class="gl-kpi-icon success"><i class="bx bx-check"></i></div>
+                        <div class="gl-kpi-label">Closed-won</div>
+                    </div>
+                    <div class="gl-kpi-value">{{ $closed_won_count }}</div>
+                    <div class="gl-kpi-foot">{{ $close_rate }}% close rate</div>
+                </div>
+                <div class="gl-kpi">
+                    <div class="gl-kpi-head">
+                        <div class="gl-kpi-icon"><i class="bx bx-rupee"></i></div>
+                        <div class="gl-kpi-label">Pipeline Value</div>
+                    </div>
+                    <div class="gl-kpi-value">{!! $shortInr($pipeline_value) !!}</div>
+                    <div class="gl-kpi-foot">Open + Proposal stages</div>
+                </div>
+            </div>
 
             <div class="row">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="card-title mb-0">Manage Leads</h5>
-                                <div>
-									<button id="btnOffcanvas" class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#add-lead-modal">Add Lead</button>
-									<a href="javascript:void(0);" class="btn btn-primary me-2" id="export_to_excel"><i class="fas fa-file-export"></i>&nbsp;Export</a>
+                        <div class="card-body" style="padding:0;">
+                            <div class="table-responsive gl-leads">
+                                <div class="gl-leads-toolbar">
+                                    <div class="filter-group">
+                                        <span class="filter-label">Status</span>
+                                        <button type="button" class="filter-pill active" data-status="">All <span class="mono">{{ $total_leads_count }}</span></button>
+                                        @foreach($lead_status_counts as $statusName => $cnt)
+                                            <button type="button" class="filter-pill" data-status="{{ $statusName }}">{{ $statusName }} <span class="mono">{{ $cnt }}</span></button>
+                                        @endforeach
+
+                                        <span class="gl-divider"></span>
+
+                                        <select id="partner_filter" class="filter-select-gl">
+                                            <option value="">All partners</option>
+                                            @foreach($partners as $key=>$value)
+                                                <option value="{{ $key }}">{{ $value }}</option>
+                                            @endforeach
+                                        </select>
+
+                                        <select id="filter_status" class="filter-select-gl">
+                                            <option value="">Status: Any</option>
+                                            @foreach($lead_status as $value)
+                                                <option value="{{ $value->lead_status }}">{{ $value->lead_status }}</option>
+                                            @endforeach
+                                        </select>
+
+                                        <select id="filter_payment_status" class="filter-select-gl">
+                                            <option value="">Payment: Any</option>
+                                            <option value="0">Not Paid</option>
+                                            <option value="1">Paid</option>
+                                            <option value="2">Pending</option>
+                                        </select>
+
+                                        <select id="filter_age" class="filter-select-gl">
+                                            <option value="">Age: Any</option>
+                                            <option value="stale">Stale (&gt;7 days)</option>
+                                            <option value="cold">Cold (&gt;14 days)</option>
+                                        </select>
+                                    </div>
+                                    <div class="table-stats">
+                                        <div class="stat">Showing <strong id="showing_count">0</strong></div>
+                                        <div class="sep">·</div>
+                                        <div class="stat">of <strong id="total_count">{{ $total_leads_count }}</strong></div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="card-body" style="padding-top:0px;">
 
-			<div class="row row-cols-1 row-cols-lg-1 row-cols-xl-1 row-cols-xxl-1">
-              <div class="col">
-                <div class="card overflow-hidden radius-10">
-                    <div class="card-body">
-                     <div class="d-flex overflow-hidden">
-                      <label style="width:100px;"> Filter By:</label>
-                            <div class="d-flex">
-									<select id="partner_filter" name="partner_filter" class="filter-select-new" >
-                                    <option value="" selected disabled>Partners</option>
-									<option value="">All</option>
-									@foreach($partners as $key=>$value)
-                                    <option value="{{$key}}">{{$value}}</option>
-									@endforeach
-                                </select>
-														
-								 <select id="filter_status" name="filter_status" class="filter-select-new">
-                                    <option value="" selected disabled>Status</option>
-									<option value="">All</option>
-									@foreach($lead_status as $value)
-                                    <option value="{{$value->lead_status}}">{{$value->lead_status}}</option>
-									@endforeach
-									
-                                </select>
-								
-								<select id="filter_payment_status" name="filter_payment_status" class="filter-select-new">
-                                    <option value="" selected disabled>Payment</option>
-									<option value="">All</option>
-									<option value="0">Not Paid</option>
-									<option value="1">Paid</option>
-                                </select>
-								
-                            </div>
-                    </div>
-                  </div>
-                </div>
-               </div>
-
-            </div>
-
-						
-							<div class="d-flex mb-2">
-							<label class="lbl-bold">Partner : <span id="partner"></span></label> 
-							<label class="lbl-bold" style="margin-left:50px;">Leads : <span id="leads"></span></label>
-                             </div>
-														
-                            <div class="table-responsive">
-
-							    <table id="leads-table" class="table table-striped table-centered align-middle table-nowrap mb-0" style="width:100% !important;">
+                                <table id="leads-table" class="data" style="width:100% !important;">
                                     <thead>
- 										
-									<tr id="tab-row">
-										<th>No</th>
-										<th>Partner</th>
-										<th>Lead</th>
-										<th>Mobile</th>
-										<th>Email</th>
-										<th>Company</th>
-										<th>Lead Status</th>
-										<!--<th>Amount</th>
-										<th>Commission</th>-->
-										<th>Payments</th>
-										<th>Actions</th>
-									</tr>
-										
+                                        <tr id="tab-row">
+                                            <th>Lead</th>
+                                            <th>Partner</th>
+                                            <th>Days in Stage</th>
+                                            <th class="num">Deal Value</th>
+                                            <th>Lead Status</th>
+                                            <th>Payment</th>
+                                            <th>Actions</th>
+                                        </tr>
                                     </thead>
-                                    <tbody>
-                                   
-                                    </tbody>
+                                    <tbody></tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div> <!-- container-fluid -->
+        </div>
     </div>
 	
     <!-- Add Partner Modal -->
@@ -421,68 +654,62 @@ var phone_number = window.intlTelInput(document.querySelector("#mobile"), {
             processing: true,
             serverSide: true,
 			stateStatus: true,
-			scrollX:true,
-			"language": {
-				searchPlaceholder: 'Search',
-				sSearch: '',
-			},
-			"lengthMenu": [10, 25, 50,100,150,200],
-			
+			scrollX: true,
+			"language": { searchPlaceholder: 'Search', sSearch: '' },
+			"lengthMenu": [10, 25, 50, 100, 150, 200],
+
             ajax: {
                 url: "{{ route('admin.list-leads') }}",
-                data: function (d) 
-                {
-                    d.status = $('#filter_status').val();
-                    d.partner_id = $('#partner_filter').val();  
-					d.pay_status = $('#filter_payment_status').val();  
+                data: function (d) {
+                    var pillStatus = $('.gl-leads-toolbar .filter-pill.active').data('status') || '';
+                    d.status      = pillStatus || $('#filter_status').val() || '';
+                    d.partner_id  = $('#partner_filter').val();
+                    d.pay_status  = $('#filter_payment_status').val();
+                    d.age_filter  = $('#filter_age').val();
                 }
             },
-			columnDefs:
-			[
-				{ width:"170px",targets:[6]},
-				{ width:"110px",targets:[8]},
-			],
-            columns: [
-				{data: 'DT_RowIndex', name: 'DT_RowIndex',orderable: false, searchable: false},
-				{data: 'partner', name: 'partner'},
-				{data: 'name', name: 'name'},
-				{data: 'mobile', name: 'mobile'},
-				{data: 'email', name: 'email'},
-				{data: 'company_name', name: 'company_name'},
-				{data: 'status', name: 'status'},
-				//{data: 'amount_collected', name: 'amount_collected'},
-				//{data: 'commission_amount', name: 'commission_amount'},
-				{data: 'pay_status', name: 'pay_status'},
-				{data: 'action', name: 'action'},
+
+            columnDefs:[
+                {width:"130px", targets:[6]},
             ],
-			
-            "drawCallback": function( json ) {
-					$("#partner").html("All");
-					$("#leads").html(table.page.info().recordsTotal);
-						
-					if($('#partner_filter').find(":selected").val()!="")
-					{
-						$("#partner").html($('#partner_filter').find(":selected").text());
-						$("#leads").html(table.page.info().recordsTotal);
-					}
+
+            columns: [
+                {data: 'lead',          name: 'lead',          orderable: false, searchable: false},
+                {data: 'partner',       name: 'partner'},
+                {data: 'days_in_stage', name: 'days_in_stage', orderable: false, searchable: false},
+                {data: 'deal_value',    name: 'deal_value',    orderable: false, searchable: false, className: 'num'},
+                {data: 'status',        name: 'status',        orderable: false},
+                {data: 'pay_status',    name: 'pay_status',    orderable: false},
+                {data: 'action',        name: 'action',        orderable: false, searchable: false},
+            ],
+
+            drawCallback: function () {
+                var info = this.api().page.info();
+                $('#showing_count').text(info.recordsDisplay || 0);
+                $('#total_count').text(info.recordsTotal || 0);
             }
         });
 
 //---------------------------------------------------------------
 
-$("#filter_status").change(function()
-	{
-		table.draw();
-	});
+$('.gl-leads-toolbar').on('click','.filter-pill', function(){
+    $('.gl-leads-toolbar .filter-pill').removeClass('active');
+    $(this).addClass('active');
+    // sync the redundant Status dropdown so both stay aligned
+    $('#filter_status').val($(this).data('status') || '');
+    table.draw();
+});
 
-$("#partner_filter").change(function()
-	{
-		table.draw();
-	});
-$("#filter_payment_status").change(function()
-	{
-		table.draw();
-	});
+$('#filter_status, #partner_filter, #filter_payment_status, #filter_age').on('change', function(){
+    // dropdown Status takes precedence — clear the pill highlight
+    if (this.id === 'filter_status') {
+        $('.gl-leads-toolbar .filter-pill').removeClass('active');
+        var v = $(this).val();
+        $('.gl-leads-toolbar .filter-pill[data-status="'+v+'"]').addClass('active');
+        if (v === '') $('.gl-leads-toolbar .filter-pill[data-status=""]').addClass('active');
+    }
+    table.draw();
+});
 
 var addLeadValidator=$('#lead-form').validate({ 
                 rules: {
@@ -731,7 +958,7 @@ $(".button-close").click(function()
 					$("#set_comm_lead_status").val(lstatus);
 					$("#set_comm_percentage").val(com_per);
 					$("#temp_comm_percentage").val(com_per);
-					$("#renewal_status").val("renewal");
+					$("#renewal_status").val("Renewal");
 					
 					$("#set-commission-modal").modal('show');
 			}
@@ -778,32 +1005,53 @@ $(".button-close").click(function()
 		
 		//-------------------------------------------------
 
-        $(document).on('click','.confirm_deletion',function()
+        $("#leads-table tbody").on('click','.confirm_deletion',function()
         {
-            $.ajax({
+            var leadId = $(this).data('id');
+            Swal.fire({
+                title: 'Delete this lead?',
+                text:  'This action cannot be undone.',
+                icon:  'warning',
+                showCancelButton:  true,
+                confirmButtonText: 'Yes, delete',
+                cancelButtonText:  'Cancel',
+                confirmButtonColor: '#DC2626',
+                cancelButtonColor:  '#94A3B8',
+                reverseButtons:     true,
+            }).then(function(result) {
+                if (!result.isConfirmed) return;
+                $.ajax({
                     url: "{{ route('admin.delete-lead') }}",
                     method: 'post',
-                    data: {'_token': '{{ csrf_token() }}','lead_id':$(this).data('id')},
-                    success: function(result)
-                    {
-                        if(result.status)
-                        {
+                    data: {'_token':'{{ csrf_token() }}','lead_id': leadId},
+                    success: function(result) {
+                        if (result.status) {
                             toastr.success("Lead successfully removed!");
                             table.ajax.reload();
+                        } else {
+                            toastr.error(result.msg || 'Could not delete the lead.');
                         }
-                        
+                    },
+                    error: function() {
+                        toastr.error('Could not delete the lead, please try again.');
                     }
                 });
-        })
+            });
+        });
 
 
 	$("#export_to_excel").click(function()
 	{
-		var status=($("#filter_status").find(':selected').val()!="")?$("#filter_status").find(':selected').val():"All";
-		var partner=($("#partner_filter").find(':selected').val()!="")?$("#partner_filter").find(':selected').val():"All";
-		var pay_status=($("#filter_payment_status").find(':selected').val()!="")?$("#filter_payment_status").find(':selected').val():"All";
-		var lnk="{{url('admin/export-lead-list')}}"+"/"+status+"/"+partner+"/"+pay_status;
-		$("#export_to_excel").attr('href',lnk);	
+		var pillStatus = $('.gl-leads-toolbar .filter-pill.active').data('status') || '';
+		var status     = pillStatus || $('#filter_status').val() || '';
+		var params = {
+			status:  status  || 'All',
+			partner: $('#partner_filter').val() || 'All',
+			payment: $('#filter_payment_status').val() || 'All',
+			age:     $('#filter_age').val() || ''
+		};
+		var lnk = "{{ route('admin.export-lead-list') }}" + "?" + $.param(params);
+		$("#export_to_excel").attr('href', lnk);
 	});
 	
 

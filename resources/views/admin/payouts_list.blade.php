@@ -1,610 +1,512 @@
 @extends('admin.master')
 @section('content')
 <style>
-.error
-{
-	color:red !important;
-	font-size:12px !important;
-}
+.error { color:red !important; font-size:12px !important; }
 
-.payment-active { color:green;}
-.payment-inactive{ color:red;}
+/* ============ PAYOUTS — PAGE HEADER ============ */
+.gl-page-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 16px; padding: 8px 4px 20px; flex-wrap: wrap;
+    font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+.gl-page-title { font-size: 24px; font-weight: 700; color: #0F172A; letter-spacing: -0.01em; margin: 0 0 4px 0; line-height: 1.2; }
+.gl-page-subtitle { font-size: 13px; color: #475569; }
+.gl-page-header__actions { display: inline-flex; align-items: center; gap: 10px; }
+.gl-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 8px;
+    font-size: 13px; font-weight: 500; line-height: 1.2;
+    font-family: inherit; text-decoration: none; cursor: pointer;
+    border: 1px solid transparent; white-space: nowrap;
+    transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+.gl-btn i { font-size: 15px; line-height: 1; }
+.gl-btn-outline { background: #FFFFFF; border-color: #E7E9EE; color: #0F172A; }
+.gl-btn-outline:hover { background: #FAFAFB; border-color: #CBD5E1; }
+.gl-btn-primary { background: #1E3A5F; color: #fff; border-color: #1E3A5F; box-shadow: 0 1px 2px rgba(15,23,42,0.08); }
+.gl-btn-primary:hover { background: #15294A; border-color: #15294A; color: #fff; }
+.gl-btn-sm { padding: 5px 10px; font-size: 12px; }
 
-.filter-select
-{
-	width:110px;
-	height:34px;
-	margin:8px 0px 8px 8px;
-	border-color:#aaa !important;
+/* ============ PAYOUTS — KPI ============ */
+.gl-kpi-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px;
+    font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
 }
-.pd-view p{ margin-bottom:.3rem !important;}
+.gl-kpi {
+    background: #FFFFFF; border: 1px solid #E7E9EE; border-radius: 8px;
+    padding: 16px 18px; box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+}
+.gl-kpi-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.gl-kpi-icon {
+    width: 28px; height: 28px; border-radius: 7px;
+    display: grid; place-items: center;
+    background: #EEF2F8; color: #1E3A5F;
+}
+.gl-kpi-icon i { font-size: 15px; line-height: 1; }
+.gl-kpi-icon.warn    { background: #FEF3C7; color: #D97706; }
+.gl-kpi-icon.success { background: #ECFDF5; color: #059669; }
+.gl-kpi-icon.danger  { background: #FEE2E2; color: #DC2626; }
+.gl-kpi-label { font-size: 12px; color: #475569; font-weight: 500; }
+.gl-kpi-value {
+    font-size: 24px; font-weight: 600; letter-spacing: -0.02em;
+    color: #0F172A; line-height: 1.1;
+    font-family: 'Geist Mono', monospace; font-variant-numeric: tabular-nums;
+}
+.gl-kpi-foot { margin-top: 8px; font-size: 12px; color: #475569; }
+.gl-kpi-foot.danger { color: #DC2626; font-weight: 500; }
+@media (max-width: 1100px) { .gl-kpi-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 540px)  { .gl-kpi-grid { grid-template-columns: 1fr; } }
 
-.fs-10
-{
-	font-size:10px;
-	color:red;
-	font-weight:600;
+/* ============ PAYOUTS — TOOLBAR ============ */
+.gl-payouts-toolbar {
+    padding: 12px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 14px; border-bottom: 1px solid #F0F2F5;
+    flex-wrap: wrap; background: #FAFAFB;
 }
-.numericCol
-{
-	text-align:right;
+.gl-payouts-toolbar .tabs {
+    display: flex; gap: 2px;
+    background: #FFFFFF; padding: 3px; border-radius: 6px;
+    border: 1px solid #E7E9EE;
 }
+.gl-payouts-toolbar .tabs .tab {
+    padding: 5px 14px; background: transparent; border: none;
+    border-radius: 5px; font-size: 12.5px; font-weight: 500;
+    color: #475569; cursor: pointer; font-family: inherit;
+}
+.gl-payouts-toolbar .tabs .tab.active { background: #1E3A5F; color: #fff; }
+.gl-payouts-toolbar .tabs .tab .mono { font-family: 'Geist Mono', monospace; font-size: 11px; opacity: 0.85; margin-left: 4px; }
+.gl-payouts-toolbar .filter-group { display: flex; gap: 8px; align-items: center; }
+.gl-payouts-toolbar .filter-select-gl {
+    padding: 6px 10px; border: 1px solid #E7E9EE; border-radius: 6px;
+    background: #FFFFFF; font-size: 12.5px; color: #0F172A;
+    font-family: inherit; cursor: pointer; outline: none;
+}
+.gl-payouts-toolbar .filter-select-gl:focus { border-color: #1E3A5F; }
 
-.cursor-pointer
-{
-	cursor:pointer
+/* Legend strip */
+.gl-payouts-legend {
+    display: flex; gap: 16px; align-items: center;
+    padding: 10px 20px;
+    background: #FAFAFB; border-bottom: 1px solid #F0F2F5;
+    font-size: 11.5px; color: #475569;
+    flex-wrap: wrap;
 }
-.text-center
+.gl-payouts-legend .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.gl-payouts-legend .legend-spacer { color: #94A3B8; margin-left: auto; }
+
+/* ============ PAYOUTS — TABLE ============ */
+.gl-payouts {
+    --gl-surface: #FFFFFF; --gl-surface-2: #FAFAFB;
+    --gl-border: #E7E9EE; --gl-border-soft: #F0F2F5;
+    --gl-text: #0F172A; --gl-text-soft: #475569; --gl-text-muted: #94A3B8;
+    font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding:10px;
+}
+.gl-payouts table.data { width: 100%; border-collapse: collapse; font-size: 13px; }
+.gl-payouts table.data thead tr { background: var(--gl-surface-2); }
+.gl-payouts table.data thead th {
+    padding: 10px 16px; text-align: left;
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--gl-text-muted); font-weight: 600;
+    border-bottom: 1px solid var(--gl-border-soft); white-space: nowrap;
+}
+.gl-payouts table.data thead th.num { text-align: right; }
+.gl-payouts table.data tbody td {
+    padding: 12px 16px; border-bottom: 1px solid var(--gl-border-soft);
+    color: var(--gl-text-soft); vertical-align: middle; background: var(--gl-surface);
+}
+.gl-payouts table.data tbody tr:hover td { background: #FAFBFC; }
+.gl-payouts table.data td.numericCol,
+.gl-payouts table.data td.num {
+    font-family: 'Geist Mono', monospace; text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+.gl-payouts table.data td .num.strong { color: var(--gl-text); font-weight: 600; font-family: 'Geist Mono', monospace; }
+.gl-payouts table.data td .num.muted  { color: var(--gl-text-muted); font-family: 'Geist Mono', monospace; }
+
+/* Partner cell — clickable link wrapping avatar */
+.gl-payouts .row-avatar {
+    display: inline-flex; align-items: center; gap: 10px;
+    text-decoration: none;
+}
+.gl-payouts .row-avatar.partner-link { color: inherit; }
+.gl-payouts .row-avatar:hover .nm .name { color: #1E3A5F; }
+.gl-payouts .row-avatar .av {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: grid; place-items: center; font-size: 11px; font-weight: 600;
+    color: #fff; flex-shrink: 0; letter-spacing: 0.02em;
+}
+.gl-payouts .row-avatar .av.c1 { background: #1E3A5F; }
+.gl-payouts .row-avatar .av.c2 { background: #059669; }
+.gl-payouts .row-avatar .av.c3 { background: #B68B3C; }
+.gl-payouts .row-avatar .av.c4 { background: #DC2626; }
+.gl-payouts .row-avatar .av.c5 { background: #475569; }
+.gl-payouts .row-avatar .av.c6 { background: #2C5282; }
+.gl-payouts .row-avatar .nm { line-height: 1.25; }
+.gl-payouts .row-avatar .nm .name { color: var(--gl-text); font-weight: 500; font-size: 13px; }
+.gl-payouts .row-avatar .nm .sub { color: var(--gl-text-muted); font-size: 11px; margin-top: 2px; }
+
+/* R / I commission type marks */
+.gl-payouts .type-mark {
+    display: inline-block;
+    width: 22px; height: 22px;
+    border-radius: 5px;
+    font-size: 11px; font-weight: 700;
+    text-align: center; line-height: 22px;
+    font-family: 'Geist Mono', monospace;
+}
+.gl-payouts .type-mark.r { background: #EEF2F8; color: #1E3A5F; }
+.gl-payouts .type-mark.i { background: #FBF5E5; color: #B68B3C; }
+
+/* Pills */
+.gl-payouts .pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px; border-radius: 4px;
+    font-size: 11.5px; font-weight: 500;
+}
+.gl-payouts .pill::before { content:''; width:5px; height:5px; border-radius:50%; }
+.gl-payouts .pill.won    { background: #ECFDF5; color: #059669; }
+.gl-payouts .pill.won::before { background: #059669; }
+.gl-payouts .pill.paid   { background: #ECFDF5; color: #059669; }
+.gl-payouts .pill.paid::before { background: #059669; }
+.gl-payouts .pill.unpaid { background: #FEE2E2; color: #DC2626; }
+.gl-payouts .pill.unpaid::before { background: #DC2626; }
+
+/* Aged column */
+.gl-payouts .days {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: 'Geist Mono', monospace; font-size: 12px;
+    color: var(--gl-text-soft);
+}
+.gl-payouts .days.fresh { color: var(--gl-text-muted); }
+.gl-payouts .days.stale { color: #D97706; font-weight: 500; }
+.gl-payouts .days.cold  { color: #DC2626; font-weight: 600; }
+.gl-payouts .days .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+/* Pay button used inside the action column */
+.gl-payouts .gl-btn { padding: 6px 12px; font-size: 12px; }
+
+.fs-10 { font-size: 10px; color: #DC2626; font-weight: 600; }
+.numericCol { text-align: right; }
+#unpaid_leads_table .name:hover
 {
-	text-align:center;
+    color:blue;
+    font-weight:500;
 }
 </style>
 
- <div class="page-content">
-        <div class="container-fluid">
+<div class="page-content">
+    <div class="container-fluid">
 
-            <!-- Start page title -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="page-title-box d-flex align-items-center justify-content-between">
-                        <h4 class="mb-0">Payout Details (Converted Leads)</h4>
-                        <div class="page-title-right">
-                            <ol class="breadcrumb m-0">
-                                <li class="breadcrumb-item"><a href="{{route('admin.dashboard')}}">Home</a></li>
-                                <li class="breadcrumb-item active">Business Leads</li>
-                            </ol>
-                        </div>
+        <div class="gl-page-header">
+            <div class="gl-page-header__text">
+                <h1 class="gl-page-title">Prepare Payouts</h1>
+                <div class="gl-page-subtitle">Commission due for closed-won leads · Released after customer payment clears.</div>
+            </div>
+            <div class="gl-page-header__actions">
+                <a href="{{ url('admin/payout-history') }}" class="gl-btn gl-btn-outline">
+                    <i class="bx bx-time-five"></i> Payout History
+                </a>
+            </div>
+        </div>
+
+        {{-- KPI cards --}}
+        @php
+            $shortInr = function ($val) {
+                $val = (int) $val;
+                if ($val >= 10000000) return '&#8377;'.round($val/10000000, 1).'Cr';
+                if ($val >= 100000)   return '&#8377;'.round($val/100000, 1).'L';
+                return '&#8377;'.number_format($val, 0, '.', ',');
+            };
+        @endphp
+        <div class="gl-kpi-grid">
+            <div class="gl-kpi">
+                <div class="gl-kpi-head">
+                    <div class="gl-kpi-icon warn"><i class="bx bx-rupee"></i></div>
+                    <div class="gl-kpi-label">Pending Payout</div>
+                </div>
+                <div class="gl-kpi-value">{!! $shortInr($pending_payout ?? 0) !!}</div>
+                <div class="gl-kpi-foot">Across {{ $pending_deals ?? 0 }} deal{{ ($pending_deals ?? 0) == 1 ? '' : 's' }}</div>
+            </div>
+            <div class="gl-kpi">
+                <div class="gl-kpi-head">
+                    <div class="gl-kpi-icon"><i class="bx bx-group"></i></div>
+                    <div class="gl-kpi-label">Partners Owed</div>
+                </div>
+                <div class="gl-kpi-value">{{ $partners_owed ?? 0 }}</div>
+                <div class="gl-kpi-foot">Awaiting payout</div>
+            </div>
+            <div class="gl-kpi">
+                <div class="gl-kpi-head">
+                    <div class="gl-kpi-icon danger"><i class="bx bx-error"></i></div>
+                    <div class="gl-kpi-label">Aged (&gt;14 days)</div>
+                </div>
+                <div class="gl-kpi-value">{!! $shortInr($aged_payout ?? 0) !!}</div>
+                <div class="gl-kpi-foot danger">{{ $aged_deals ?? 0 }} deal{{ ($aged_deals ?? 0) == 1 ? '' : 's' }} overdue</div>
+            </div>
+            <div class="gl-kpi">
+                <div class="gl-kpi-head">
+                    <div class="gl-kpi-icon success"><i class="bx bx-check"></i></div>
+                    <div class="gl-kpi-label">Paid This Month</div>
+                </div>
+                <div class="gl-kpi-value">{!! $shortInr($paid_this_month ?? 0) !!}</div>
+                <div class="gl-kpi-foot">@if(($paid_this_month ?? 0) === 0)No payouts processed yet @else Released to partners @endif</div>
+            </div>
+        </div>
+
+        <div class="card">
+
+            {{-- TAB & FILTER TOOLBAR --}}
+            <div class="gl-payouts-toolbar">
+                <div class="tabs" role="tablist">
+                    <button class="tab active" id="unpaid-tab" data-bs-toggle="tab" data-bs-target="#unpaid-tab-pane" type="button" role="tab" aria-selected="true">
+                        Un-Paid <span class="mono">{{ $unpaid_count ?? 0 }}</span>
+                    </button>
+                    <button class="tab" id="paid-tab" data-bs-toggle="tab" data-bs-target="#paid-tab-pane" type="button" role="tab" aria-selected="false">
+                        Paid <span class="mono">{{ $paid_count ?? 0 }}</span>
+                    </button>
+                </div>
+                
+            </div>
+
+            <div class="gl-payouts-legend">
+                <span class="legend-item"><span class="type-mark r">R</span> Renewal commission</span>
+                <span class="legend-item"><span class="type-mark i">I</span> First (initial) commission</span>
+                <span class="legend-spacer">Commission paid after customer payment clears</span>
+            </div>
+
+            <div class="tab-content" id="payoutsTabContent">
+
+                {{-- UN-PAID TAB --}}
+                <div class="tab-pane fade show active" id="unpaid-tab-pane" role="tabpanel" tabindex="0">
+
+               
+                    <select id="unpaid_partner_filter" class="filter-select-gl" style="margin-left:10px;">
+                        <option value="">All partners</option>
+                        @foreach($partners as $key=>$value)
+                            <option value="{{ $key }}">{{ $value }}</option>
+                        @endforeach
+                    </select>
+           
+
+                    <div class="table-responsive gl-payouts">
+                        <table id="unpaid_leads_table" class="data" style="width:100% !important;">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Partner</th>
+                                    <th>Lead</th>
+                                    <!--<th>Email / Mobile</th>-->
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th class="num">Deal Amount</th>
+                                    <th class="num">Commission</th>
+                                    <th class="num">Paid</th>
+                                    <th class="num">Balance</th>
+                                    <th>Aged</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
-            </div>
-            <!-- End page title -->
 
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="card-title mb-0">Converted Leads</h5>
-                                <div>
-								{{--<button id="btnOffcanvas" class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Add Lead</button>--}}
-								<a href="{{url('admin/payout-history')}}" class="btn btn-primary me-2" ><i class="fas fa-file"></i>&nbsp;Payout History</a>
-                                </div>
+                {{-- PAID TAB --}}
+                <div class="tab-pane fade" id="paid-tab-pane" role="tabpanel" tabindex="0">
+  
+                    <select id="paid_partner_filter" class="filter-select-gl" style="margin-left:10px;">
+                        <option value="">All partners</option>
+                        @foreach($partners as $key=>$value)
+                            <option value="{{ $key }}">{{ $value }}</option>
+                        @endforeach
+                    </select>
+           
+   
+                    <div class="table-responsive gl-payouts">
+                        <table id="paid_leads_table" class="data " style="width:100% !important;" >
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Partner</th>
+                                    <th>Lead</th>
+                                    <!--<th>Email / Mobile</th>-->
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th class="num">Deal Amount</th>
+                                    <th class="num">Commission</th>
+                                    <th class="num">Paid Amount</th>
+                                    <!--<th>Aged</th>-->
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                   </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{{-- Existing modals kept for the set-commission flow --}}
+<div class="modal fade" id="set-payment-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Payment Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="set-commission-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Set Collected Amount</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" name="temp_comm_percentage" id="temp_comm_percentage">
+                <form id="setLeadCommission">
+                    @csrf
+                    <input type="text" class="form-control" name="set_comm_lead_id" id="set_comm_lead_id">
+                    <input type="text" class="form-control" name="set_comm_lead_status" id="set_comm_lead_status">
+                    <input type="text" class="form-control" name="renewal_status" id="renewal_status">
+
+                    <div class="form-group ">
+                        <input type="checkbox" name="cbox_renewal" id="cbox_renewal" style="width:20px;height:20px;font-size:16px;vertical-align:middle;">&nbsp;&nbsp;Renewal Amount
+                    </div>
+
+                    <div class="form-group mt-2">
+                        <label for="set_comm_percentage" class="form-label">Commission (%)</label>
+                        <input type="number" class="form-control" name="set_comm_percentage" id="set_comm_percentage" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label">Collected Amount</label>
+                                <input type="number" class="form-control" name="set_collected_amount" id="set_collected_amount">
+                                <label class="error" id="err-msg" style="display:none;"></label>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label">Commission</label>
+                                <input type="number" class="form-control" name="set_commission" id="set_commission">
                             </div>
                         </div>
-						
-                        <div class="card-body" style="padding-top:0px;">
-						
-						<div class="row mt-3">
-						<div class="col-lg-12">
-						
-						<ul class="nav nav-tabs" id="myTab" role="tablist">
-							  <li class="nav-item" role="presentation">
-								<button class="nav-link active" id="unpaid-tab" data-bs-toggle="tab" data-bs-target="#unpaid-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true"><b>Un-Paid Leads</b></button>
-							  </li>
-							  <li class="nav-item" role="presentation">
-								<button class="nav-link" id="paid-tab" data-bs-toggle="tab" data-bs-target="#paid-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false"><b>Paid Leads</b></button>
-							  </li>
-							  
-						</ul>
-						
-						<div class="tab-content mt-3 " id="myTabContent">
-							
-							<!-- TAB -1 -------------------------------------------->
-							  <div class="tab-pane fade show active" id="unpaid-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
-							  
-
-
-								<div class="row row-cols-1 row-cols-lg-1 row-cols-xl-1 row-cols-xxl-1" style="margin-top:-16px !important;">
-									<div class="col">
-										<div class="card overflow-hidden radius-10">
-											<div class="card-body">
-											<div class="d-flex overflow-hidden">
-												<label style="width:100px;"> Filter By:</label>
-													<div class="d-flex">
-															<select id="unpaid_partner_filter" name="unpaid_partner_filter" class="filter-select-new">
-																<option value="" selected disabled>Partners</option>
-																<option value="">All</option>
-																@foreach($partners as $key=>$value)
-																<option value="{{$key}}">{{$value}}</option>
-																@endforeach
-															</select>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-
-
-									<div class="table-responsive">
-
-									<!--<table id="partner-table" class="table table-striped table-centered align-middle table-nowrap mb-0" style="width:100%;">-->
-										<table id="unpaid_leads_table" class="table table-striped table-hover table-nowrap mb-0" style="width:100% !important;">
-											<thead>
-												
-											<tr id="tab-row">
-												<th>No</th>
-												<th>Partner</th>
-												<th>Lead</th>
-												<th>Email/Mobile</th>
-												<!--<th>Company</th>-->
-												<th>Status</th>
-												<th>Amount</th>
-												<th>Commission</th>
-												<th>Paid</th>
-												<th>Balance</th>
-												<th>Action</th>
-											</tr>
-												
-											</thead>
-											<tbody>
-										   
-											</tbody>
-										</table>
-									</div>
-
-							  </div>
-							  
-							<!-- TAB -2 -------------------------------------------->  
-							
-							  <div class="tab-pane fade" id="paid-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
-							  
-
-								<div class="row row-cols-1 row-cols-lg-1 row-cols-xl-1 row-cols-xxl-1" style="margin-top:-16px !important;">
-									<div class="col">
-										<div class="card overflow-hidden radius-10">
-											<div class="card-body">
-											<div class="d-flex overflow-hidden">
-												<label style="width:100px;"> Filter By:</label>
-													<div class="d-flex">
-														<select id="paid_partner_filter" name="paid_partner_filter" class="filter-select-new">
-															<option value="" selected disabled>Partners</option>
-															<option value="">All</option>
-															@foreach($partners as $key=>$value)
-															<option value="{{$key}}">{{$value}}</option>
-															@endforeach
-														</select>
-														
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-
-									  
-
-
-									<div class="table-responsive">
-
-									<!--<table id="partner-table" class="table table-striped table-centered align-middle table-nowrap mb-0" style="width:100%;">-->
-										<table id="paid_leads_table" class="table table-striped table-hover table-nowrap mb-0" style="width:100% !important;">
-											<thead>
-												
-											<tr id="tab-row">
-												<th>No</th>
-												<th>Partner</th>
-												<th>Lead</th>
-												<th>Email/Mobile</th>
-												<!--<th>Company</th>-->
-												
-												<th>Lead Status</th>
-												<th>Commission</th>
-												<th>Paid</th>
-												<th>Status</th>
-											</tr>
-												
-											</thead>
-											<tbody>
-										   
-											</tbody>
-										</table>
-									</div>
-
-							</div>
-							<!-- TAB END --------------------------------------------->
-							
-						</div>
-						
-						</div>
-						</div>
-
-							
-                        </div>
                     </div>
-                </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea rows="3" class="form-control" name="description" id="description" required></textarea>
+                    </div>
+
+                    <div class="form-group mt-3 mb-3" style="text-align:right;">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
             </div>
-        </div> <!-- container-fluid -->
+        </div>
     </div>
-	
-    <!-- Add Partner Modal -->
-
-	<div class="modal fade" id="set-payment-modal" tabindex="-1" aria-labelledby="addPartnerModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-lg">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="addPartnerModalLabel">Payment Details</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body">
-			
-			
-			</div>
-		</div>
-	</div>	
 </div>
-
-
-<div class="modal fade" id="set-commission-modal" tabindex="-1" aria-labelledby="addPartnerModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-md">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="addPartnerModalLabel">Set Collected Amount</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body">
-			
-			<input type="text" name="temp_comm_percentage" id="temp_comm_percentage">
-			
-			<form id="setLeadCommission">
-			@csrf
-			
-			<input type="text" class="form-control" name="set_comm_lead_id" id="set_comm_lead_id">
-			<input type="text" class="form-control" name="set_comm_lead_status" id="set_comm_lead_status">
-			<input type="text" class="form-control" name="renewal_status" id="renewal_status" >
-			
-			<div class="form-group ">
-				<input type="checkbox"  name="cbox_renewal" id="cbox_renewal" style="width:20px;height:20px;font-size:16px;vertical-align:middle;">&nbsp;&nbsp;Renewal Amount
-			</div>
-					
-			
-			<div class="form-group mt-2">
-				<label for="set_comm_percentage" class="form-label">Commission (%)</label>
-				<input type="number" class="form-control" name="set_comm_percentage" id="set_comm_percentage" readonly>
-			</div>
-			
-			<div class="form-group">
-			<div class="row">
-			<div class="col-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
-				<label for="recipient-name" class="form-label">Collected Amount</label>
-				<input type="number" class="form-control"  name="set_collected_amount" id="set_collected_amount" aria-describedby="button-addon2">
-				<label class="error" id="err-msg" style="display:none;"></label>
-			</div>
-			<div class="col-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
-			<div class="form-group">
-				<label for="recipient-name" class="form-label">Commission</label>
-				<input type="number" class="form-control" name="set_commission" id="set_commission" >
-			</div>
-			</div>
-			</div>
-			</div>
-			
-			<div class="form-group">
-				<label for="description" class="form-label">Description</label>
-				<textarea rows=3 class="form-control" name="description" id="description"  required></textarea>
-			</div>
-									
-			<div class="form-group mt-3 mb-3" style="text-align:right;">
-				<button type="button" class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close">Close</button>
-				<button type="submit"  class="btn btn-primary">Submit</button>
-			</div>
-			</form>
-			</div>
-		</div>
-	</div>	
-</div>
-
-<!-- End Page-content -->
-
 
 @push('scripts')
 <script type="text/javascript">
-    $(function () {
-    toastr.options = {
-        // "positionClass": "toast-top-right cp",
-        "showDuration": "300000",
-        "hideMethod": "fadeOut"
-        }
-    });
-	
+$(function () { toastr.options = { "showDuration": "300000", "hideMethod": "fadeOut" }; });
 </script>
 
 @if(Session::has('success'))
-	<script>
-	toastr.success("{{Session::get('success')}}")
-</script>
+<script>toastr.success("{{ Session::get('success') }}");</script>
 @endif
 
-
 <script type="text/javascript">
-    $(function () {
+$(function () {
 
-		//---------datatable -------------------------------------
-				
-        var table = $('#unpaid_leads_table').DataTable({
-            processing: true,
-            serverSide: true,
-			stateStatus: true,
-			bAutoWidth: false,
-			
-			"language": {
-				searchPlaceholder: 'Search',
-				sSearch: '',
-			},
-			"lengthMenu": [10, 25, 50,100,150,200],
-			
-            ajax: {
-                url: "{{ route('admin.got-business-unpaid-leads') }}",
-                data: function (d) 
-                {
-                    d.partner_id = $('#unpaid_partner_filter').val()   
-                }
-            },
-            columns: [
-            
-            {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable: false, searchable: false},
-			{data: 'partner', name: 'partner'},
-            {data: 'lead_name', name: 'lead_name'},
-			{data: 'email', name: 'email'},
-            //{data: 'company_name', name: 'company_name'},
-			
-			{data: 'status', name: 'status',className:"full-width-select"},
-			{data: 'amount_collected', name: 'amount_collected',className:'numericCol'},
-			{data: 'commission_amount', name: 'commission_amount',className:'numericCol'},
-			{data: 'amount', name: 'amount',className:'numericCol'},
-			{data: 'balance', name: 'balance',className:'numericCol'},
-			{data: 'actions', name: 'action',orderable: false, searchable: false,className:"text-center"},
-            ],
-        });
-
-	
-
-$("#unpaid_partner_filter").change(function()
- {
-	table.draw();
- });
-
-
-var table2 = $('#paid_leads_table').DataTable({
-            processing: true,
-            serverSide: true,
-			stateStatus: true,
-			bAutoWidth: false,
-			
-			"language": {
-				searchPlaceholder: 'Search',
-				sSearch: '',
-			},
-			"lengthMenu": [10, 25, 50,100,150,200],
-			
-            ajax: {
-                url: "{{ route('admin.got-business-paid-leads')}}",
-                data: function (d) 
-                {
-                    d.partner_id = $('#paid_partner_filter').val()   
-                }
-            },
-            columns: [
-            
-            {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable: false, searchable: false},
-			{data: 'partner', name: 'partner'},
-            {data: 'name', name: 'name'},
-			{data: 'email', name: 'email'},
-            //{data: 'company_name', name: 'company_name'},
-			
-			{data: 'status', name: 'status',className:"full-width-select"},
-			{data: 'com_amount', name: 'com_amount',className:'numericCol'},
-			{data: 'paid_amount', name: 'paid_amount',className:'numericCol'},
-			{data: 'pay_status', name: 'action',orderable: false, searchable: false,className:"text-center"},
-            ],
-        });
-
-
-
-$("#paid_partner_filter").change(function()
-	{
-		table2.draw();
-	});
-
-$("#paid-tab").click(function()
-		{
-			table2.ajax.reload();
-		});
-
-
-/// SET PAYMENT DETAILS -------------same functions added into leads blade file-------------------------------------------------------
-
- var paymentValidator=$('#paymentForm').validate({ 
-                rules: {
-
-                },
-                submitHandler: function(form) 
-                {
-                    $("#btnPayment").attr('disabled',true).html('Saving <i class="fa fa-spinner fa-spin"></i>')
-					
-					var formData=new FormData(document.getElementById('paymentForm'));
-					
-                    $.ajax({
-                    url: "{{ route('admin.save-payout') }}",
-                    type: 'post',
-                    data: formData,
-                    success: function(result){
-                        if(result.status == 1)
-                        {
-                            $("#btnPayment").attr('disabled',false).html('Submit')
-							table.ajax.reload();
-                            toastr.success(result.msg);
-							$('#paymentForm')[0].reset();
-							paymentValidator.resetForm();
-							$("#payment-detail-modal").modal('hide');
-                        }
-                    },
-					cache: false,
-					contentType: false,
-					processData: false
-                    });
-                  }
-                });
-
-	$(document).on('change','#cbox_renewal',function()
-	{
-		if($(this).is(':checked'))
-		{
-			$("#set_comm_percentage").val(5);
-			$("#renewal_status").val('Renewal');
-		}				
-		else
-		{
-			$("#set_comm_percentage").val($("#temp_comm_percentage").val());
-			$("#renewal_status").val('');
-		}
-		
-	});
-
-
-	$("#unpaid_leads_table tbody").on( 'click', '.set-commission', function()
-	{
-		var lead_id = $(this).attr('data-leadid')
-		var com_per=$(this).attr('data-percentage');
-		var lead_status=$(this).attr('data-leadstatus');
-		var com_type=$(this).attr('data-comtype');
-		var com_per=$(this).attr('data-comper');
-				
-			$("#setLeadCommission")[0].reset();
-			var id=$(this).attr('id');
-			$("#set_comm_lead_id").val(lead_id);
-			$("#set_comm_percentage").val(com_per);
-			$("#temp_comm_percentage").val(com_per);
-			
-			$("#set_comm_lead_status").val(lead_status);
-			$("#renewal_status").val(com_type);
-			$("#set-commission-modal").modal('show');
-	});
-		
-
-	$(document).on('keyup','#set_collected_amount',function()
-        {
-            var camt=$("#set_collected_amount").val();
-			var com_per=$("#set_comm_percentage").val();
-			if(camt!="")
-			{
-				comm=(parseInt(camt)*parseInt(com_per))/100;
-				$("#set_commission").val(Math.round(comm,2));
-				$("#err-msg").html("").css('display','none');
-				$("#btnLeadCommSubmit").prop('disabled',false);
-			}
-			else
-			{
-				$("#err-msg").html("Invalid Amount!").css('display','block');
-			}
-        });
-	
-		
-	var sValidator=$('#setLeadCommission').validate({ 
-                rules: {
-					set_comm_percentage:{required:true,},
-					set_collected_amount:{required:true,},
-					set_commission:{required:true,},
-					description:{required:true,}
-                },
-                submitHandler: function(form) 
-                {
-
-					formData=new FormData(document.getElementById('setLeadCommission'));
-					
-                    $.ajax({
-					url: "{{ route('admin.update-lead-commission') }}",
-					type: 'post',
-					dataType:'json',
-					data: formData,
-					success: function(result)
-					{
-						if(result.status==1)
-						{
-							toastr.success(result.msg);
-							table.ajax.reload();
-							$("#setLeadCommission")[0].reset();
-							$("#set-commission-modal").modal('hide');
-							
-						}
-						else
-						{
-							toastr.error(result.msg);
-						}
-					},
-					cache: false,
-					contentType: false,
-					processData: false
-                    });
-				}
+    // ---- Tab visual sync (matches new pill tabs) ----
+    document.querySelectorAll('.gl-payouts-toolbar .tab').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.gl-payouts-toolbar .tab').forEach(function (b) {
+                b.classList.remove('active');
+                b.setAttribute('aria-selected', 'false');
             });
+            btn.classList.add('active');
+            btn.setAttribute('aria-selected', 'true');
+        });
+    });
 
-		
-		
-		/*$("#unpaid_leads_table tbody").on('click','.btn-pay',function()
-        {
-            lead_id = $(this).data('leadid');
-			var pstatus=$(this).val();
+    // ---- UN-PAID TABLE ----
+    var table = $('#unpaid_leads_table').DataTable({
+        processing: true,
+        serverSide: true,
+        bAutoWidth: false,
+        language: { searchPlaceholder: 'Search', sSearch: '' },
+        lengthMenu: [10, 25, 50, 100, 150, 200],
+        ajax: {
+            url: "{{ route('admin.got-business-unpaid-leads') }}",
+            data: function (d) { d.partner_id = $('#partner_filter').val(); }
+        },
+        columns: [
+            {data: 'DT_RowIndex',       name: 'DT_RowIndex',       orderable: false, searchable: false},
+            {data: 'partner',           name: 'partner',           orderable: false},
+            {data: 'lead_name',         name: 'lead_name'},
+            //{data: 'email',             name: 'email'},
+            {data: 'type',              name: 'type',              orderable: false, searchable: false},
+            {data: 'status',            name: 'status',            orderable: false},
+            {data: 'amount_collected',  name: 'amount_collected',  className: 'numericCol'},
+            {data: 'commission_amount', name: 'commission_amount', className: 'numericCol'},
+            {data: 'amount',            name: 'amount',            className: 'numericCol'},
+            {data: 'balance',           name: 'balance',           className: 'numericCol'},
+            {data: 'aged',              name: 'aged',              orderable: false, searchable: false},
+            {data: 'actions',           name: 'actions',           orderable: false, searchable: false, className: 'text-center'},
+        ]
+    });
 
-			if(pstatus==1)
-			{
+    $("#unpaid_leads_table_length").append(unpaid_partner_filter);
 
-				$("#lead_pay_status").val(pstatus);
-				
-				$.ajax({
-                    url: "{{ url('admin/get-lead-details')}}"+"/"+lead_id,
-                    type: 'get',
-					dataType:'json',
-                    success: function(res)
-                    {
+    $("#unpaid_partner_filter").change(function () {
+            table.draw();
+    });
 
-						if(res.status==1)
-                        {
-                            $("#pay_lead_id").val(res.data.id);
-							$("#pay_partner_id").val(res.data.partner_id);
-							$("#pay_commission").val(res.data.commission_amount);
-							$("#pay_percentage").val(res.data.commission_percentage);
-							$("#pay_amount").val(res.data.amount_collected);
-							$("#payment-detail-modal").modal('show');
-				
-                        }
-						else
-						{
-							toastr.warning(res.msg);
-						}
-                    }
-                });
+    // ---- PAID TABLE ----
+    var table2 = $('#paid_leads_table').DataTable({
+        processing: true,
+        serverSide: true,
+        bAutoWidth: false,
+        language: { searchPlaceholder: 'Search', sSearch: '' },
+        lengthMenu: [10, 25, 50, 100, 150, 200],
+        ajax: {
+            url: "{{ route('admin.got-business-paid-leads') }}",
+            data: function (d) { d.partner_id = $('#paid_partner_filter').val(); }
+        },
+        columns: [
+            {data: 'DT_RowIndex',       name: 'DT_RowIndex',       orderable: false, searchable: false},
+            {data: 'partner',           name: 'partner',           orderable: false},
+            {data: 'lead_name',         name: 'lead_name'},
+            //{data: 'email',             name: 'email'},
+            {data: 'type',              name: 'type',              orderable: false, searchable: false},
+            {data: 'status',            name: 'status',            orderable: false},
+            {data: 'amount_collected',  name: 'amount_collected',  className: 'numericCol'},
+            {data: 'commission_amount', name: 'commission_amount', className: 'numericCol'},
+            {data: 'paid_amount',       name: 'paid_amount',       className: 'numericCol'},
+            //{data: 'aged',              name: 'aged',              orderable: false, searchable: false},
+            {data: 'pay_status',        name: 'pay_status',        orderable: false, searchable: false},
+        ]
+    });
 
-			}
-			else
-			{
-		
-				$.ajax({
-                    url: "{{ route('admin.update-payment-status') }}",
-                    method: 'get',
-                    data: {'lead_id':lead_id,'status':$(this).val()},
-                    success: function(result)
-                    {
-                        if(result.status==1)
-                        {
-                            toastr.success(result.msg);
-                            table.ajax.reload();
-                        }
-						else
-						{
-							toastr.warning(result.msg);
-						}
-                        
-                    }
-                });
-			}
-        })
+    $("#paid_leads_table_length").append(paid_partner_filter);
 
-*/
-
+    $("#paid_partner_filter").change(function () { table2.draw(); });
+    $("#paid-tab").click(function () { table2.ajax.reload(); });
 
 });
-
 </script>
 
 @endpush
